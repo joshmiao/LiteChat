@@ -20,11 +20,24 @@ void LiteChat::on_pushButton_clicked()
     QString ip = ui->lineEdit->text();
     QString port = ui->lineEdit_2->text();
     client->connectToHost(ip, port.toShort());
-    connect(client, SIGNAL(), this, SLOT(handConnected()));
+    ui->textEdit->append("tring to connect...");
+    connect(client, SIGNAL(connected()), this, SLOT(handConnected()));
 }
 
 void LiteChat::handConnected()
 {
     ui->pushButton_2->setEnabled(true);
+    ui->textEdit->append("successfully connected!");
+    connect(client, SIGNAL(readyRead()), this, SLOT(handReadyRead()));
 }
 
+void LiteChat::on_pushButton_2_clicked()
+{
+    QString txt = ui->lineEdit_3->text();
+    client->write(txt.toUtf8());
+}
+
+void LiteChat::handReadyRead(){
+    QByteArray recvArray = client->readAll();
+    ui->textEdit->append(QString::fromUtf8(recvArray));
+}
