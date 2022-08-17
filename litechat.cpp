@@ -19,6 +19,10 @@ void LiteChat::on_pushButton_clicked()
 {
     QString ip = ui->lineEdit->text();
     QString port = ui->lineEdit_2->text();
+    if (ip == "" || port == ""){
+        ui->textEdit->append("Input correct IP and Port!");
+        return;
+    }
     client->connectToHost(ip, port.toShort());
     ui->textEdit->append("tring to connect...");
     connect(client, SIGNAL(connected()), this, SLOT(handConnected()));
