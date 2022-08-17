@@ -1,1 +1,1 @@
-# README file for LiteChar
+# README file for LiteChat
