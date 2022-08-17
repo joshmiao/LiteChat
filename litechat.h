@@ -16,7 +16,12 @@ public:
     LiteChat(QWidget *parent = nullptr);
     ~LiteChat();
 
+private slots:
+    void on_pushButton_clicked();
+    void handConnected();
+
 private:
     Ui::LiteChat *ui;
+    QTcpSocket *client;
 };
 #endif // LITECHAT_H
