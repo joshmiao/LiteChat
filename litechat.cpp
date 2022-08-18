@@ -1,12 +1,13 @@
 #include "litechat.h"
 #include "ui_litechat.h"
-
+#include "litechat_login.h"
 LiteChat::LiteChat(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::LiteChat)
 {
     ui->setupUi(this);
     client = new QTcpSocket();
+    serverReady = false;
 }
 
 LiteChat::~LiteChat()
@@ -30,9 +31,17 @@ void LiteChat::on_pushButton_clicked()
 
 void LiteChat::handConnected()
 {
+    serverReady = true;
     ui->pushButton_2->setEnabled(true);
     ui->textEdit->append("successfully connected!");
     connect(client, SIGNAL(readyRead()), this, SLOT(handReadyRead()));
+}
+
+int LiteChat::sendtoServer(QString msg)
+{
+    if (!serverReady) return -1;
+    client->write(msg.toUtf8());
+    return 0;
 }
 
 void LiteChat::on_pushButton_2_clicked()
@@ -43,5 +52,11 @@ void LiteChat::on_pushButton_2_clicked()
 
 void LiteChat::handReadyRead(){
     QByteArray recvArray = client->readAll();
-    ui->textEdit->append(QString::fromUtf8(recvArray));
+    QString recvString = QString::fromUtf8(recvArray);
+    if (recvString == "success"){
+        LiteChat_Login *loginPage = new LiteChat_Login(this);
+        loginPage->show();
+        this->hide();
+    }
+    ui->textEdit->append(recvString);
 }

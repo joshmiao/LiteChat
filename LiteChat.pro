@@ -9,14 +9,17 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    litechat_login.cpp \
     main.cpp \
     litechat.cpp
 
 HEADERS += \
-    litechat.h
+    litechat.h \
+    litechat_login.h
 
 FORMS += \
-    litechat.ui
+    litechat.ui \
+    litechat_login.ui
 
 TRANSLATIONS += \
     LiteChat_zh_CN.ts

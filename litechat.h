@@ -15,6 +15,7 @@ class LiteChat : public QMainWindow
 public:
     LiteChat(QWidget *parent = nullptr);
     ~LiteChat();
+    int sendtoServer(QString msg);
 
 private slots:
     void on_pushButton_clicked();
@@ -26,5 +27,6 @@ private slots:
 private:
     Ui::LiteChat *ui;
     QTcpSocket *client;
+    bool serverReady;
 };
 #endif // LITECHAT_H
