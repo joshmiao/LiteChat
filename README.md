@@ -18,7 +18,7 @@ id（PK）
 
 客户端与服务器通讯数据结构：
 登录：
-QByteArray [请求标识，[id，密码哈希值]]
+QByteArray [（）——请求标识，[id，密码哈希值]]
 QByteArray [回应标识，[成功标识，句柄]]
 注册：
 QByteArray [请求标识，[id，邮箱，昵称，密码哈希值，生日]]
