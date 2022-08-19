@@ -4,10 +4,11 @@
 #include <QDateTime>
 #include <QDebug>
 
-LiteChat_Diolog::LiteChat_Diolog(LiteChat *liteChatMain, QWidget *parent) :
+LiteChat_Diolog::LiteChat_Diolog(LiteChat *liteChatMain, QString title, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::LiteChat_Diolog),
-    liteChatMain(liteChatMain)
+    liteChatMain(liteChatMain),
+    title(title)
 {
     ui->setupUi(this);
     resize(600, 800);
@@ -21,46 +22,28 @@ LiteChat_Diolog::~LiteChat_Diolog()
 void LiteChat_Diolog::on_pushButton_clicked()
 {
     QString msg = ui->textEdit->toPlainText();
-    liteChatMain->sendtoServer(msg);
+
     ui->textEdit->setText("");
     QString time = QString::number(QDateTime::currentDateTime().toTime_t()); //时间戳
 
-    bool isSending = true; // 发送中
-
     qDebug()<<"addMessage" << msg << time << ui->listWidget->count();
-    if(ui->listWidget->count()%2) {
-        if(isSending) {
-            dealMessageTime(time);
 
-            LiteChat_Message* messageW = new LiteChat_Message(ui->listWidget->parentWidget());
-            QListWidgetItem* item = new QListWidgetItem(ui->listWidget);
-            dealMessage(messageW, item, msg, time, LiteChat_Message::User_Me);
-        } else {
-            bool isOver = true;
-            for(int i = ui->listWidget->count() - 1; i > 0; i--) {
-                LiteChat_Message* messageW = (LiteChat_Message*)ui->listWidget->itemWidget(ui->listWidget->item(i));
-                if(messageW->text() == msg) {
-                    isOver = false;
-                    messageW->setTextSuccess();
-                }
-            }
-            if(isOver) {
-                dealMessageTime(time);
+    dealMessageTime(time);
+    LiteChat_Message* messageW = new LiteChat_Message(ui->listWidget->parentWidget());
+    QListWidgetItem* item = new QListWidgetItem(ui->listWidget);
+    dealMessage(messageW, item, msg, time, LiteChat_Message::User_Me);
+    if(liteChatMain->sendtoServer(msg) == 0) messageW->setTextSuccess();
 
-                LiteChat_Message* messageW = new LiteChat_Message(ui->listWidget->parentWidget());
-                QListWidgetItem* item = new QListWidgetItem(ui->listWidget);
-                dealMessage(messageW, item, msg, time, LiteChat_Message::User_Me);
-                messageW->setTextSuccess();
-            }
-        }
-    } else {
-        if(msg != "") {
-            dealMessageTime(time);
+    ui->listWidget->setCurrentRow(ui->listWidget->count()-1);
+}
 
-            LiteChat_Message* messageW = new LiteChat_Message(ui->listWidget->parentWidget());
-            QListWidgetItem* item = new QListWidgetItem(ui->listWidget);
-            dealMessage(messageW, item, msg, time, LiteChat_Message::User_She);
-        }
+void LiteChat_Diolog::receiveSingalMessage(QString msg){
+    QString time = QString::number(QDateTime::currentDateTime().toTime_t()); //时间戳
+    if(msg != "") {
+        dealMessageTime(time);
+        LiteChat_Message* messageW = new LiteChat_Message(ui->listWidget->parentWidget());
+        QListWidgetItem* item = new QListWidgetItem(ui->listWidget);
+        dealMessage(messageW, item, msg, time, LiteChat_Message::User_She);
     }
     ui->listWidget->setCurrentRow(ui->listWidget->count()-1);
 }
@@ -103,6 +86,7 @@ void LiteChat_Diolog::dealMessageTime(QString curMsgTime)
 void LiteChat_Diolog::resizeEvent(QResizeEvent *event){
     Q_UNUSED(event);
 }
+
 /*
 void LiteChat_Diolog::resizeEvent(QResizeEvent *event)
 {

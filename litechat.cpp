@@ -2,7 +2,6 @@
 #include "litechat.h"
 #include "ui_litechat.h"
 #include "litechat_login.h"
-#include "litechat_privatechat.h"
 #include "litechat_diolog.h"
 
 LiteChat::LiteChat(QWidget *parent)
@@ -23,6 +22,8 @@ void LiteChat::on_pushButton_clicked()
 {
     QString ip = ui->lineEdit->text();
     QString port = ui->lineEdit_2->text();
+    ip = QString("192.168.1.3");
+    port = QString("1234");
     if (ip == "" || port == ""){
         ui->textEdit->append("Input correct IP and Port!");
         return;
@@ -68,13 +69,6 @@ void LiteChat::on_pushButton_2_clicked()
     sendtoServer(txt);
 }
 
-void LiteChat::createPrivateChat()
-{
-    LiteChat_PrivateChat *privateChatPage = new LiteChat_PrivateChat(this);
-    privateChatPage->show();
-    connect(this, &LiteChat::messageReceive, privateChatPage, &LiteChat_PrivateChat::showMessage);
-}
-
 void LiteChat::createLoginPage()
 {
     LiteChat_Login *loginPage = new LiteChat_Login(this);
@@ -83,6 +77,7 @@ void LiteChat::createLoginPage()
 
 void LiteChat::createDiolog()
 {
-    LiteChat_Diolog *diologPage = new LiteChat_Diolog(this);
+    LiteChat_Diolog *diologPage = new LiteChat_Diolog(this, "Test Diolog");
     diologPage->show();
+    connect(this, &LiteChat::messageReceive, diologPage, &LiteChat_Diolog::receiveSingalMessage);
 }

@@ -12,7 +12,6 @@ SOURCES += \
     litechat_diolog.cpp \
     litechat_login.cpp \
     litechat_message.cpp \
-    litechat_privatechat.cpp \
     main.cpp \
     litechat.cpp
 
@@ -20,14 +19,12 @@ HEADERS += \
     litechat.h \
     litechat_diolog.h \
     litechat_login.h \
-    litechat_message.h \
-    litechat_privatechat.h
+    litechat_message.h
 
 FORMS += \
     litechat.ui \
     litechat_diolog.ui \
-    litechat_login.ui \
-    litechat_privatechat.ui
+    litechat_login.ui
 
 TRANSLATIONS += \
     LiteChat_zh_CN.ts
@@ -38,3 +35,6 @@ CONFIG += embed_translations
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    images.qrc
