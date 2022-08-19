@@ -22,11 +22,11 @@ void LiteChat::on_pushButton_clicked()
 {
     QString ip = ui->lineEdit->text();
     QString port = ui->lineEdit_2->text();
-    ip = QString("192.168.1.3");
-    port = QString("1234");
     if (ip == "" || port == ""){
+        ip = QString("192.168.1.5");
+        port = QString("1234");
         ui->textEdit->append("Input correct IP and Port!");
-        return;
+//        return;
     }
     client->connectToHost(ip, port.toShort());
     ui->textEdit->append("tring to connect...");
