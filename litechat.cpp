@@ -1,6 +1,9 @@
+#include <QDebug>
 #include "litechat.h"
 #include "ui_litechat.h"
 #include "litechat_login.h"
+#include "litechat_privatechat.h"
+
 LiteChat::LiteChat(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::LiteChat)
@@ -47,16 +50,33 @@ int LiteChat::sendtoServer(QString msg)
 void LiteChat::on_pushButton_2_clicked()
 {
     QString txt = ui->lineEdit_3->text();
-    client->write(txt.toUtf8());
+    sendtoServer(txt);
 }
 
-void LiteChat::handReadyRead(){
+void LiteChat::createPrivateChat()
+{
+    LiteChat_PrivateChat *privateChatPage = new LiteChat_PrivateChat(this);
+    privateChatPage->show();
+    connect(this, &LiteChat::messageReceive, privateChatPage, &LiteChat_PrivateChat::showMessage);
+}
+
+void LiteChat::createLoginPage()
+{
+    LiteChat_Login *loginPage = new LiteChat_Login(this);
+    loginPage->show();
+}
+
+void LiteChat::handReadyRead()
+{
     QByteArray recvArray = client->readAll();
     QString recvString = QString::fromUtf8(recvArray);
-    if (recvString == "success"){
-        LiteChat_Login *loginPage = new LiteChat_Login(this);
-        loginPage->show();
+    if (recvString == "connect_success"){
+        createLoginPage();
         this->hide();
+    }
+    if (recvString[0] == '#'){
+        qDebug() << recvString.mid(1);
+        emit messageReceive(recvString.mid(1));
     }
     ui->textEdit->append(recvString);
 }

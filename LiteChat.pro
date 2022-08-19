@@ -10,16 +10,19 @@ CONFIG += c++17
 
 SOURCES += \
     litechat_login.cpp \
+    litechat_privatechat.cpp \
     main.cpp \
     litechat.cpp
 
 HEADERS += \
     litechat.h \
-    litechat_login.h
+    litechat_login.h \
+    litechat_privatechat.h
 
 FORMS += \
     litechat.ui \
-    litechat_login.ui
+    litechat_login.ui \
+    litechat_privatechat.ui
 
 TRANSLATIONS += \
     LiteChat_zh_CN.ts

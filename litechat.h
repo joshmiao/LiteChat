@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QTcpSocket>
 
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class LiteChat; }
 QT_END_NAMESPACE
@@ -16,6 +17,8 @@ public:
     LiteChat(QWidget *parent = nullptr);
     ~LiteChat();
     int sendtoServer(QString msg);
+    void createPrivateChat();
+    void createLoginPage();
 
 private slots:
     void on_pushButton_clicked();
@@ -23,10 +26,12 @@ private slots:
     void handConnected();
     void handReadyRead();
 
-
 private:
     Ui::LiteChat *ui;
     QTcpSocket *client;
     bool serverReady;
+
+signals:
+    void messageReceive(QString msg);
 };
 #endif // LITECHAT_H
