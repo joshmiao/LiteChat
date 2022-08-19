@@ -1,6 +1,5 @@
 #include <QMessageBox>
 #include "litechat_login.h"
-#include "litechat_privatechat.h"
 #include "ui_litechat_login.h"
 
 
@@ -23,7 +22,7 @@ void LiteChat_Login::on_pushButton_clicked()
     QMessageBox msgBox;
     if (liteChatMain->sendtoServer(req) == 0) {
         msgBox.setText("Success");
-        liteChatMain->createPrivateChat();
+        liteChatMain->createDiolog();
         this->hide();
     }
     else{

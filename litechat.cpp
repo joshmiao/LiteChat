@@ -3,6 +3,7 @@
 #include "ui_litechat.h"
 #include "litechat_login.h"
 #include "litechat_privatechat.h"
+#include "litechat_diolog.h"
 
 LiteChat::LiteChat(QWidget *parent)
     : QMainWindow(parent)
@@ -17,7 +18,6 @@ LiteChat::~LiteChat()
 {
     delete ui;
 }
-
 
 void LiteChat::on_pushButton_clicked()
 {
@@ -38,6 +38,21 @@ void LiteChat::handConnected()
     ui->pushButton_2->setEnabled(true);
     ui->textEdit->append("successfully connected!");
     connect(client, SIGNAL(readyRead()), this, SLOT(handReadyRead()));
+}
+
+void LiteChat::handReadyRead()
+{
+    QByteArray recvArray = client->readAll();
+    QString recvString = QString::fromUtf8(recvArray);
+    if (recvString == "connect_success"){
+        createLoginPage();
+        this->hide();
+    }
+    if (recvString[0] == '#'){
+        qDebug() << recvString.mid(1);
+        emit messageReceive(recvString.mid(1));
+    }
+    ui->textEdit->append(recvString);
 }
 
 int LiteChat::sendtoServer(QString msg)
@@ -66,17 +81,8 @@ void LiteChat::createLoginPage()
     loginPage->show();
 }
 
-void LiteChat::handReadyRead()
+void LiteChat::createDiolog()
 {
-    QByteArray recvArray = client->readAll();
-    QString recvString = QString::fromUtf8(recvArray);
-    if (recvString == "connect_success"){
-        createLoginPage();
-        this->hide();
-    }
-    if (recvString[0] == '#'){
-        qDebug() << recvString.mid(1);
-        emit messageReceive(recvString.mid(1));
-    }
-    ui->textEdit->append(recvString);
+    LiteChat_Diolog *diologPage = new LiteChat_Diolog(this);
+    diologPage->show();
 }
