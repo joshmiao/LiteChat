@@ -10,6 +10,7 @@ CONFIG += c++17
 
 SOURCES += \
     litechat_diolog.cpp \
+    litechat_interface.cpp \
     litechat_login.cpp \
     litechat_message.cpp \
     main.cpp \
@@ -18,12 +19,14 @@ SOURCES += \
 HEADERS += \
     litechat.h \
     litechat_diolog.h \
+    litechat_interface.h \
     litechat_login.h \
     litechat_message.h
 
 FORMS += \
     litechat.ui \
     litechat_diolog.ui \
+    litechat_interface.ui \
     litechat_login.ui
 
 TRANSLATIONS += \
