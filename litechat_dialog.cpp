@@ -1,5 +1,5 @@
 #include "litechat_dialog.h"
-#include "ui_litechat_Dialog.h"
+#include "ui_litechat_dialog.h"
 
 #include <QDateTime>
 #include <QDebug>
