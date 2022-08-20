@@ -2,7 +2,7 @@
 #include "litechat.h"
 #include "ui_litechat.h"
 #include "litechat_login.h"
-#include "litechat_diolog.h"
+#include "litechat_dialog.h"
 
 LiteChat::LiteChat(QWidget *parent)
     : QMainWindow(parent)
@@ -75,9 +75,9 @@ void LiteChat::createLoginPage()
     loginPage->show();
 }
 
-void LiteChat::createDiolog()
+void LiteChat::createDialog()
 {
-    LiteChat_Diolog *diologPage = new LiteChat_Diolog(this, "Test Diolog");
-    diologPage->show();
-    connect(this, &LiteChat::messageReceive, diologPage, &LiteChat_Diolog::receiveSingalMessage);
+    LiteChat_Dialog *DialogPage = new LiteChat_Dialog(this, "Test Dialog");
+    DialogPage->show();
+    connect(this, &LiteChat::messageReceive, DialogPage, &LiteChat_Dialog::receiveSingalMessage);
 }

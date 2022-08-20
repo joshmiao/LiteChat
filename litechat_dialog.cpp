@@ -1,12 +1,12 @@
-#include "litechat_diolog.h"
-#include "ui_litechat_diolog.h"
+#include "litechat_dialog.h"
+#include "ui_litechat_Dialog.h"
 
 #include <QDateTime>
 #include <QDebug>
 
-LiteChat_Diolog::LiteChat_Diolog(LiteChat *liteChatMain, QString title, QWidget *parent) :
+LiteChat_Dialog::LiteChat_Dialog(LiteChat *liteChatMain, QString title, QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::LiteChat_Diolog),
+    ui(new Ui::LiteChat_Dialog),
     liteChatMain(liteChatMain),
     title(title)
 {
@@ -14,12 +14,12 @@ LiteChat_Diolog::LiteChat_Diolog(LiteChat *liteChatMain, QString title, QWidget 
     resize(600, 800);
 }
 
-LiteChat_Diolog::~LiteChat_Diolog()
+LiteChat_Dialog::~LiteChat_Dialog()
 {
     delete ui;
 }
 
-void LiteChat_Diolog::on_pushButton_clicked()
+void LiteChat_Dialog::on_pushButton_clicked()
 {
     QString msg = ui->textEdit->toPlainText();
 
@@ -37,7 +37,7 @@ void LiteChat_Diolog::on_pushButton_clicked()
     ui->listWidget->setCurrentRow(ui->listWidget->count()-1);
 }
 
-void LiteChat_Diolog::receiveSingalMessage(QString msg){
+void LiteChat_Dialog::receiveSingalMessage(QString msg){
     QString time = QString::number(QDateTime::currentDateTime().toTime_t()); //时间戳
     if(msg != "") {
         dealMessageTime(time);
@@ -48,7 +48,7 @@ void LiteChat_Diolog::receiveSingalMessage(QString msg){
     ui->listWidget->setCurrentRow(ui->listWidget->count()-1);
 }
 
-void LiteChat_Diolog::dealMessage(LiteChat_Message *messageW, QListWidgetItem *item, QString text, QString time,  LiteChat_Message::User_Type type)
+void LiteChat_Dialog::dealMessage(LiteChat_Message *messageW, QListWidgetItem *item, QString text, QString time,  LiteChat_Message::User_Type type)
 {
     messageW->setFixedWidth(this->width());
     QSize size = messageW->fontRect(text);
@@ -57,7 +57,7 @@ void LiteChat_Diolog::dealMessage(LiteChat_Message *messageW, QListWidgetItem *i
     ui->listWidget->setItemWidget(item, messageW);
 }
 
-void LiteChat_Diolog::dealMessageTime(QString curMsgTime)
+void LiteChat_Dialog::dealMessageTime(QString curMsgTime)
 {
     bool isShowTime = false;
     if(ui->listWidget->count() > 0) {
@@ -83,12 +83,12 @@ void LiteChat_Diolog::dealMessageTime(QString curMsgTime)
     }
 }
 
-void LiteChat_Diolog::resizeEvent(QResizeEvent *event){
+void LiteChat_Dialog::resizeEvent(QResizeEvent *event){
     Q_UNUSED(event);
 }
 
 /*
-void LiteChat_Diolog::resizeEvent(QResizeEvent *event)
+void LiteChat_Dialog::resizeEvent(QResizeEvent *event)
 {
     Q_UNUSED(event);
 

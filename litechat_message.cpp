@@ -19,7 +19,6 @@ LiteChat_Message::LiteChat_Message(QWidget *parent) : QWidget(parent)
 //    te_font.setLetterSpacing(QFont::AbsoluteSpacing, 0);             //设置字间距为3像素 //设置字间距像素值
     this->setFont(te_font);
     m_leftPixmap = QPixmap(":/img/Customer Copy.png");
-    qDebug() << "Height: " << m_leftPixmap.height();
     m_rightPixmap = QPixmap(":/img/CustomerService.png");
 
     m_loadingMovie = new QMovie(this);

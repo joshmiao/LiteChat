@@ -19,7 +19,7 @@ public:
     int sendtoServer(QString msg);
     void createPrivateChat();
     void createLoginPage();
-    void createDiolog();
+    void createDialog();
 
 private slots:
     void on_pushButton_clicked();
