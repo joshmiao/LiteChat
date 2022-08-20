@@ -1,5 +1,5 @@
-#ifndef LITECHAT_DIOLOG_H
-#define LITECHAT_DIOLOG_H
+#ifndef LITECHAT_DIALOG_H
+#define LITECHAT_DIALOG_H
 
 #include <QWidget>
 #include <QListWidgetItem>
@@ -7,16 +7,16 @@
 #include "litechat_message.h"
 
 namespace Ui {
-class LiteChat_Diolog;
+class LiteChat_Dialog;
 }
 
-class LiteChat_Diolog : public QWidget
+class LiteChat_Dialog : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit LiteChat_Diolog(LiteChat *liteChatMain, QString title, QWidget *parent = nullptr);
-    ~LiteChat_Diolog();
+    explicit LiteChat_Dialog(LiteChat *liteChatMain, QString title, QWidget *parent = nullptr);
+    ~LiteChat_Dialog();
     void dealMessage(LiteChat_Message *messageW, QListWidgetItem *item, QString text, QString time, LiteChat_Message::User_Type type);
     void dealMessageTime(QString curMsgTime);
 public slots:
@@ -28,9 +28,9 @@ private slots:
 
 
 private:
-    Ui::LiteChat_Diolog *ui;
+    Ui::LiteChat_Dialog *ui;
     LiteChat *liteChatMain;
     QString title;
 };
 
-#endif // LITECHAT_DIOLOG_H
+#endif // LITECHAT_DIALOG_H

@@ -22,7 +22,7 @@ void LiteChat_Login::on_pushButton_clicked()
     QMessageBox msgBox;
     if (liteChatMain->sendtoServer(req) == 0) {
         msgBox.setText("Success");
-        liteChatMain->createDiolog();
+        liteChatMain->createDialog();
         this->hide();
     }
     else{
