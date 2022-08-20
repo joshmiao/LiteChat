@@ -23,7 +23,14 @@
       <height>301</height>
      </rect>
     </property>
-    <layout class="QHBoxLayout" name="horizontalLayout"/>
+    <layout class="QHBoxLayout" name="horizontalLayout" stretch="">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <property name="sizeConstraint">
+      <enum>QLayout::SetDefaultConstraint</enum>
+     </property>
+    </layout>
    </widget>
    <widget class="QFrame" name="frame">
     <property name="geometry">

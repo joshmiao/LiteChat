@@ -6,20 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>635</width>
-    <height>397</height>
+    <width>314</width>
+    <height>320</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>635</width>
-    <height>397</height>
+    <width>314</width>
+    <height>320</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>635</width>
-    <height>397</height>
+    <width>314</width>
+    <height>320</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -29,15 +29,15 @@
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>0</y>
-     <width>641</width>
-     <height>281</height>
+     <y>40</y>
+     <width>314</width>
+     <height>201</height>
     </rect>
    </property>
    <property name="minimumSize">
     <size>
-     <width>641</width>
-     <height>281</height>
+     <width>0</width>
+     <height>0</height>
     </size>
    </property>
   </widget>
@@ -45,25 +45,25 @@
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>280</y>
-     <width>641</width>
-     <height>121</height>
+     <y>240</y>
+     <width>314</width>
+     <height>81</height>
     </rect>
    </property>
    <property name="minimumSize">
     <size>
-     <width>641</width>
-     <height>121</height>
+     <width>0</width>
+     <height>0</height>
     </size>
    </property>
   </widget>
   <widget class="QPushButton" name="pushButton">
    <property name="geometry">
     <rect>
-     <x>520</x>
-     <y>360</y>
-     <width>91</width>
-     <height>31</height>
+     <x>240</x>
+     <y>280</y>
+     <width>51</width>
+     <height>21</height>
     </rect>
    </property>
    <property name="font">
@@ -71,9 +71,54 @@
      <pointsize>12</pointsize>
     </font>
    </property>
+   <property name="styleSheet">
+    <string notr="true">background-color:rgb(33, 152, 0)</string>
+   </property>
    <property name="text">
     <string>发送</string>
    </property>
+  </widget>
+  <widget class="QFrame" name="frame">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>314</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color:rgb(98, 98, 98)</string>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>291</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>微软雅黑</family>
+      <pointsize>14</pointsize>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color:white</string>
+    </property>
+    <property name="text">
+     <string>聊天</string>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources/>

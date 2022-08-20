@@ -13,3 +13,15 @@ LiteChat_ChatList::~LiteChat_ChatList()
 {
     delete ui;
 }
+
+
+LiteChat_ChatListItem::LiteChat_ChatListItem(QWidget *parent) :
+    QWidget(parent)
+{
+
+}
+
+LiteChat_ChatListItem::~LiteChat_ChatListItem()
+{
+
+}

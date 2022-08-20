@@ -9,6 +9,11 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class LiteChat; }
 QT_END_NAMESPACE
 
+class LiteChat_Login;
+class LiteChat_Dialog;
+class LiteChat_Interface;
+class LiteChat_ChatList;
+
 class LiteChat : public QMainWindow
 {
     Q_OBJECT
@@ -17,9 +22,10 @@ public:
     LiteChat(QWidget *parent = nullptr);
     ~LiteChat();
     int sendtoServer(QString msg);
-    void createPrivateChat();
-    void createLoginPage();
-    void createDialog();
+    LiteChat_Login* createLoginPage();
+    LiteChat_Dialog* createDialog();
+    LiteChat_Interface* createInterface();
+    LiteChat_ChatList* createChatList();
 
 private slots:
     void on_pushButton_clicked();

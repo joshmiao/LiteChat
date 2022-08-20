@@ -12,7 +12,7 @@ LiteChat_Message::LiteChat_Message(QWidget *parent) : QWidget(parent)
 {
     QFont te_font = this->font();
     te_font.setFamily("MicrosoftYaHei");
-    te_font.setPointSize(12);
+    te_font.setPointSize(9);
 //    te_font.setWordSpacing(0);
 //    te_font.setLetterSpacing(QFont::PercentageSpacing,0);
 //    te_font.setLetterSpacing(QFont::PercentageSpacing, 100);          //300%,100为默认  //设置字间距%
@@ -25,7 +25,7 @@ LiteChat_Message::LiteChat_Message(QWidget *parent) : QWidget(parent)
     m_loadingMovie->setFileName(":/img/loading4.gif");
     m_loading = new QLabel(this);
     m_loading->setMovie(m_loadingMovie);
-    m_loading->resize(16,16);
+    m_loading->resize(12,12);
     m_loading->setAttribute(Qt::WA_TranslucentBackground , true);
     m_loading->setAutoFillBackground(false);
 }
@@ -60,14 +60,14 @@ void LiteChat_Message::setText(QString text, QString time, QSize allSize, LiteCh
 QSize LiteChat_Message::fontRect(QString str)
 {
     m_msg = str;
-    int minHei = 30;
-    int iconWH = 40;
-    int iconSpaceW = 20;
-    int iconRectW = 5;
-    int iconTMPH = 10;
-    int sanJiaoW = 6;
-    int kuangTMP = 20;
-    int textSpaceRect = 12;
+    int minHei = 15;
+    int iconWH = 20;
+    int iconSpaceW = 10;
+    int iconRectW = 2;
+    int iconTMPH = 5;
+    int sanJiaoW = 3;
+    int kuangTMP = 10;
+    int textSpaceRect = 6;
     m_kuangWidth = this->width() - kuangTMP - 2*(iconWH+iconSpaceW+iconRectW);
     m_textWidth = m_kuangWidth - 2*textSpaceRect;
     m_spaceWid = this->width() - m_textWidth;
@@ -167,9 +167,9 @@ void LiteChat_Message::paintEvent(QPaintEvent *event)
 
         //三角
         QPointF points[3] = {
-            QPointF(m_sanjiaoLeftRect.x(), 30),
-            QPointF(m_sanjiaoLeftRect.x()+m_sanjiaoLeftRect.width(), 25),
-            QPointF(m_sanjiaoLeftRect.x()+m_sanjiaoLeftRect.width(), 35),
+            QPointF(m_sanjiaoLeftRect.x(), 20),
+            QPointF(m_sanjiaoLeftRect.x()+m_sanjiaoLeftRect.width(), 16),
+            QPointF(m_sanjiaoLeftRect.x()+m_sanjiaoLeftRect.width(), 24),
         };
         QPen pen;
         pen.setColor(col_Kuang);
@@ -180,8 +180,8 @@ void LiteChat_Message::paintEvent(QPaintEvent *event)
         QPen penSanJiaoBian;
         penSanJiaoBian.setColor(col_KuangB);
         painter.setPen(penSanJiaoBian);
-        painter.drawLine(QPointF(m_sanjiaoLeftRect.x() - 1, 30), QPointF(m_sanjiaoLeftRect.x()+m_sanjiaoLeftRect.width(), 24));
-        painter.drawLine(QPointF(m_sanjiaoLeftRect.x() - 1, 30), QPointF(m_sanjiaoLeftRect.x()+m_sanjiaoLeftRect.width(), 36));
+        painter.drawLine(QPointF(m_sanjiaoLeftRect.x() - 1, 20), QPointF(m_sanjiaoLeftRect.x()+m_sanjiaoLeftRect.width(), 16));
+        painter.drawLine(QPointF(m_sanjiaoLeftRect.x() - 1, 20), QPointF(m_sanjiaoLeftRect.x()+m_sanjiaoLeftRect.width(), 24));
 
         //内容
         QPen penText;
@@ -203,9 +203,9 @@ void LiteChat_Message::paintEvent(QPaintEvent *event)
 
         //三角
         QPointF points[3] = {
-            QPointF(m_sanjiaoRightRect.x()+m_sanjiaoRightRect.width(), 30),
-            QPointF(m_sanjiaoRightRect.x(), 25),
-            QPointF(m_sanjiaoRightRect.x(), 35),
+            QPointF(m_sanjiaoRightRect.x()+m_sanjiaoRightRect.width(), 20),
+            QPointF(m_sanjiaoRightRect.x(), 16),
+            QPointF(m_sanjiaoRightRect.x(), 24),
         };
         QPen pen;
         pen.setColor(col_Kuang);

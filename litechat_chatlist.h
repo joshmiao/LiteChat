@@ -21,4 +21,17 @@ private:
     LiteChat *liteChatMain;
 };
 
+class LiteChat_ChatListItem : public QWidget
+{
+    Q_OBJECT
+
+public:
+    explicit LiteChat_ChatListItem(QWidget *parent = nullptr);
+    ~LiteChat_ChatListItem();
+
+private:
+
+
+};
+
 #endif // LITECHAT_CHATLIST_H

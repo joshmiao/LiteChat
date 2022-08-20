@@ -17,10 +17,15 @@
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>10</y>
-     <width>181</width>
-     <height>31</height>
+     <y>0</y>
+     <width>185</width>
+     <height>41</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
    </property>
    <property name="inputMask">
     <string/>
@@ -37,9 +42,21 @@
     <rect>
      <x>0</x>
      <y>40</y>
-     <width>181</width>
-     <height>321</height>
+     <width>185</width>
+     <height>320</height>
     </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>185</width>
+     <height>320</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>185</width>
+     <height>320</height>
+    </size>
    </property>
   </widget>
  </widget>

@@ -1,14 +1,15 @@
 #include "litechat_dialog.h"
-#include "ui_litechat_Dialog.h"
+#include "ui_litechat_dialog.h"
 
 #include <QDateTime>
 #include <QDebug>
 
-LiteChat_Dialog::LiteChat_Dialog(LiteChat *liteChatMain, QString title, QWidget *parent) :
+LiteChat_Dialog::LiteChat_Dialog(LiteChat *liteChatMain, QString chatName, Dialog_Type dialogType, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::LiteChat_Dialog),
     liteChatMain(liteChatMain),
-    title(title)
+    dialogType(dialogType),
+    chatName(chatName)
 {
     ui->setupUi(this);
     resize(600, 800);
@@ -38,6 +39,7 @@ void LiteChat_Dialog::on_pushButton_clicked()
 }
 
 void LiteChat_Dialog::receiveSingalMessage(QString msg){
+    qDebug() << "receive msg : " << msg << '\n';
     QString time = QString::number(QDateTime::currentDateTime().toTime_t()); //时间戳
     if(msg != "") {
         dealMessageTime(time);

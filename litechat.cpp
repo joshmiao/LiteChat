@@ -1,8 +1,10 @@
 #include <QDebug>
 #include "litechat.h"
-#include "ui_litechat.h"
-#include "litechat_login.h"
+#include "litechat_interface.h"
 #include "litechat_dialog.h"
+#include "litechat_login.h"
+#include "ui_litechat.h"
+
 
 LiteChat::LiteChat(QWidget *parent)
     : QMainWindow(parent)
@@ -23,7 +25,7 @@ void LiteChat::on_pushButton_clicked()
     QString ip = ui->lineEdit->text();
     QString port = ui->lineEdit_2->text();
     if (ip == "" || port == ""){
-        ip = QString("192.168.1.105");
+        ip = QString("192.168.1.3");
         port = QString("1234");
         ui->textEdit->append("Input correct IP and Port!");
 //        return;
@@ -45,8 +47,9 @@ void LiteChat::handReadyRead()
 {
     QByteArray recvArray = client->readAll();
     QString recvString = QString::fromUtf8(recvArray);
-    if (recvString == "connect_success"){
-        createLoginPage();
+    if (recvString == "succ"){
+        LiteChat_Login *loginPage = createLoginPage();
+        loginPage->show();
         this->hide();
     }
     if (recvString[0] == '#'){
@@ -69,15 +72,25 @@ void LiteChat::on_pushButton_2_clicked()
     sendtoServer(txt);
 }
 
-void LiteChat::createLoginPage()
+LiteChat_Login* LiteChat::createLoginPage()
 {
     LiteChat_Login *loginPage = new LiteChat_Login(this);
-    loginPage->show();
+    return loginPage;
 }
 
-void LiteChat::createDialog()
+LiteChat_Dialog* LiteChat::createDialog()
 {
-    LiteChat_Dialog *DialogPage = new LiteChat_Dialog(this, "Test Dialog");
-    DialogPage->show();
-    connect(this, &LiteChat::messageReceive, DialogPage, &LiteChat_Dialog::receiveSingalMessage);
+    LiteChat_Dialog *dialogPage = new LiteChat_Dialog(this, "Test Dialog", LiteChat_Dialog::Private);
+    connect(this, &LiteChat::messageReceive, dialogPage, &LiteChat_Dialog::receiveSingalMessage);
+    return dialogPage;
+}
+
+LiteChat_ChatList* LiteChat::createChatList(){
+    LiteChat_ChatList *chatList = new LiteChat_ChatList(this);
+    return chatList;
+}
+
+LiteChat_Interface* LiteChat::createInterface(){
+    LiteChat_Interface *interface = new LiteChat_Interface(this);
+    return interface;
 }
