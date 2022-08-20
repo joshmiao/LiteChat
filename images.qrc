@@ -3,5 +3,14 @@
         <file>img/Customer Copy.png</file>
         <file>img/CustomerService.png</file>
         <file>img/loading4.gif</file>
+        <file>img/addfriend.png</file>
+        <file>img/forgetpwd.png</file>
+        <file>img/friends.png</file>
+        <file>img/id.png</file>
+        <file>img/login.png</file>
+        <file>img/password.png</file>
+        <file>img/register.png</file>
+        <file>img/send.png</file>
+        <file>img/loginbg.png</file>
     </qresource>
 </RCC>
