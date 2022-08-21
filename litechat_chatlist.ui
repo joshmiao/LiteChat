@@ -6,26 +6,34 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>185</width>
-    <height>370</height>
+    <width>201</width>
+    <height>424</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(255, 255, 255);
+</string>
+  </property>
   <widget class="QLineEdit" name="lineEdit">
    <property name="geometry">
     <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>185</width>
-     <height>41</height>
+     <x>30</x>
+     <y>10</y>
+     <width>171</width>
+     <height>21</height>
     </rect>
    </property>
    <property name="font">
     <font>
-     <pointsize>12</pointsize>
+     <pointsize>10</pointsize>
     </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border-radius:15px;
+background-color: rgb(240, 240, 240);</string>
    </property>
    <property name="inputMask">
     <string/>
@@ -40,24 +48,104 @@
   <widget class="QListWidget" name="listWidget">
    <property name="geometry">
     <rect>
-     <x>0</x>
+     <x>10</x>
      <y>40</y>
-     <width>185</width>
-     <height>320</height>
+     <width>191</width>
+     <height>391</height>
     </rect>
    </property>
-   <property name="minimumSize">
-    <size>
-     <width>185</width>
-     <height>320</height>
-    </size>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgb(240, 240, 240);</string>
    </property>
-   <property name="maximumSize">
-    <size>
-     <width>185</width>
-     <height>320</height>
-    </size>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>21</width>
+     <height>21</height>
+    </rect>
    </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgb(240, 240, 240);
+border-image: url(:/img/search.png);</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QWidget" name="widget" native="true">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>40</y>
+     <width>191</width>
+     <height>71</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgb(240, 240, 240);
+border:2px solid gray;</string>
+   </property>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>51</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-image: url(:/img/CustomerService.png);</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>10</y>
+      <width>81</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(240, 240, 240);
+border-color: rgb(240, 240, 240);</string>
+    </property>
+    <property name="text">
+     <string>Server</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEdit_2">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>72</x>
+      <y>40</y>
+      <width>111</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border-color: rgb(240, 240, 240);
+color: rgb(128, 128, 128);</string>
+    </property>
+    <property name="text">
+     <string>Hello.</string>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources/>

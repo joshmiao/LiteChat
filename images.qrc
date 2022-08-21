@@ -12,5 +12,10 @@
         <file>img/register.png</file>
         <file>img/send.png</file>
         <file>img/loginbg.png</file>
+        <file>img/emoji.png</file>
+        <file>img/chatlist.png</file>
+        <file>img/chatlist1.png</file>
+        <file>img/addfriend1.png</file>
+        <file>img/search.png</file>
     </qresource>
 </RCC>
