@@ -3,6 +3,7 @@
 #include "litechat_interface.h"
 #include "litechat_dialog.h"
 #include "litechat_login.h"
+#include "litechat_register.h"
 #include "ui_litechat.h"
 
 
@@ -93,4 +94,9 @@ LiteChat_ChatList* LiteChat::createChatList(){
 LiteChat_Interface* LiteChat::createInterface(){
     LiteChat_Interface *interface = new LiteChat_Interface(this);
     return interface;
+}
+
+LiteChat_Register* LiteChat::createRegister(){
+    LiteChat_Register *Register = new LiteChat_Register(this);
+    return Register;
 }

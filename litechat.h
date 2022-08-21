@@ -13,6 +13,7 @@ class LiteChat_Login;
 class LiteChat_Dialog;
 class LiteChat_Interface;
 class LiteChat_ChatList;
+class LiteChat_Register;
 
 class LiteChat : public QMainWindow
 {
@@ -26,6 +27,7 @@ public:
     LiteChat_Dialog* createDialog();
     LiteChat_Interface* createInterface();
     LiteChat_ChatList* createChatList();
+    LiteChat_Register* createRegister();
 
 private slots:
     void on_pushButton_clicked();

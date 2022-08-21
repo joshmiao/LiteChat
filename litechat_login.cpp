@@ -1,5 +1,6 @@
 #include <QMessageBox>
 #include "litechat_login.h"
+#include "litechat_register.h"
 #include "litechat_interface.h"
 #include "ui_litechat_login.h"
 
@@ -31,5 +32,13 @@ void LiteChat_Login::on_pushButton_clicked()
         msgBox.setText("Fail");
     }
     msgBox.exec();
+}
+
+
+void LiteChat_Login::on_pushButton_2_clicked()
+{
+    LiteChat_Register *Register = liteChatMain->createRegister();
+    Register->show();
+    this->hide();
 }
 

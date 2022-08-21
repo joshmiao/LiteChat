@@ -17,5 +17,9 @@
         <file>img/chatlist1.png</file>
         <file>img/addfriend1.png</file>
         <file>img/search.png</file>
+        <file>img/confirmpwd.png</file>
+        <file>img/phone.png</file>
+        <file>img/picture.png</file>
+        <file>img/mail.png</file>
     </qresource>
 </RCC>

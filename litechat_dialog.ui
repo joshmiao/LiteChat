@@ -124,9 +124,9 @@ color: rgb(0, 0, 0);</string>
     <property name="geometry">
      <rect>
       <x>120</x>
-      <y>10</y>
+      <y>0</y>
       <width>161</width>
-      <height>31</height>
+      <height>41</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -153,6 +153,23 @@ color: rgb(0, 0, 0);</string>
     <string/>
    </property>
   </widget>
+  <widget class="QPushButton" name="pushButton_3">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>310</y>
+     <width>41</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border-image: url(:/img/picture.png);</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <zorder>pushButton_3</zorder>
   <zorder>frame</zorder>
   <zorder>pushButton_2</zorder>
   <zorder>listWidget</zorder>

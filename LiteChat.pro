@@ -14,6 +14,7 @@ SOURCES += \
     litechat_interface.cpp \
     litechat_login.cpp \
     litechat_message.cpp \
+    litechat_register.cpp \
     main.cpp \
     litechat.cpp
 
@@ -24,14 +25,16 @@ HEADERS += \
     litechat_dialog.h \
     litechat_interface.h \
     litechat_login.h \
-    litechat_message.h
+    litechat_message.h \
+    litechat_register.h
 
 FORMS += \
     litechat.ui \
     litechat_chatlist.ui \
     litechat_dialog.ui \
     litechat_interface.ui \
-    litechat_login.ui
+    litechat_login.ui \
+    litechat_register.ui
 
 TRANSLATIONS += \
     LiteChat_zh_CN.ts
