@@ -24,12 +24,12 @@ LiteChatDatabaseAccess::LiteChatDatabaseAccess(const std::string& url):
         user_status(sch, "user_status"),
         message_to_user(sch, "message_to_user"),
         message_to_group(sch, "message_to_group"),
-        unsend_messgae_from_user(sch, "unsend_messgae_from_user"),
-        unsend_messgae_from_group(sch, "unsend_messgae_from_group"),
+        unsend_messgae_from_user(sch, "unsend_message_from_user"),
+        unsend_messgae_from_group(sch, "unsend_message_from_group"),
         friend_relation(sch, "friend_ralation"),
         friend_request(sch, "friend_request"),
         group_member(sch, "group_member"),
-        users_group(sch, "users_group"),
+        groups_of_a_user(sch, "users_group"),
         
         user_login(basic_user_data, "pwd"),
         registered_user_count(basic_user_data, "COUNT(*)"),
@@ -41,10 +41,18 @@ LiteChatDatabaseAccess::LiteChatDatabaseAccess(const std::string& url):
         search_unsend_messgae_from_user(unsend_messgae_from_user, "UNIX_TIMESTAMP(send_time)", "src_user_id", "content"), 
         search_unsend_messgae_from_group(unsend_messgae_from_group, "UNIX_TIMESTAMP(send_time)", "src_user_id", "dst_group_id", "content"), 
         get_user_status(user_status, "is_online", "handle", "UNIX_TIMESTAMP(last_response)"),
-        get_friend_relation(friend_relation), 
-        get_friend_request(friend_request),
-        get_group_member(group_member), 
-        get_groups_of_a_user(users_group)
+        get_friend_relation(friend_relation, "user1_id", "user2_id"), 
+        get_friend_request(friend_request, "user_from", "user_to", "request_message"),
+        get_group_member(group_member, "group_id", "user_id"), 
+        get_groups_of_a_user(groups_of_a_user, "user_id", "group_id"),
+        
+        delete_group(basic_group_data.remove()), 
+        delete_unsend_messgae_from_user(unsend_messgae_from_user.remove()),
+        delete_unsend_messgae_from_group(unsend_messgae_from_group.remove()),
+        remove_user_from_group(group_member.remove()), 
+        remove_group_from_user(groups_of_a_user.remove()),
+        delete_friend_relation(friend_relation.remove()), 
+        delete_friend_request(friend_request.remove())
 {};
 
 ID LiteChatDatabaseAccess::userLogin(ID user_id, const std::string& email, const std::string& pwd){
@@ -110,14 +118,43 @@ mysqlx::Row LiteChatDatabaseAccess::getUserStatus(ID user_id){
     return get_user_status.execute().fetchOne();
 }
 
+mysqlx::RowResult LiteChatDatabaseAccess::getFriendRelation(ID user1_id, ID user2_id){
+    std::string command = "user1_id = '" + std::to_string(user1_id) + "'";
+    if(user2_id != 0)
+        command += " AND user2_id = '" + std::to_string(user2_id) + "'";
+
+    get_friend_relation.where(command);
+    return get_friend_relation.execute();
+}
+
+mysqlx::RowResult LiteChatDatabaseAccess::getFriendRequest(ID user_to){
+    get_friend_request.where("user_to = '" + std::to_string(user_to) + "'");
+    return get_friend_request.execute();
+}
+
+mysqlx::RowResult LiteChatDatabaseAccess::getGroupMember(ID group_id){
+    get_group_member.where("group_id = '" + std::to_string(group_id) + "'");
+    return get_group_member.execute();
+}
+
+mysqlx::RowResult LiteChatDatabaseAccess::getGroupsOfAUser(ID user_id){
+    get_groups_of_a_user.where("user_id = '" + std::to_string(user_id) + "'");
+    return get_group_member.execute();
+}
+
 ID LiteChatDatabaseAccess::userRegister(const std::string& user_name, const std::string& pwd, const std::string& email, const std::string& birthday){
     if(!emailUnique(email))
         return -1; // -1：邮箱已注册
-    mysqlx::TableInsert user_register = basic_user_data.insert("user_id", "user_name", "pwd", "email", "birthday");
 
+    mysqlx::TableInsert user_register = basic_user_data.insert("user_id", "user_name", "pwd", "email", "birthday");
     ID new_id = USER_ID_BEGIN + static_cast<ID>(regsiteredUserCount());
     user_register.values(new_id, user_name, pwd, email, birthday);
     user_register.execute();
+
+    mysqlx::TableInsert create_user_status = user_status.insert("user_id");
+    create_user_status.values(new_id);
+    create_user_status.execute();
+
     return new_id;
 }
 
@@ -148,17 +185,39 @@ ID LiteChatDatabaseAccess::createGroup(const std::string& group_name, ID owner_i
         return -1;
 
     mysqlx::TableInsert create_group = basic_group_data.insert("group_id", "group_name", "owner_id", "group_description");
-    ID group_id = GROUP_ID_BEGIN + existedGroupCount();
+    ID group_id = GROUP_ID_BEGIN + existGroupCount();
 
     create_group.values(group_id, group_name, owner_id, group_description);
     create_group.execute();
     return group_id;
 }
 
-void updateBasicUserData(ID user_id, const std::string& user_name, const std::string& pwd, const std::string& email, const std::string& birthday, 
-        const std::string& avatar_filename, const std::string& signature);
-void updateBasicGroupData(ID group_id, const std::string& group_name, ID owner_id, const std::string& group_description);
-void updateUserStatus(ID user_id, const std::string& datetime);
+mysqlx::TableUpdate LiteChatDatabaseAccess::updateBasicUserData(){
+    return basic_user_data.update();
+}
+
+mysqlx::TableUpdate LiteChatDatabaseAccess::updateBasicGroupData(){
+    return basic_group_data.update();
+}
+
+mysqlx::TableUpdate LiteChatDatabaseAccess::updateUserStatus(){
+    return user_status.update();
+}
+
+void LiteChatDatabaseAccess::deleteGroup(ID group_id){
+    delete_group.where("group_id = " + std::to_string(group_id));
+    delete_group.execute();
+}
+
+void LiteChatDatabaseAccess::deleteUnsendMessageFromUser(ID unsend_user_id){
+    delete_unsend_messgae_from_user.where("unsend_user_id = " + std::to_string(unsend_user_id));
+    delete_unsend_messgae_from_user.execute();
+}
+
+void LiteChatDatabaseAccess::deleteUnsendMessageFromGroup(ID unsend_user_id){
+    delete_unsend_messgae_from_group.where("unsend_user_id = " + std::to_string(unsend_user_id));
+    delete_unsend_messgae_from_group.execute();
+}
 
 /////////////////////////////////////////////////////////////////////////////////////
 
@@ -171,7 +230,7 @@ bool LiteChatDatabaseAccess::emailUnique(const std::string& email){
     return get_basic_user_data.execute().count() == 0;
 }
 
-int LiteChatDatabaseAccess::existedGroupCount(){
+int LiteChatDatabaseAccess::existGroupCount(){
     return existed_group_count.execute().fetchOne().get(0);
 }
 

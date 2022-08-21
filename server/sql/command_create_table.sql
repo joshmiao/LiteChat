@@ -21,11 +21,11 @@ CONSTRAINT OWNER_REGISTERED foreign key (owner_id) references basic_user_data(us
 );
 
 CREATE TABLE user_status (
-id INT PRIMARY KEY,
+user_id INT PRIMARY KEY,
 is_online BOOL DEFAULT(FALSE),
 handle INT UNIQUE DEFAULT(NULL),-- 储存客户端最后一次回应的时间。当再次上线时，查询send_time > last_response的消息发送给客户端
 -- 其它数据（ip等）？
-CONSTRAINT USER_REGISTERED_1 foreign key (id) references basic_user_data(user_id)
+CONSTRAINT USER_REGISTERED_1 foreign key (user_id) references basic_user_data(user_id)
 );
 
 CREATE TABLE message_to_user (
@@ -90,14 +90,14 @@ CONSTRAINT IDENTIFIER_FRIEND_REQUEST PRIMARY KEY(user_from, user_to)
 
 CREATE TABLE group_member (
 group_id INT,
-member_id INT,
+user_id INT,
 -- 其它属性？
-CONSTRAINT IDENTIFIER_GROUP_MEMBER PRIMARY KEY(group_id, member_id),
+CONSTRAINT IDENTIFIER_GROUP_MEMBER PRIMARY KEY(group_id, user_id),
 CONSTRAINT GROUP_CREATED_5 foreign key (group_id) references basic_group_data(group_id),
-CONSTRAINT MEMBER_REGISTERED foreign key (member_id) references basic_user_data(user_id)
+CONSTRAINT MEMBER_REGISTERED foreign key (user_id) references basic_user_data(user_id)
 );
 
-CREATE TABLE users_group ( -- 为加快查找速度，维护两个表
+CREATE TABLE groups_of_a_user ( -- 为加快查找速度，维护两个表
 user_id INT,
 group_id INT,
 -- 其它属性？

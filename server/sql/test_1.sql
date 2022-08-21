@@ -1,12 +1,4 @@
-USE LiteChat;
-
-DELETE FROM message_to_user;
-INSERT INTO message_to_user VALUES
-('2022-08-20 13:14:15.233', 10000, 10000, 'w'),
-('2022-08-20 13:14:15.233', 10000, 10001, 'w'),
-('2022-08-20 13:14:15.233', 10001, 10001, 'w'),
-('2022-08-20 13:14:15.232', 10001, 10000, 'sdasdas'),
-('2022-08-20', 10001, 10000, 'w'),
-('2022-08-20 13:14:15.234', 10001, 10000, 'w'),
-('2022-08-20 13:14:15.234', 10000, 10001, 'wwdqwqwdqwd');
-
+-- DELETE FROM message_to_user;
+-- DELETE FROM unsend_message_from_user;
+-- select * FROM message_to_user; 
+select * from user_status;
