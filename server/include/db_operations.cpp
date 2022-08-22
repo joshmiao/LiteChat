@@ -24,12 +24,12 @@ LiteChatDatabaseAccess::LiteChatDatabaseAccess(const std::string& url):
         user_status(sch, "user_status"),
         message_to_user(sch, "message_to_user"),
         message_to_group(sch, "message_to_group"),
-        unsend_messgae_from_user(sch, "unsend_message_from_user"),
-        unsend_messgae_from_group(sch, "unsend_message_from_group"),
-        friend_relation(sch, "friend_ralation"),
+        user_unsend_messgae(sch, "unsend_message_from_user"),
+        group_unsend_messgae(sch, "unsend_message_from_group"),
+        friend_relation(sch, "friend_relation"),
         friend_request(sch, "friend_request"),
         group_member(sch, "group_member"),
-        groups_of_a_user(sch, "users_group"),
+        group_request(sch, "group_request"),
         
         user_login(basic_user_data, "pwd"),
         registered_user_count(basic_user_data, "COUNT(*)"),
@@ -38,19 +38,19 @@ LiteChatDatabaseAccess::LiteChatDatabaseAccess(const std::string& url):
         get_basic_group_data(basic_group_data, "group_id", "group_name", "owner_id", "group_description"),
         search_user_history(message_to_user, "UNIX_TIMESTAMP(send_time)", "src_user_id", "dst_user_id", "content"),
         search_group_history(message_to_group, "UNIX_TIMESTAMP(send_time)", "src_user_id", "dst_group_id", "content"),
-        search_unsend_messgae_from_user(unsend_messgae_from_user, "UNIX_TIMESTAMP(send_time)", "src_user_id", "content"), 
-        search_unsend_messgae_from_group(unsend_messgae_from_group, "UNIX_TIMESTAMP(send_time)", "src_user_id", "dst_group_id", "content"), 
+        search_user_unsend_messgae(user_unsend_messgae, "UNIX_TIMESTAMP(send_time)", "src_user_id", "content"), 
+        search_group_unsend_messgae(group_unsend_messgae, "UNIX_TIMESTAMP(send_time)", "src_user_id", "dst_group_id", "content"), 
         get_user_status(user_status, "is_online", "handle", "UNIX_TIMESTAMP(last_response)"),
         get_friend_relation(friend_relation, "user1_id", "user2_id"), 
         get_friend_request(friend_request, "user_from", "user_to", "request_message"),
         get_group_member(group_member, "group_id", "user_id"), 
-        get_groups_of_a_user(groups_of_a_user, "user_id", "group_id"),
+        get_group_request(group_request, "user_id", "group_id", "request_message"),
         
         delete_group(basic_group_data.remove()), 
-        delete_unsend_messgae_from_user(unsend_messgae_from_user.remove()),
-        delete_unsend_messgae_from_group(unsend_messgae_from_group.remove()),
-        remove_user_from_group(group_member.remove()), 
-        remove_group_from_user(groups_of_a_user.remove()),
+        delete_user_unsend_messgae(user_unsend_messgae.remove()),
+        delete_group_unsend_messgae(group_unsend_messgae.remove()),
+        remove_user_from_group(group_member.remove()),
+        remove_group_request(group_request.remove()),
         delete_friend_relation(friend_relation.remove()), 
         delete_friend_request(friend_request.remove())
 {};
@@ -105,12 +105,12 @@ mysqlx::RowResult LiteChatDatabaseAccess::searchGroupHistory(ID src_user_id, ID 
     return searchHistory(search_group_history, "group", src_user_id, dst_group_id, time_begin, time_end);
 }
 
-mysqlx::RowResult LiteChatDatabaseAccess::searchUnsendMessageFromUser(ID unsend_user_id){
-    return searchUnsendMessage(search_unsend_messgae_from_user, unsend_user_id);
+mysqlx::RowResult LiteChatDatabaseAccess::searchUserUnsendMessage(ID unsend_user_id){
+    return searchUnsendMessage(search_user_unsend_messgae, unsend_user_id);
 }
 
-mysqlx::RowResult LiteChatDatabaseAccess::searchUnsendMessageFromGroup(ID unsend_user_id){
-    return searchUnsendMessage(search_unsend_messgae_from_group, unsend_user_id);
+mysqlx::RowResult LiteChatDatabaseAccess::searchGroupUnsendMessage(ID unsend_user_id){
+    return searchUnsendMessage(search_group_unsend_messgae, unsend_user_id);
 }
 
 mysqlx::Row LiteChatDatabaseAccess::getUserStatus(ID user_id){
@@ -127,9 +127,26 @@ mysqlx::RowResult LiteChatDatabaseAccess::getFriendRelation(ID user1_id, ID user
     return get_friend_relation.execute();
 }
 
-mysqlx::RowResult LiteChatDatabaseAccess::getFriendRequest(ID user_to){
-    get_friend_request.where("user_to = " + std::to_string(user_to));
+mysqlx::RowResult LiteChatDatabaseAccess::getFriendRequest(ID user_from, ID user_to){
+    std::string command = "1 == 1";
+    if(user_from != 0)
+        command += "AND user_from = " + std::to_string(user_from);
+    if(user_to != 0)
+        command += "AND user_to = " + std::to_string(user_to);
+    
+    get_friend_request.where(command);
     return get_friend_request.execute();
+}
+
+mysqlx::RowResult LiteChatDatabaseAccess::getGroupRequest(ID user_id, ID group_id){
+    std::string command = "1 == 1";
+    if(user_id != 0)
+        command += "AND user_id = " + std::to_string(user_id);
+    if(group_id != 0)
+        command += "AND group_id = " + std::to_string(group_id);
+    
+    get_group_request.where(command);
+    return get_group_request.execute();
 }
 
 mysqlx::RowResult LiteChatDatabaseAccess::getGroupMember(ID group_id){
@@ -138,7 +155,7 @@ mysqlx::RowResult LiteChatDatabaseAccess::getGroupMember(ID group_id){
 }
 
 mysqlx::RowResult LiteChatDatabaseAccess::getGroupsOfAUser(ID user_id){
-    get_groups_of_a_user.where("user_id = " + std::to_string(user_id));
+    get_group_member.where("user_id = " + std::to_string(user_id));
     return get_group_member.execute();
 }
 
@@ -166,18 +183,18 @@ void LiteChatDatabaseAccess::addGroupHistory(const std::string& send_time, ID sr
     addHistory(message_to_user, "group", send_time, src_user_id, dst_group_id, content);
 }
 
-void LiteChatDatabaseAccess::addUnsendMessageFromUser(const std::string& send_time, ID unsend_user_id, ID src_user_id, const std::string& content){
-    mysqlx::TableInsert add_unsend_messgae_from_user = unsend_messgae_from_user.insert("send_time", "unsend_user_id", "src_user_id", "content");
+void LiteChatDatabaseAccess::addUserUnsendMessage(const std::string& send_time, ID unsend_user_id, ID src_user_id, const std::string& content){
+    mysqlx::TableInsert add_user_unsend_messgae = user_unsend_messgae.insert("send_time", "unsend_user_id", "src_user_id", "content");
 
-    add_unsend_messgae_from_user.values(send_time, unsend_user_id, src_user_id, content);
-    add_unsend_messgae_from_user.execute();
+    add_user_unsend_messgae.values(send_time, unsend_user_id, src_user_id, content);
+    add_user_unsend_messgae.execute();
 }
 
-void LiteChatDatabaseAccess::addUnsendMessageFromGroup(const std::string& send_time, ID unsend_user_id, ID src_user_id, ID dst_group_id, const std::string& content){
-    mysqlx::TableInsert add_unsend_messgae_from_group= unsend_messgae_from_user.insert("send_time", "unsend_user_id", "src_user_id", "dst_group_id", "content");
+void LiteChatDatabaseAccess::addGroupUnsendMessage(const std::string& send_time, ID unsend_user_id, ID src_user_id, ID dst_group_id, const std::string& content){
+    mysqlx::TableInsert add_group_unsend_messgae= user_unsend_messgae.insert("send_time", "unsend_user_id", "src_user_id", "dst_group_id", "content");
 
-    add_unsend_messgae_from_group.values(send_time, unsend_user_id, src_user_id, dst_group_id, content);
-    add_unsend_messgae_from_group.execute();
+    add_group_unsend_messgae.values(send_time, unsend_user_id, src_user_id, dst_group_id, content);
+    add_group_unsend_messgae.execute();
 }
 
 ID LiteChatDatabaseAccess::createGroup(const std::string& group_name, ID owner_id, const std::string& group_description){
@@ -190,6 +207,44 @@ ID LiteChatDatabaseAccess::createGroup(const std::string& group_name, ID owner_i
     create_group.values(group_id, group_name, owner_id, group_description);
     create_group.execute();
     return group_id;
+}
+
+void LiteChatDatabaseAccess::addUserToGroup(ID group_id, ID user_id){
+    mysqlx::TableInsert add_user_to_group = group_member.insert("group_id", "user_id");
+
+    add_user_to_group.values(group_id, user_id);
+    add_user_to_group.execute();
+}
+
+int LiteChatDatabaseAccess::createGroupRequest(ID user_id, ID group_id, const std::string& request_message){
+    if(!groupRequestUnique(user_id, group_id))
+        return -1;
+
+    mysqlx::TableInsert create_group_request = group_request.insert("user_id", "group_id", "request_message");
+
+    create_group_request.values(user_id, group_id, request_message);
+    create_group_request.execute();
+    return 0;
+}
+
+void LiteChatDatabaseAccess::createFriendRelation(ID user1_id, ID user2_id){
+    mysqlx::TableInsert create_friend_relation = friend_relation.insert("user1_id", "user2_id");
+    create_friend_relation.values(user1_id, user2_id);
+    create_friend_relation.execute();
+    create_friend_relation = friend_relation.insert("user2_id", "user1_id");
+    create_friend_relation.values(user1_id, user2_id);
+    create_friend_relation.execute();
+}
+
+int LiteChatDatabaseAccess::createFriendRequest(ID user_from, ID user_to, const std::string& request_message){
+    if(!friendRequestUnique(user_from, user_to))
+        return -1;
+
+    mysqlx::TableInsert create_friend_request = friend_request.insert("user_from", "user_to", "request_message");
+
+    create_friend_request.values(user_from, user_to, request_message);
+    create_friend_request.execute();
+    return 0;
 }
 
 mysqlx::TableUpdate LiteChatDatabaseAccess::updateBasicUserData(){
@@ -217,14 +272,38 @@ void LiteChatDatabaseAccess::deleteGroup(ID group_id){
     delete_group.execute();
 }
 
-void LiteChatDatabaseAccess::deleteUnsendMessageFromUser(ID unsend_user_id){
-    delete_unsend_messgae_from_user.where("unsend_user_id = " + std::to_string(unsend_user_id));
-    delete_unsend_messgae_from_user.execute();
+void LiteChatDatabaseAccess::deleteUserUnsendMessage(ID unsend_user_id){
+    delete_user_unsend_messgae.where("unsend_user_id = " + std::to_string(unsend_user_id));
+    delete_user_unsend_messgae.execute();
 }
 
-void LiteChatDatabaseAccess::deleteUnsendMessageFromGroup(ID unsend_user_id){
-    delete_unsend_messgae_from_group.where("unsend_user_id = " + std::to_string(unsend_user_id));
-    delete_unsend_messgae_from_group.execute();
+void LiteChatDatabaseAccess::deleteGroupUnsendMessage(ID unsend_user_id){
+    delete_group_unsend_messgae.where("unsend_user_id = " + std::to_string(unsend_user_id));
+    delete_group_unsend_messgae.execute();
+}
+
+void LiteChatDatabaseAccess::removeUserFromGroup(ID group_id, ID user_id){
+    remove_user_from_group.where("group_id = " + std::to_string(group_id) + " AND user_id = " + std::to_string(user_id));
+    remove_user_from_group.execute();
+}
+
+void LiteChatDatabaseAccess::removeGroupRequest(ID user_id, ID group_id){
+    remove_group_request.where("user_id = " + std::to_string(user_id) + " AND group_id = " + std::to_string(group_id));
+    remove_group_request.execute();
+}
+
+void LiteChatDatabaseAccess::deleteFriendRelation(ID user1_id, ID user2_id){
+    delete_friend_relation.where("user1_id = " + std::to_string(user1_id) + " AND user2_id = " + std::to_string(user2_id));
+    delete_friend_relation.execute();
+    delete_friend_relation.where("user1_id = " + std::to_string(user2_id) + " AND user2_id = " + std::to_string(user1_id));
+    delete_friend_relation.execute();
+}
+
+void LiteChatDatabaseAccess::deleteFriendRequest(ID user_from, ID user_to){
+    delete_friend_request.where("user_from = " + std::to_string(user_from) + " AND user_to = " + std::to_string(user_to));
+    delete_friend_request.execute();
+    delete_friend_request.where("user_from = " + std::to_string(user_to) + " AND user_to = " + std::to_string(user_from));
+    delete_friend_request.execute();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -285,4 +364,12 @@ void LiteChatDatabaseAccess::addHistory(mysqlx::Table& table, const std::string&
 
     add_history.values(send_time, src_id, dst_id, content);
     add_history.execute();
+}
+
+bool LiteChatDatabaseAccess::friendRequestUnique(ID user_from, ID user_to){
+    return getFriendRequest(user_from, user_to).count() == 0;
+}
+
+bool LiteChatDatabaseAccess::groupRequestUnique(ID user_id, ID group_id){
+    return getGroupRequest(user_id, group_id).count() == 0;
 }

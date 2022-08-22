@@ -87,13 +87,13 @@ int main(){
     std::cout << std::endl;
 
     // 添加未发送信息
-    db.addUnsendMessageFromUser("2022-07-20 13:14:15.234", 10000, 10002, "wwdqwqwdqwd");
-    db.addUnsendMessageFromUser("2022-07-20 13:14:15.434", 10000, 10002, "wwdqwefwqwd");
-    db.addUnsendMessageFromUser("2022-07-20 13:14:15.534", 10000, 10002, "wwqwd");
-    db.addUnsendMessageFromUser("2022-07-20 13:14:15.634", 10000, 10002, "wwqwd");
+    db.addUserUnsendMessage("2022-07-20 13:14:15.234", 10000, 10002, "wwdqwqwdqwd");
+    db.addUserUnsendMessage("2022-07-20 13:14:15.434", 10000, 10002, "wwdqwefwqwd");
+    db.addUserUnsendMessage("2022-07-20 13:14:15.534", 10000, 10002, "wwqwd");
+    db.addUserUnsendMessage("2022-07-20 13:14:15.634", 10000, 10002, "wwqwd");
 
     // 搜索未发送信息
-    rowresult = db.searchUnsendMessageFromUser(10000);
+    rowresult = db.searchUserUnsendMessage(10000);
     std::cout << "FROM 10000" << std::endl;
     while (rowresult.count() != 0){
         result = rowresult.fetchOne();
@@ -101,7 +101,7 @@ int main(){
         std::cout << result.get(1) << std::endl;
         std::cout << result.get(2) << std::endl;
     }
-    rowresult = db.searchUnsendMessageFromUser(10002);
+    rowresult = db.searchUserUnsendMessage(10002);
     std::cout << "FROM 10002" << std::endl;
     while (rowresult.count() != 0){
         result = rowresult.fetchOne();
@@ -112,8 +112,55 @@ int main(){
     std::cout << std::endl;
 
     // 删除未发送信息
-    db.deleteUnsendMessageFromUser(10000);
-    std::cout << db.searchUnsendMessageFromUser(10000).count() << std::endl;
+    db.deleteUserUnsendMessage(10000);
+    std::cout << db.searchUserUnsendMessage(10000).count() << std::endl;
+    std::cout << std::endl;
+
+    // 添加群
+    db.createGroup("123", 10000, "");
+    db.createGroup("12r33", 10001, "r56+23");
+    db.createGroup("1223", 10002, "r53");
+    db.createGroup("1222", 10002, "r62d53");
+
+    // 删除群
+    db.deleteGroup(10001);
+    
+    // 添加加群请求
+    std::cout << db.createGroupRequest(10000, 10000, "") << std::endl;
+    std::cout << db.createGroupRequest(10000, 10000, "") << std::endl;
+    std::cout << db.createGroupRequest(10000, 10000, "") << std::endl;
+    std::cout << db.createGroupRequest(10000, 10003, "") << std::endl;
+    std::cout << db.createGroupRequest(10000, 10002, "") << std::endl;
+    std::cout << std::endl;
+
+    // 删除加群请求
+    db.removeGroupRequest(10000, 10000);
+    db.removeGroupRequest(10001, 10000);
+    db.removeGroupRequest(10002, 10000);
+
+    // 添加好友请求
+    std::cout << db.createFriendRequest(10000, 10001, "") << std::endl;
+    std::cout << db.createFriendRequest(10000, 10001, "") << std::endl;
+    std::cout << db.createFriendRequest(10000, 10001, "") << std::endl;
+    std::cout << db.createFriendRequest(10001, 10000, "") << std::endl;
+    std::cout << db.createFriendRequest(10001, 10000, "") << std::endl;
+    std::cout << db.createFriendRequest(10001, 10002, "") << std::endl;
+    std::cout << db.createFriendRequest(10000, 10002, "") << std::endl;
+    std::cout << std::endl;
+
+    // 删除好友请求
+    db.deleteFriendRequest(10000, 10001);
+    db.deleteFriendRequest(10001, 10000);
+    db.deleteFriendRequest(10001, 10002);
+    db.deleteFriendRequest(10000, 10002);
+
+    // 添加朋友关系
+    db.createFriendRelation(10000, 10001);
+    db.createFriendRelation(10000, 10002);
+    db.createFriendRelation(10001, 10002);
+
+    // 删除朋友关系
+    db.deleteFriendRelation(10000, 10001);
     
     return 0;
 }
