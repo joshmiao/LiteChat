@@ -28,7 +28,7 @@ Login:
     "email":
     "user_name":
     "birthday":
-    "avatat_filename":
+    "avatar_filename":
     "signature"
 }//server to client
 
@@ -61,7 +61,7 @@ getFriends
         {
             "user_id":
             "user_name":
-            "avatat_filename":
+            "avatar_filename":
             "signature":
             "birthday":
             "is_online":
@@ -161,7 +161,7 @@ getGroupMessage
     "begin_time":
     "end_time":
 }//client to server to get group message
-// time is optimal
+// time is optional
 
 {
     "type":GET_HISTORY_GROUP,

@@ -91,8 +91,8 @@ void Server::Receive()
     {
         if(FD_ISSET(confd,&rset))
         {
-            char buf[1024]={0};
-            int ret=recv(confd,buf,sizeof(char)*1024,0);
+            char buf[2048]={0};
+            int ret=recv(confd,buf,sizeof(char)*2048,0);
             if(ret==-1)
                 Error("receive error",confd,RECEIVE);
             else if(ret==0)
@@ -207,7 +207,7 @@ void Server::userLogin(int confd,json &request)
     if(res==-3)
     {
         std::cout<<confd<<" login failed\n\n";
-        Error("empty user_id or password",confd,LOGIN);
+        Error("user_id and email are both empty",confd,LOGIN);
     }
     else if(res==-2)
     {
@@ -217,7 +217,7 @@ void Server::userLogin(int confd,json &request)
     else if(res==-1)
     {
         std::cout<<confd<<" login failed\n\n";
-        Error("password wrong",confd,LOGIN);
+        Error("wrong password",confd,LOGIN);
     }
     else if(res>=USER_ID_BEGIN)
     {
