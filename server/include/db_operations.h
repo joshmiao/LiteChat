@@ -54,6 +54,7 @@ public:
     void deleteFriendRequest(ID user_from, ID user_to);
 
 private:
+    std::string sqlString(std::string s);
     int regsiteredUserCount();
     bool emailUnique(const std::string& email); 
     int existGroupCount();
