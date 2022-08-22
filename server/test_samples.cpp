@@ -161,6 +161,11 @@ int main(){
 
     // 删除朋友关系
     db.deleteFriendRelation(10000, 10001);
+
+    // 更改用户状态
+    db.updateUserStatusWhenLogin(10000, 123, "q4d9q4w8d9q4wd9qw4d98qd4");
+    db.updateUserStatusWhenLogout(123);
+    db.updateUserStatusWhenLogout(10000);
     
     return 0;
 }

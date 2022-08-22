@@ -40,7 +40,7 @@ LiteChatDatabaseAccess::LiteChatDatabaseAccess(const std::string& url):
         search_group_history(message_to_group, "UNIX_TIMESTAMP(send_time)", "src_user_id", "dst_group_id", "content"),
         search_user_unsend_messgae(user_unsend_messgae, "UNIX_TIMESTAMP(send_time)", "src_user_id", "content"), 
         search_group_unsend_messgae(group_unsend_messgae, "UNIX_TIMESTAMP(send_time)", "src_user_id", "dst_group_id", "content"), 
-        get_user_status(user_status, "is_online", "handle", "UNIX_TIMESTAMP(last_response)"),
+        get_user_status(user_status, "is_online", "handle", "token"),
         get_friend_relation(friend_relation, "user1_id", "user2_id"), 
         get_friend_request(friend_request, "user_from", "user_to", "request_message"),
         get_group_member(group_member, "group_id", "user_id"), 
@@ -259,11 +259,21 @@ mysqlx::TableUpdate LiteChatDatabaseAccess::updateUserStatus(){
     return user_status.update();
 }
 
-void LiteChatDatabaseAccess::updateUserStatusWhenLogin(ID user_id, int handle){
+void LiteChatDatabaseAccess::updateUserStatusWhenLogin(ID user_id, int handle, const std::string& token){
     auto update_user_status_when_login =  updateUserStatus();
     update_user_status_when_login.where("user_id = " + std::to_string(user_id));
     update_user_status_when_login.set("is_online", true);
     update_user_status_when_login.set("handle", handle);
+    update_user_status_when_login.set("token", token);
+    update_user_status_when_login.execute();
+}
+
+void LiteChatDatabaseAccess::updateUserStatusWhenLogout(int handle){
+    auto update_user_status_when_login = updateUserStatus();
+    update_user_status_when_login.where("handle = " + std::to_string(handle));
+    update_user_status_when_login.set("is_online", false);
+    update_user_status_when_login.set("handle", nullptr);
+    update_user_status_when_login.set("token", nullptr);
     update_user_status_when_login.execute();
 }
 
@@ -308,7 +318,7 @@ void LiteChatDatabaseAccess::deleteFriendRequest(ID user_from, ID user_to){
 
 /////////////////////////////////////////////////////////////////////////////////////
 
-std::string LiteChatDatabaseAccess::sqlString(std::string s){
+std::string LiteChatDatabaseAccess::sqlString(const std::string& s){
     return "'" + s + "'";
 }
 
@@ -332,12 +342,8 @@ bool LiteChatDatabaseAccess::groupNameUnique(const std::string& group_name){
 
 mysqlx::RowResult LiteChatDatabaseAccess::searchUG(mysqlx::TableSelect& table_select, const std::string& type,
         ID id, const std::string& name){
-    std::string command = "1 == 1";
-    if (id != 0) // 用0表示不使用id搜索
-        command += " AND " + type + "_id = " + std::to_string(id);
-    if (!name.empty()) // 用空字符串表示不使用名称搜索
-        command += " AND " + type + "_name = " + sqlString(name);
-
+    std::string command = type + "_id = " + std::to_string(id) + " OR " + type + "_name = " + sqlString(name);
+        
     table_select.where(command);
     return table_select.execute();
 }
