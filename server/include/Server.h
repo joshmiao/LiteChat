@@ -17,7 +17,7 @@ private:
     int maxfd;
     double last_request[1024];
 
-    void Error(const char *msg,int confd);
+    void Error(const char *msg,int confd,int type);
     void Accept();
     void Receive();
     void Analyze(int confd,json buf);
@@ -26,6 +26,7 @@ private:
     void userLogin(int confd,json &request);
     void userRegister(int confd,json &request);
     void setLogout(int confd);
+    void setLogin(int confd,int32_t user_id);
 
     void sendUnreadMessage(int confd,int32_t user_id);
     void sendPrivateMessage(json &request);

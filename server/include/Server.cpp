@@ -24,19 +24,19 @@ int Server::sendjson(int confd,json result){
     std::string str = to_string(result);
     int ret=send(confd,str.c_str(),str.size(),0);
     if(ret<0){
-        printf("send to %d error\n",confd);
+        printf("send to %d failed\n",confd);
         return -1;
     }
     return 0;
 }
 
-void Server::Error(const char *msg,int confd=-1)
+void Server::Error(const char *msg,int confd=-1,int type=ERROR)
 {
     std::string response=(std::string)(msg);
     if(confd>=0)
     {
         json result;
-        result["type"]=ERROR;
+        result["type"]=type;
         result["result"]="failed";
         result["error"]=response;
         sendjson(confd,result);
@@ -94,7 +94,7 @@ void Server::Receive()
             char buf[1024]={0};
             int ret=recv(confd,buf,sizeof(char)*1024,0);
             if(ret==-1)
-                Error("receive error",confd);
+                Error("receive error",confd,RECEIVE);
             else if(ret==0)
             {
                 printf("client %d close\n",confd);
@@ -105,10 +105,10 @@ void Server::Receive()
             {
                 if(json::accept(buf)&&buf[0]=='{'&&buf[strlen(buf)-1]=='}')
                 {
-                    std::cout<<"accepted a json"<<'\n';
+                    std::cout<<"accepted a json from "<<confd<<'\n';
                     Analyze(confd,json::parse(buf));
                 }
-                else Error("request format",confd);
+                else Error("request format error",confd,REQUEST);
             }
         }
     }
@@ -121,7 +121,7 @@ void Server::Receive()
         //send(confd,str.c_str(),str.length(),0);
         if(nowtime-last_request[confd]>=WAIT_TIME&&last_request[confd]>0)
         {
-            send(confd,"timeout",7,0);
+            //send(confd,"timeout",7,0);
             printf("client %d offline\n",confd);
             FD_CLR(confd,&allset);
             del.push_back(confd);
@@ -148,7 +148,7 @@ void Server::Start()
         rset=allset;
         int nready=select(maxfd+1,&rset,NULL,NULL,NULL);
         if(nready==-1)
-            Error("select");
+            Error("select error");
         if(FD_ISSET(lisfd,&rset))
             Accept();
         Receive();
@@ -183,7 +183,7 @@ void Server::Analyze(int confd,json request)
     {
         getFriends(confd,request);
     }
-    else Error("request type",confd);
+    else Error("request type error",confd);
 }
 
 //Login with user_id or email and password
@@ -198,44 +198,32 @@ void Server::userLogin(int confd,json &request)
     int res=db->userLogin(request["user_id"],request["email"],request["pwd"]);
     if(res==-3)
     {
-        std::cout<<"login failed\n\n";
-        json result;
-        result["type"]=LOGIN;
-        result["result"]="failed";
-        result["error"]="empty user_id and email";
-        sendjson(confd,result);
+        std::cout<<confd<<" login failed\n\n";
+        Error("empty user_id or password",confd,LOGIN);
     }
     else if(res==-2)
     {
-        std::cout<<"login faild\n\n";
-        json result;
-        result["result"]="failed";
-        result["error"]="user not exist";
-        sendjson(confd,result);
+        std::cout<<confd<<" login faild\n\n";
+        Error("user_id not exist",confd,LOGIN);
     }
     else if(res==-1)
     {
-        std::cout<<"login failed\n\n";
-        json result;
-        result["result"]="failed";
-        result["error"]="password error";
-        sendjson(confd,result);
+        std::cout<<confd<<" login failed\n\n";
+        Error("password wrong",confd,LOGIN);
     }
     else if(res>=USER_ID_BEGIN)
     {
-        std::cout<<"login success\n\n";
+        std::cout<<confd<<" login success\n\n";
         json result;
+        result["type"]=LOGIN;
         result["result"]="success_login";
         result["user_id"]=res;
         sendjson(confd,result);
-        //update online statu and handle
+        setLogin(confd,res);
     }
     else{
-        std::cout<<"login failed\n\n";
-        json result;
-        result["result"]="failed";
-        result["error"]="unknown error";
-        sendjson(confd,result);
+        std::cout<<confd<<" login failed\n\n";
+        Error("unknown error",confd,LOGIN);
     }
 }
 
@@ -244,36 +232,30 @@ void Server::userRegister(int confd,json &request)
     int res=db->userRegister(request["username"],request["pwd"],request["email"],request["birthday"]);
     if(res==-1)
     {
-        std::cout<<"register failed\n\n";
-        json error;
-        error["error"]="email_already_exists";
-        error["result"]="failed";
-        sendjson(confd,error);
+        std::cout<<confd<<" register failed\n\n";
+        Error("email already exist",confd,REGISTER);
     }
     else {
-        std::cout<<"success_register\n\n";
-        json user;
-        user["result"]="success_register";
-        user["id"]=(int32_t)res;
-        sendjson(confd,user);
+        std::cout<<confd<<" success_register\n\n";
+        json result;
+        result["type"]=REGISTER;
+        result["result"]="success_register";
+        result["id"]=(int32_t)res;
+        sendjson(confd,result);
     }
 }
 
 //after login will request right now
-//...
 void Server::getFriends(int confd,json &request)
 {
     if(request["user_id"]==request["null"])
     {
         std::cout<<confd<<" get friends failed\n\n";
-        json result;
-        result["result"]="failed";
-        result["error"]="empty user_id";
-        sendjson(confd,result);
+        Error("empty user_id",confd,GET_FREIENDS);
         return;
     }
     int32_t user_id=request["user_id"];
-    
+    //...
     sendUnreadMessage(confd,request["user_id"]);
 }
 
@@ -283,10 +265,10 @@ void Server::sendPrivateMessage(json &request)
     int32_t to_id=request["to_id"];
     std::string content=request["content"];
     std::string time=request["time"];
-    db->addUserHistory(user_id,to_id,time,content);
+    db->addUserHistory(time,user_id,to_id,content);
     auto statu=db->getUserStatus(to_id);
     bool to_online=bool(statu.get(1));
-    int to_fd=statu.get(2),success;
+    int to_fd=statu.get(2),success=-1;
     if(to_online==true)
     {
         json message;
@@ -301,6 +283,9 @@ void Server::sendPrivateMessage(json &request)
     {
         //db->addUnsendMessageFromUser(user_id,to_id,time,content);
     }
+    else {
+        std::cout<<"send to "<<to_id<<" private message success\n\n";
+    }
 }
 
 void Server::sendGroupMessage(json &request)
@@ -309,7 +294,7 @@ void Server::sendGroupMessage(json &request)
     int32_t group_id=request["group_id"];
     std::string content=request["content"];
     std::string time=request["time"];
-    db->addGroupHistory(user_id,group_id,time,content);
+    db->addGroupHistory(time,user_id,group_id,content);
     auto group_member=db->getGroupMember(group_id);
     while(group_member.count()>0)
     {
@@ -318,13 +303,17 @@ void Server::sendGroupMessage(json &request)
         if(to_id==user_id)
             continue;
         bool to_online=bool(statu.get(1));
-        int to_fd=statu.get(2);
+        int to_fd=statu.get(2),success=-1;
         if(to_online==true)
         {
-            sendjson(to_fd,request);
+            success=sendjson(to_fd,request);
         }
-        else{
+        if(to_online==false||success==-1)
+        {
             //db->addUnsendMessageFromGroup(to_id,user_id,group_id,time,content);
+        }
+        else {
+            std::cout<<"send to "<<to_id<<" group message success\n\n";
         }
     }
 }
@@ -344,7 +333,7 @@ void Server::sendUnreadMessage(int confd,int32_t user_id)
         message["time"]=row.get(0);
         message["content"]=row.get(3);
         message_bundle.push_back(message);
-    } 
+    }
     int success=sendjson(confd,(json)message_bundle);
     //if(success==0)db->removeUnsendMessageFromUser(user_id);
 
@@ -363,12 +352,17 @@ void Server::sendUnreadMessage(int confd,int32_t user_id)
         message_bundle.push_back(message);
     }
 
-    int success=sendjson(confd,(json)message_bundle);
+    success=sendjson(confd,(json)message_bundle);
     //if(success==0)db->removeUnsendMessageFromGroup(user_id);
 }
 
-//judge a user login with the fd first
+//judge if a user login with the fd first
 void Server::setLogout(int confd)
 {
 
+}
+
+void Server::setLogin(int confd,int32_t user_id)
+{
+    
 }
