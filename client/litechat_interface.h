@@ -14,14 +14,14 @@ class LiteChat_DialogListItem : public QWidget
 {
     Q_OBJECT
 public:
-    explicit LiteChat_DialogListItem(LiteChat_Dialog::Dialog_Type dialogType, int32_t toId, QString chatName, QWidget *parent = nullptr);
+    explicit LiteChat_DialogListItem(LiteChat_Dialog::Dialog_Type dialogType, int32_t toId, QString dialogName, QWidget *parent = nullptr);
     ~LiteChat_DialogListItem() = default;
     LiteChat_Dialog::Dialog_Type dialogType;
     int32_t toId;
-    QString chatName;
+    QString dialogName;
 
 private:
-    QLabel *chatNameLabel, *chatContentLabel;
+    QLabel *dialogNameLabel, *dialogContentLabel;
 };
 
 class LiteChat_Interface : public QMainWindow
@@ -31,7 +31,7 @@ class LiteChat_Interface : public QMainWindow
 public:
     explicit LiteChat_Interface(LiteChat_Server *liteChatServer, QString loginName, int32_t loginId, QWidget *parent = nullptr);
     ~LiteChat_Interface();
-    void addSingleChatListItem(LiteChat_Dialog::Dialog_Type dialogType, int32_t toId, QString chatName);
+    void addSingleDialogListItem(LiteChat_Dialog::Dialog_Type dialogType, int32_t toId, QString dialogName);
 
 private:
     Ui::LiteChat_Interface *ui;
@@ -45,8 +45,8 @@ private:
     std::map<int32_t, LiteChat_DialogListItem*> dialogList;
 
 public slots:
-    void changeCurrentDialog(QListWidgetItem *currentItem);
-
+    void changeCurrentDialog(int currentRow);
+    void messageReceive(LiteChat_Dialog::Dialog_Type dialogType, int32_t toId, QString chatName, QString msg);
 };
 
 

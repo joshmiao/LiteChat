@@ -41,8 +41,7 @@ void LiteChat_Dialog::on_pushButton_clicked()
     ui->listWidget->setCurrentRow(ui->listWidget->count()-1);
 }
 
-void LiteChat_Dialog::receiveSingalMessage(Dialog_Type receiveType, int32_t fromId, QString msg){
-    if (receiveType != dialogType || fromId != toId) return;
+void LiteChat_Dialog::receiveSingalMessage(QString msg){
     qDebug() << "receive msg : " << msg << '\n';
     QString time = QString::number(QDateTime::currentDateTime().toTime_t()); //时间戳
     if(msg != "") {
