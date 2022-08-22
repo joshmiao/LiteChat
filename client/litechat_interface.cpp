@@ -12,7 +12,6 @@ LiteChat_Interface::LiteChat_Interface(LiteChat_Server *liteChatServer, QString 
     currentDialog = nullptr;
     addSingleChatListItem(LiteChat_Dialog::Private, 10002, "测试私聊10002");
     addSingleChatListItem(LiteChat_Dialog::Private, 10003, "测试私聊10003");
-//    ui->horizontalLayout->addWidget(currentDialog);
 }
 
 LiteChat_Interface::~LiteChat_Interface()
@@ -20,7 +19,7 @@ LiteChat_Interface::~LiteChat_Interface()
     delete ui;
 }
 
-LiteChat_ChatListItem::LiteChat_ChatListItem(LiteChat_Dialog::Dialog_Type dialogType, int32_t toId, QString chatName, QWidget *parent) :
+LiteChat_DialogListItem::LiteChat_DialogListItem(LiteChat_Dialog::Dialog_Type dialogType, int32_t toId, QString chatName, QWidget *parent) :
     QWidget(parent),
     dialogType(dialogType),
     toId(toId),
@@ -43,7 +42,7 @@ void LiteChat_Interface::changeCurrentDialog(QListWidgetItem *currentItem)
 {
     Q_UNUSED(currentItem);
     qDebug() << "####" << ui->listWidget->currentRow() << '\n';
-    LiteChat_ChatListItem *currentFriend = chatListIndex[ui->listWidget->currentRow()];
+    LiteChat_DialogListItem *currentFriend = dialogList[ui->listWidget->currentRow()];
     LiteChat_Dialog::Dialog_Type dialogType = currentFriend->dialogType;
     int32_t toId = currentFriend->toId;
     QString chatName = currentFriend->chatName;
@@ -53,15 +52,15 @@ void LiteChat_Interface::changeCurrentDialog(QListWidgetItem *currentItem)
         ui->horizontalLayout->removeWidget(currentDialog);
         currentDialog->hide();
     }
-    auto iter = dialogList.find({dialogType, toId});
-    if (iter != dialogList.end()) {
+    auto iter = openedDialog.find({dialogType, toId});
+    if (iter != openedDialog.end()) {
         currentDialog = iter->second;
         ui->horizontalLayout->addWidget(currentDialog);
         currentDialog->show();
     }
     else{
         currentDialog = liteChatServer->createDialog(chatName, dialogType, toId);
-        dialogList[{dialogType, toId}] = currentDialog;
+        openedDialog[{dialogType, toId}] = currentDialog;
         ui->horizontalLayout->addWidget(currentDialog);
         currentDialog->show();
     }
@@ -71,10 +70,10 @@ void LiteChat_Interface::changeCurrentDialog(QListWidgetItem *currentItem)
 
 void LiteChat_Interface::addSingleChatListItem(LiteChat_Dialog::Dialog_Type dialogType, int32_t toId, QString chatName)
 {
-    LiteChat_ChatListItem *newFriend = new LiteChat_ChatListItem(dialogType, toId, chatName, ui->listWidget);
+    LiteChat_DialogListItem *newFriend = new LiteChat_DialogListItem(dialogType, toId, chatName, ui->listWidget);
     qDebug() << "****" << ui->listWidget->count() << '\n';
     QListWidgetItem *newItem = new QListWidgetItem(ui->listWidget);
     newItem->setSizeHint(QSize(ui->listWidget->size().width() - 10, 60));
     ui->listWidget->setItemWidget(newItem, newFriend);
-    chatListIndex[ui->listWidget->count() - 1] = newFriend;
+    dialogList[ui->listWidget->count() - 1] = newFriend;
 }

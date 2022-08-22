@@ -10,12 +10,12 @@ namespace Ui {
 class LiteChat_Interface;
 }
 
-class LiteChat_ChatListItem : public QWidget
+class LiteChat_DialogListItem : public QWidget
 {
     Q_OBJECT
 public:
-    explicit LiteChat_ChatListItem(LiteChat_Dialog::Dialog_Type dialogType, int32_t toId, QString chatName, QWidget *parent = nullptr);
-    ~LiteChat_ChatListItem() = default;
+    explicit LiteChat_DialogListItem(LiteChat_Dialog::Dialog_Type dialogType, int32_t toId, QString chatName, QWidget *parent = nullptr);
+    ~LiteChat_DialogListItem() = default;
     LiteChat_Dialog::Dialog_Type dialogType;
     int32_t toId;
     QString chatName;
@@ -41,8 +41,8 @@ private:
 
     LiteChat_Dialog *currentDialog;
 
-    std::map<std::pair<LiteChat_Dialog::Dialog_Type, int32_t>, LiteChat_Dialog*> dialogList;
-    std::map<uint32_t, LiteChat_ChatListItem*> chatListIndex;
+    std::map<std::pair<LiteChat_Dialog::Dialog_Type, int32_t>, LiteChat_Dialog*> openedDialog;
+    std::map<int32_t, LiteChat_DialogListItem*> dialogList;
 
 public slots:
     void changeCurrentDialog(QListWidgetItem *currentItem);

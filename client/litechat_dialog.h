@@ -14,6 +14,9 @@ class LiteChat_Server;
 class LiteChat_Dialog : public QWidget
 {
     Q_OBJECT
+private:
+    Ui::LiteChat_Dialog *ui;
+    LiteChat_Server *liteChatServer;
 
 public:
     enum Dialog_Type{
@@ -35,10 +38,6 @@ protected:
 private slots:
     void on_pushButton_clicked();
 
-
-private:
-    Ui::LiteChat_Dialog *ui;
-    LiteChat_Server *liteChatServer;
 
 };
 
