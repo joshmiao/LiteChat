@@ -1,0 +1,174 @@
+Error:
+{
+    "type":request["type"],
+    "result":"failed",
+    "error":error_message
+}//server to client to send error message
+
+
+Alive:
+{
+    "type":ALIVE
+}//client to server to check online
+
+
+Login:
+{
+    "type":LOGIN,
+    "user_id":
+    "email":
+    "pwd":
+}//client to server to login
+//pwd and one of email and user_id are required 
+
+{
+    "type":LOGIN,
+    "result":"success_login",
+    "user_id":
+    "email":
+    "user_name":
+    "birthday":
+    "avatat_filename":
+    "signature"
+}//server to client
+
+
+Register:
+{
+    "type":REGISTER,
+    "email":
+    "pwd":
+    "username":
+    "birthday":
+}//client to server to register
+
+{
+    "type":REGISTER,
+    "result":"success_register"
+    "user_id":
+}//server to client
+
+getFriends
+{
+    "type":GET_FRIENDS,
+    "user_id":
+}//client to server to get friends
+
+{
+    "type":GET_FRIENDS,
+    "result":"success_get_friends",
+    "friends":[
+        {
+            "user_id":
+            "user_name":
+            "avatat_filename":
+            "signature":
+            "birthday":
+            "is_online":
+        }
+        ....
+    ]
+}//server to client
+
+
+sendPrivateMessage
+{
+    "type":PRIVATE_MESSAGE,
+    "user_id":
+    "to_id":
+    "time":
+    "content":
+}//client to server to send private message
+
+{
+    "type":PRIVATE_MESSAGE,
+    "from_id":
+    "to_id":
+    "time":
+    "content":
+}
+//server to client to forward private message
+
+{
+    "type":PRIVATE_MESSAGE,
+    "result":"success send"/"wait send"
+}//server to client sender
+
+
+sendGroupMessage
+{
+    "type":GROUP_MESSAGE,
+    "user_id"
+    "group_id":
+    "time":
+    "content":
+}//client to server to send group message
+
+{
+    "type":GROUP_MESSAGE,
+    "group_id":
+    "from_id":
+    "to_id":
+    "time":
+    "content":
+}//server to client to forward group message
+
+{
+    "type":GROUP_MESSAGE,
+    "result":"success send"/"wait send"
+}//server to client sender
+
+
+sendUnreadMessage
+{
+    "type":UNREAD_PRIVATE_MESSAGE/UNREAD_GROUP_MESSAGE,
+    "contents":[
+        {
+            //same as sendPrivateMessage
+        },
+        ...
+    ]
+}//server to client
+//while be sent after login right now
+
+
+getPrivateMessage
+{
+    "type":GET_HISTORY_PRIVATE,
+    "user_id":
+    "to_id":
+    "begin_time":
+    "end_time":
+}//client to server to get private message
+// time is optimal, we will use "2000-01-01 00:00:00" as the beginning time and now() as the ending time
+
+{
+    "type":GET_HISTORY_PRIVATE,
+    "contents":[
+        {
+            //same as sendPrivateMessage
+        },
+        ...
+    ]
+}//server to client
+
+
+getGroupMessage
+{
+    "type":GET_HISTORY_GROUP,
+    "user_id":
+    "group_id":
+    "begin_time":
+    "end_time":
+}//client to server to get group message
+// time is optimal
+
+{
+    "type":GET_HISTORY_GROUP,
+    "contents":[
+        {
+            //same as sendGroupMessage
+        },
+        ...
+    ]
+}//server to client

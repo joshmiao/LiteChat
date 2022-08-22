@@ -43,6 +43,7 @@ public:
     mysqlx::TableUpdate updateBasicUserData();
     mysqlx::TableUpdate updateBasicGroupData();
     mysqlx::TableUpdate updateUserStatus();
+    void updateUserStatusWhenLogin(ID user_id, int handle);
 
     void deleteGroup(ID group_id);
     void deleteUnsendMessageFromUser(ID unsend_user_id);
@@ -53,6 +54,7 @@ public:
     void deleteFriendRequest(ID user_from, ID user_to);
 
 private:
+    std::string sqlString(std::string s);
     int regsiteredUserCount();
     bool emailUnique(const std::string& email); 
     int existGroupCount();

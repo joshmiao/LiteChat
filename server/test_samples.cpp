@@ -1,6 +1,6 @@
 #include <iostream>
 #include <mysqlx/xdevapi.h>
-#include "db_operations.h"
+#include "include/db_operations.h"
 
 int main(){
     LiteChatDatabaseAccess db("mysqlx://root:Sail2Boat3A@127.0.0.1");

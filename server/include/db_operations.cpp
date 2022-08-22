@@ -63,7 +63,7 @@ ID LiteChatDatabaseAccess::userLogin(ID user_id, const std::string& email, const
     if (user_id != 0)
         command += " AND user_id = " + std::to_string(user_id);
     if (!email.empty()) // 用空字符串表示不使用名称搜索
-        command += std::string(" AND email = '") + email + "'";
+        command +=  "AND email = " + sqlString(email);
     user_login.where(command);
     auto result = user_login.execute();
 
@@ -80,7 +80,7 @@ mysqlx::Row LiteChatDatabaseAccess::getBasicUserDataByID(ID user_id){
 }
 
 mysqlx::Row LiteChatDatabaseAccess::getBasicUserDataByEmail(const std::string& email){
-    get_basic_user_data.where("email = '" + email + "'");
+    get_basic_user_data.where("email = " + sqlString(email));
     return get_basic_user_data.execute().fetchOne();
 }
 
@@ -119,26 +119,26 @@ mysqlx::Row LiteChatDatabaseAccess::getUserStatus(ID user_id){
 }
 
 mysqlx::RowResult LiteChatDatabaseAccess::getFriendRelation(ID user1_id, ID user2_id){
-    std::string command = "user1_id = '" + std::to_string(user1_id) + "'";
+    std::string command = "user1_id = " + std::to_string(user1_id);
     if(user2_id != 0)
-        command += " AND user2_id = '" + std::to_string(user2_id) + "'";
+        command += " AND user2_id = " + std::to_string(user2_id);
 
     get_friend_relation.where(command);
     return get_friend_relation.execute();
 }
 
 mysqlx::RowResult LiteChatDatabaseAccess::getFriendRequest(ID user_to){
-    get_friend_request.where("user_to = '" + std::to_string(user_to) + "'");
+    get_friend_request.where("user_to = " + std::to_string(user_to));
     return get_friend_request.execute();
 }
 
 mysqlx::RowResult LiteChatDatabaseAccess::getGroupMember(ID group_id){
-    get_group_member.where("group_id = '" + std::to_string(group_id) + "'");
+    get_group_member.where("group_id = " + std::to_string(group_id));
     return get_group_member.execute();
 }
 
 mysqlx::RowResult LiteChatDatabaseAccess::getGroupsOfAUser(ID user_id){
-    get_groups_of_a_user.where("user_id = '" + std::to_string(user_id) + "'");
+    get_groups_of_a_user.where("user_id = " + std::to_string(user_id));
     return get_group_member.execute();
 }
 
@@ -204,6 +204,14 @@ mysqlx::TableUpdate LiteChatDatabaseAccess::updateUserStatus(){
     return user_status.update();
 }
 
+void LiteChatDatabaseAccess::updateUserStatusWhenLogin(ID user_id, int handle){
+    auto update_user_status_when_login =  updateUserStatus();
+    update_user_status_when_login.where("user_id = " + std::to_string(user_id));
+    update_user_status_when_login.set("is_online", true);
+    update_user_status_when_login.set("handle", handle);
+    update_user_status_when_login.execute();
+}
+
 void LiteChatDatabaseAccess::deleteGroup(ID group_id){
     delete_group.where("group_id = " + std::to_string(group_id));
     delete_group.execute();
@@ -221,12 +229,16 @@ void LiteChatDatabaseAccess::deleteUnsendMessageFromGroup(ID unsend_user_id){
 
 /////////////////////////////////////////////////////////////////////////////////////
 
+std::string LiteChatDatabaseAccess::sqlString(std::string s){
+    return "'" + s + "'";
+}
+
 int LiteChatDatabaseAccess::regsiteredUserCount(){
     return registered_user_count.execute().fetchOne().get(0);
 }
 
 bool LiteChatDatabaseAccess::emailUnique(const std::string& email){
-    get_basic_user_data.where("email = '" + email + "'");
+    get_basic_user_data.where("email = " + sqlString(email));
     return get_basic_user_data.execute().count() == 0;
 }
 
@@ -235,7 +247,7 @@ int LiteChatDatabaseAccess::existGroupCount(){
 }
 
 bool LiteChatDatabaseAccess::groupNameUnique(const std::string& group_name){
-    get_basic_group_data.where("group_name = '" + group_name + "'");
+    get_basic_group_data.where("group_name = " + sqlString(group_name));
     return get_basic_group_data.execute().count() == 0;
 }
 
@@ -245,7 +257,7 @@ mysqlx::RowResult LiteChatDatabaseAccess::searchUG(mysqlx::TableSelect& table_se
     if (id != 0) // 用0表示不使用id搜索
         command += " AND " + type + "_id = " + std::to_string(id);
     if (!name.empty()) // 用空字符串表示不使用名称搜索
-        command += " AND " + type + "_name = '" + name + "'";
+        command += " AND " + type + "_name = " + sqlString(name);
 
     table_select.where(command);
     return table_select.execute();
