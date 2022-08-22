@@ -24,7 +24,7 @@ CREATE TABLE user_status ( -- 储存客户端最后一次回应的时间。当�
 user_id INT PRIMARY KEY,
 is_online BOOL DEFAULT(FALSE),
 handle INT UNIQUE DEFAULT(NULL),
-token CHAR(40) UNIQUE DEFAULT(NULL),
+token CHAR(32) UNIQUE DEFAULT(NULL),
 -- 其它数据（ip等）？
 CONSTRAINT USER_REGISTERED_1 foreign key (user_id) references basic_user_data(user_id)
 );

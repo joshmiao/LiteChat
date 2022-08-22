@@ -8,10 +8,10 @@ LiteChat_Interface::LiteChat_Interface(LiteChat_Server *liteChatServer, QString 
     userinfo(loginId, loginName)
 {
     ui->setupUi(this);
-    connect(ui->listWidget, &QListWidget::itemClicked, this, &LiteChat_Interface::changeCurrentDialog);
+    connect(ui->listWidget, &QListWidget::currentRowChanged, this, &LiteChat_Interface::changeCurrentDialog);
     currentDialog = nullptr;
-    addSingleChatListItem(LiteChat_Dialog::Private, 10002, "测试私聊10002");
-    addSingleChatListItem(LiteChat_Dialog::Private, 10003, "测试私聊10003");
+    addSingleDialogListItem(LiteChat_Dialog::Private, 10002, "测试私聊10002");
+    addSingleDialogListItem(LiteChat_Dialog::Private, 10003, "测试私聊10003");
 }
 
 LiteChat_Interface::~LiteChat_Interface()
@@ -19,33 +19,32 @@ LiteChat_Interface::~LiteChat_Interface()
     delete ui;
 }
 
-LiteChat_DialogListItem::LiteChat_DialogListItem(LiteChat_Dialog::Dialog_Type dialogType, int32_t toId, QString chatName, QWidget *parent) :
+LiteChat_DialogListItem::LiteChat_DialogListItem(LiteChat_Dialog::Dialog_Type dialogType, int32_t toId, QString dialogName, QWidget *parent) :
     QWidget(parent),
     dialogType(dialogType),
     toId(toId),
-    chatName(chatName),
-    chatNameLabel(new QLabel(chatName, this)),
-    chatContentLabel(new QLabel("ChatContent", this))
+    dialogName(dialogName),
+    dialogNameLabel(new QLabel(dialogName, this)),
+    dialogContentLabel(new QLabel("ChatContent", this))
 {
     QFont font;
     font.setPointSize(9);
     resize(QSize(parent->size().width(), 60));
-    chatNameLabel->setFont(font);
-    chatNameLabel->setAttribute(Qt::WA_TranslucentBackground);
-    chatNameLabel->setGeometry(60, 5, parent->size().width() - 40, 20);
-    chatContentLabel->setFont(font);
-    chatContentLabel->setAttribute(Qt::WA_TranslucentBackground);
-    chatContentLabel->setGeometry(60, 25, parent->size().width() - 40, 20);
+    dialogNameLabel->setFont(font);
+    dialogNameLabel->setAttribute(Qt::WA_TranslucentBackground);
+    dialogNameLabel->setGeometry(60, 5, parent->size().width() - 40, 20);
+    dialogContentLabel->setFont(font);
+    dialogContentLabel->setAttribute(Qt::WA_TranslucentBackground);
+    dialogContentLabel->setGeometry(60, 25, parent->size().width() - 40, 20);
 }
 
-void LiteChat_Interface::changeCurrentDialog(QListWidgetItem *currentItem)
+void LiteChat_Interface::changeCurrentDialog(int currentRow)
 {
-    Q_UNUSED(currentItem);
-    qDebug() << "####" << ui->listWidget->currentRow() << '\n';
-    LiteChat_DialogListItem *currentFriend = dialogList[ui->listWidget->currentRow()];
+    qDebug() << "####" << currentRow << '\n';
+    LiteChat_DialogListItem *currentFriend = dialogList[currentRow];
     LiteChat_Dialog::Dialog_Type dialogType = currentFriend->dialogType;
     int32_t toId = currentFriend->toId;
-    QString chatName = currentFriend->chatName;
+    QString dialogName = currentFriend->dialogName;
     if (currentDialog != nullptr && dialogType == currentDialog->dialogType && toId == currentDialog->toId) return;
 
     if (currentDialog != nullptr){
@@ -59,7 +58,7 @@ void LiteChat_Interface::changeCurrentDialog(QListWidgetItem *currentItem)
         currentDialog->show();
     }
     else{
-        currentDialog = liteChatServer->createDialog(chatName, dialogType, toId);
+        currentDialog = liteChatServer->createDialog(dialogName, dialogType, toId);
         openedDialog[{dialogType, toId}] = currentDialog;
         ui->horizontalLayout->addWidget(currentDialog);
         currentDialog->show();
@@ -68,7 +67,7 @@ void LiteChat_Interface::changeCurrentDialog(QListWidgetItem *currentItem)
     return;
 }
 
-void LiteChat_Interface::addSingleChatListItem(LiteChat_Dialog::Dialog_Type dialogType, int32_t toId, QString chatName)
+void LiteChat_Interface::addSingleDialogListItem(LiteChat_Dialog::Dialog_Type dialogType, int32_t toId, QString chatName)
 {
     LiteChat_DialogListItem *newFriend = new LiteChat_DialogListItem(dialogType, toId, chatName, ui->listWidget);
     qDebug() << "****" << ui->listWidget->count() << '\n';
@@ -76,4 +75,16 @@ void LiteChat_Interface::addSingleChatListItem(LiteChat_Dialog::Dialog_Type dial
     newItem->setSizeHint(QSize(ui->listWidget->size().width() - 10, 60));
     ui->listWidget->setItemWidget(newItem, newFriend);
     dialogList[ui->listWidget->count() - 1] = newFriend;
+}
+
+void LiteChat_Interface::messageReceive(LiteChat_Dialog::Dialog_Type dialogType, int32_t fromId, QString chatName, QString msg){
+    auto iter = openedDialog.find({dialogType, fromId});
+    if (iter != openedDialog.end()) {
+        iter->second->receiveSingalMessage(msg);
+    }
+    else{
+        LiteChat_Dialog *newDialog = liteChatServer->createDialog(chatName, dialogType, fromId);
+        openedDialog[{dialogType, fromId}] = newDialog;
+        newDialog->receiveSingalMessage(msg);
+    }
 }

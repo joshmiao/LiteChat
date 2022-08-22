@@ -56,7 +56,7 @@ private:
     QString token;
 
 signals:
-    void messageReceive(LiteChat_Dialog::Dialog_Type recieveType, int32_t fromId, QString msg);
+    void messageReceive(LiteChat_Dialog::Dialog_Type recieveType, int32_t fromId, QString chatName, QString msg);
     void loginSuccess(QString loginName, int32_t loginId);
 
 };

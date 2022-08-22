@@ -450,10 +450,10 @@ void Server::setLogout(int confd)
 const char charlist[]="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 std::string Server::setLogin(int confd,ID user_id)
 {
-    std::cout<<"set login\n\n";
-    char token[TOKEN_LENGTH];
+    char token[TOKEN_LENGTH+1];
     for(int i=0;i<TOKEN_LENGTH;i++)
     token[i]=charlist[rand()%62];
+    token[TOKEN_LENGTH]=0;
     db->updateUserStatusWhenLogin(user_id,confd,std::string(token));
     return std::string(token);
 }
