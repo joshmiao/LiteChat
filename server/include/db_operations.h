@@ -43,6 +43,7 @@ public:
     mysqlx::TableUpdate updateBasicUserData();
     mysqlx::TableUpdate updateBasicGroupData();
     mysqlx::TableUpdate updateUserStatus();
+    void updateUserStatusWhenLogin(ID user_id, int handle);
 
     void deleteGroup(ID group_id);
     void deleteUnsendMessageFromUser(ID unsend_user_id);
