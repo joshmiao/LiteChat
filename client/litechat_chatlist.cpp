@@ -1,10 +1,10 @@
 #include "litechat_chatlist.h"
 #include "ui_litechat_chatlist.h"
 
-LiteChat_ChatList::LiteChat_ChatList(LiteChat *liteChatMain, QWidget *parent) :
+LiteChat_ChatList::LiteChat_ChatList(LiteChatServer *liteChatServer, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::LiteChat_ChatList),
-    liteChatMain(liteChatMain)
+    liteChatServer(liteChatServer)
 {
     ui->setupUi(this);
 }

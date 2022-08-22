@@ -1,17 +1,17 @@
-#include "litechat.h"
+#include "litechat_server.h"
 #include "litechat_dialog.h"
 #include "ui_litechat_dialog.h"
 
 #include <QDateTime>
 #include <QDebug>
 
-LiteChat_Dialog::LiteChat_Dialog(LiteChat *liteChatMain, QString chatName, Dialog_Type dialogType, int32_t id, QWidget *parent) :
+LiteChat_Dialog::LiteChat_Dialog(LiteChatServer *liteChatServer, QString chatName, Dialog_Type dialogType, int32_t toId, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::LiteChat_Dialog),
-    liteChatMain(liteChatMain),
+    liteChatServer(liteChatServer),
     chatName(chatName),
     dialogType(dialogType),
-    id(id)
+    toId(toId)
 {
     ui->setupUi(this);
     resize(600, 800);
@@ -36,7 +36,7 @@ void LiteChat_Dialog::on_pushButton_clicked()
     QListWidgetItem* item = new QListWidgetItem(ui->listWidget);
     dealMessage(messageW, item, msg, time, LiteChat_Message::User_Me);
 
-    if(liteChatMain->sendMessage(dialogType, id, msg) == 0) messageW->setTextSuccess();
+    if(liteChatServer->sendMessage(dialogType, toId, msg) == 0) messageW->setTextSuccess();
 
     ui->listWidget->setCurrentRow(ui->listWidget->count()-1);
 }

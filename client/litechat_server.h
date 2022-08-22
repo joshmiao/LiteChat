@@ -1,5 +1,5 @@
-#ifndef LITECHAT_H
-#define LITECHAT_H
+#ifndef LITECHAT_SERVER_H
+#define LITECHAT_SERVER_H
 
 #include <QMainWindow>
 #include <QTcpSocket>
@@ -18,19 +18,28 @@ class LiteChat_Interface;
 class LiteChat_ChatList;
 class LiteChat_Register;
 
-class LiteChat : public QMainWindow
+class UserInfo
+{
+public:
+    explicit UserInfo(int32_t id, QString username = "");
+    ~UserInfo() = default;
+    int32_t id;
+    QString username;
+};
+
+class LiteChatServer : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    LiteChat(QWidget *parent = nullptr);
-    ~LiteChat();
+    LiteChatServer(QWidget *parent = nullptr);
+    ~LiteChatServer();
     LiteChat_Login* createLoginPage();
-    LiteChat_Dialog* createDialog(QString chatName, LiteChat_Dialog::Dialog_Type dialogType, int id);
+    LiteChat_Dialog* createDialog(QString chatName, LiteChat_Dialog::Dialog_Type dialogType, int32_t toId);
     LiteChat_Interface* createInterface(QString loginName, int32_t loginId);
     LiteChat_ChatList* createChatList();
     LiteChat_Register* createRegister();
-    int sendMessage(LiteChat_Dialog::Dialog_Type dialogType, int32_t id, QString msg);
+    int sendMessage(LiteChat_Dialog::Dialog_Type dialogType, int32_t toId, QString msg);
     int requestLogin(int32_t id, QString pwd);
 
 private slots:
@@ -43,11 +52,12 @@ private:
     int sendtoServer(json j);
     Ui::LiteChat *ui;
     QTcpSocket *client;
-    bool serverReady;
+    bool serverStatus, loginStatus;
+    UserInfo userInfo;
     QString token;
 
 signals:
     void messageReceive(QString msg);
     void loginSuccess(QString loginName, int32_t loginId);
 };
-#endif // LITECHAT_H
+#endif // LITECHAT_SERVER_H

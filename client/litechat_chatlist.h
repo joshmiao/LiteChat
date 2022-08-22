@@ -7,19 +7,19 @@ namespace Ui {
 class LiteChat_ChatList;
 }
 
-class LiteChat;
+class LiteChatServer;
 
 class LiteChat_ChatList : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit LiteChat_ChatList(LiteChat *liteChatMain, QWidget *parent = nullptr);
+    explicit LiteChat_ChatList(LiteChatServer *liteChatServer, QWidget *parent = nullptr);
     ~LiteChat_ChatList();
 
 private:
     Ui::LiteChat_ChatList *ui;
-    LiteChat *liteChatMain;
+    LiteChatServer *liteChatServer;
 };
 
 class LiteChat_ChatListItem : public QWidget
