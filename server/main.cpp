@@ -6,13 +6,3 @@ int main()
     server.Start();
     return 0;
 }
-
-/*
-{
-    "type":
-    "token":
-    "content":{
-        
-    }
-}
-/*

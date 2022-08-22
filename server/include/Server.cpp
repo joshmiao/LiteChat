@@ -20,7 +20,7 @@ using json = nlohmann::json;
 
 #define WAIT_TIME 0.005
 
-int Server::sendjson(int confd,json result){
+int Server::sendjson(int confd,json &result){
     std::string str = to_string(result);
     int ret=send(confd,str.c_str(),str.size(),0);
     if(ret<0){
@@ -37,8 +37,10 @@ void Server::Error(const char *msg,int confd=-1,int type=ERROR)
     {
         json result;
         result["type"]=type;
-        result["result"]="failed";
-        result["error"]=response;
+        json data;
+        data["result"]="failed";
+        data["error"]=response;
+        result["data"]=data;
         sendjson(confd,result);
     }
     else if(confd==-1)exit(1);
@@ -106,7 +108,8 @@ void Server::Receive()
                 if(json::accept(buf)&&buf[0]=='{'&&buf[strlen(buf)-1]=='}')
                 {
                     std::cout<<"accepted a json from "<<confd<<'\n';
-                    Analyze(confd,json::parse(buf));
+                    json request=json::parse(buf);
+                    Analyze(confd,request);
                 }
                 else Error("request format error",confd,REQUEST);
             }
@@ -156,42 +159,39 @@ void Server::Start()
 }
 
 //analyze client request
-void Server::Analyze(int confd,json request)
+void Server::Analyze(int confd,json &request)
 {
     //update last request time
     last_request[confd]=(double)clock()/CLOCKS_PER_SEC;
     if(request["type"]==ALIVE)
     return;
     //std::cout<<std::setw(4)<<request<<'\n';
-    if(request["type"]==LOGIN)
+
+    if(request["user_id"]==request["null"])
+        return;
+
+    //unfinished
+    // std::string token=db->getToken(request["user_id"]);
+    // if(token!=(std::string)request["token"])
+    // {
+    //     Error("token error",confd,TOKEN);
+    //     return;
+    // }
+
+    int type=(int)request["type"];
+    request=request["data"];
+    switch(type)
     {
-        userLogin(confd,request);
+        case LOGIN:userLogin(confd,request);break;
+        case REGISTER:userRegister(confd,request);break;
+        case PRIVATE_MESSAGE:sendPrivateMessage(confd,request);break;
+        case GROUP_MESSAGE:sendGroupMessage(confd,request);break;
+        case GET_FRIENDS:getFriends(confd,request);break;
+        case GET_GROUPS:getGroups(confd,request);break;
+        case GET_HISTORY_PRIVATE:getPrivateHistory(confd,request);break;
+        case GET_HISTORY_GROUP:getGroupHistory(confd,request);break;
+        default :Error("request type error",confd);break;  
     }
-    else if(request["type"]==REGISTER)
-    {
-        userRegister(confd,request);
-    }
-    else if(request["type"]==PRIVATE_MESSAGE)
-    {
-        sendPrivateMessage(confd,request);
-    }
-    else if(request["type"]==GROUP_MESSAGE)
-    {
-        sendPrivateMessage(confd,request);
-    }
-    else if(request["type"]==GET_FREIENDS)
-    {
-        getFriends(confd,request);
-    }
-    else if(request["type"]==GET_HISTORY_PRIVATE)
-    {
-        getPrivateHistory(confd,request);
-    }
-    else if(request["type"]==GET_HISTORY_GROUP)
-    {
-        getGroupHistory(confd,request);
-    }
-    else Error("request type error",confd);
 }
 
 //Login with user_id or email and password
@@ -224,9 +224,11 @@ void Server::userLogin(int confd,json &request)
         std::cout<<confd<<" login success\n\n";
         json result;
         result["type"]=LOGIN;
-        result["result"]="success_login";
-        result["user_id"]=res;
-        //unfinished
+        json data;
+        data["result"]="success_login";
+        data["user_id"]=res;
+        //unfinished(user information)
+        result["data"]=data;
         sendjson(confd,result);
         setLogin(confd,res);
     }
@@ -248,8 +250,10 @@ void Server::userRegister(int confd,json &request)
         std::cout<<confd<<" success_register\n\n";
         json result;
         result["type"]=REGISTER;
-        result["result"]="success_register";
-        result["user_id"]=(ID)res;
+        json data;
+        data["result"]="success_register";
+        data["user_id"]=(ID)res;
+        result["data"]=data;
         sendjson(confd,result);
     }
 }
@@ -260,12 +264,25 @@ void Server::getFriends(int confd,json &request)
     if(request["user_id"]==request["null"])
     {
         std::cout<<confd<<" get friends failed\n\n";
-        Error("empty user_id",confd,GET_FREIENDS);
+        Error("empty user_id",confd,GET_FRIENDS);
         return;
     }
     ID user_id=request["user_id"];
     //unfinished
-    sendUnreadMessage(confd,request["user_id"]);
+    sendPrivateUnreadMessage(confd,request["user_id"]);
+}
+
+void Server::getGroups(int confd,json &request)
+{
+    if(request["user_id"]==request["null"])
+    {
+        std::cout<<confd<<" get groups failed\n\n";
+        Error("empty user_id",confd,GET_GROUPS);
+        return;
+    }
+    ID user_id=request["user_id"];
+    //unfinished
+    sendGroupUnreadMessage(confd,request["user_id"]);
 }
 
 void Server::sendPrivateMessage(int confd,json &request)
@@ -280,26 +297,32 @@ void Server::sendPrivateMessage(int confd,json &request)
     int to_fd=statu.get(2),success=-1;
     if(to_online==true)
     {
-        json message;
-        message["type"]=PRIVATE_MESSAGE;
-        message["from_id"]=user_id;
-        message["to_id"]=to_id;
-        message["content"]=content;
-        message["time"]=time;
-        success=sendjson(to_fd,message);
+        json result;
+        result["type"]=PRIVATE_MESSAGE;
+        json data;
+        data["from_id"]=user_id;
+        data["to_id"]=to_id;
+        data["content"]=content;
+        data["time"]=time;
+        result["data"]=data;
+        success=sendjson(to_fd,result);
     }
     if(to_online==false||success==-1)
     {
         json result;
         result["type"]=PRIVATE_MESSAGE;
-        result["result"]="wait_send";
+        json data;
+        data["result"]="wait_send";
+        result["data"]=data;
         sendjson(confd,result);
-        db->addUnsendMessageFromUser(time,to_id,user_id,content);
+        db->addUserUnsendMessage(time,to_id,user_id,content);
     }
     else {
         json result;
         result["type"]=PRIVATE_MESSAGE;
-        result["result"]="success_send";
+        json data;
+        data["result"]="success_send";
+        result["data"]=data;
         sendjson(confd,result);
         std::cout<<"send to "<<to_id<<" private message success\n\n";
     }
@@ -314,15 +337,19 @@ void Server::sendGroupMessage(int confd,json &request)
 
     json message;
     message["type"]=GROUP_MESSAGE;
-    message["from_id"]=user_id;
-    message["group_id"]=group_id;
-    message["content"]=content;
-    message["time"]=time;
+    json data;
+    data["from_id"]=user_id;
+    data["group_id"]=group_id;
+    data["content"]=content;
+    data["time"]=time;
+    message["data"]=data;
     
     db->addGroupHistory(time,user_id,group_id,content);
     json result;
     result["type"]=GROUP_MESSAGE;
-    result["result"]="success_send";
+    json rdata;
+    rdata["result"]="success_send";
+    result["data"]=rdata;
     std::cout<<"send to "<<group_id<<" group message success\n\n";
     sendjson(confd,result);
 
@@ -337,12 +364,12 @@ void Server::sendGroupMessage(int confd,json &request)
         int to_fd=statu.get(2),success=-1;
         if(to_online==true)
         {
-            message["to_id"]=to_id;
+            message["data"]["to_id"]=to_id;
             success=sendjson(to_fd,message);
         }
         if(to_online==false||success==-1)
         {
-            db->addUnsendMessageFromGroup(time,to_id,user_id,group_id,content);
+            db->addGroupUnsendMessage(time,to_id,user_id,group_id,content);
         }
         else {
             std::cout<<"send to "<<to_id<<" group message success\n\n";
@@ -351,46 +378,55 @@ void Server::sendGroupMessage(int confd,json &request)
 }
 
 //send unread message to user after login
-void Server::sendUnreadMessage(int confd,ID user_id)
+void Server::sendPrivateUnreadMessage(int confd,ID user_id)
 { 
     std::vector<json>message_bundle;
-    auto private_message=db->searchUnsendMessageFromUser(user_id);   
+    auto private_message=db->searchUserUnsendMessage(user_id);   
     while(private_message.count()>0)
     {
         auto row=private_message.fetchOne();
         json message;
         message["type"]=PRIVATE_MESSAGE;
-        message["from_id"]=row.get(2);
-        message["to_id"]=row.get(1);
-        message["time"]=row.get(0);
-        message["content"]=row.get(3);
+        json data;
+        data["from_id"]=row.get(2);
+        data["to_id"]=row.get(1);
+        data["content"]=row.get(3);
+        data["time"]=row.get(0);
+        message["data"]=data;
         message_bundle.push_back(message);
     }
+
     json result;
     result["type"]=UNREAD_PRIVATE_MESSAGE;
-    result["contents"]=json(message_bundle);
+    result["data"]=json(message_bundle);
     int success=sendjson(confd,result);
-    if(success==0)db->deleteUnsendMessageFromUser(user_id);
+    if(success==0)db->deleteUserUnsendMessage(user_id);
+}
 
-    message_bundle.clear();
-    auto group_message=db->searchUnsendMessageFromGroup(user_id);   
-    while(private_message.count()>0)
+void Server::sendGroupUnreadMessage(int confd,ID user_id)
+{
+    std::vector<json>message_bundle;
+    auto group_message=db->searchGroupUnsendMessage(user_id);   
+    while(group_message.count()>0)
     {
-        auto row=private_message.fetchOne();
+        auto row=group_message.fetchOne();
         json message;
         message["type"]=GROUP_MESSAGE;
-        message["group_id"]=row.get(3);
-        message["from_id"]=row.get(2);
-        message["to_id"]=row.get(1);
-        message["time"]=row.get(0);
-        message["content"]=row.get(4);
+        json data;
+        data["group_id"]=row.get(3);
+        data["from_id"]=row.get(2);
+        data["to_id"]=row.get(1);
+        data["time"]=row.get(0);
+        data["content"]=row.get(4);
+        message["data"]=data;
         message_bundle.push_back(message);
     }
 
+    json result;
     result["type"]=UNREAD_GROUP_MESSAGE;
-    result["contents"]=json(message_bundle);
-    success=sendjson(confd,result);
-    if(success==0)db->deleteUnsendMessageFromGroup(user_id);
+    result["data"]=json(message_bundle);
+    int success=sendjson(confd,result);
+    if(success==0)db->deleteGroupUnsendMessage(user_id);
 }
 
 //judge if a user login with the fd first
@@ -427,16 +463,18 @@ void Server::getPrivateHistory(int confd,json &request)
         auto row=all_message.fetchOne();
         json message;
         message["type"]=PRIVATE_MESSAGE;
-        message["from_id"]=row.get(2);
-        message["to_id"]=row.get(1);
-        message["time"]=row.get(0);
-        message["content"]=row.get(3);
+        json data;
+        data["from_id"]=row.get(2);
+        data["to_id"]=row.get(1);
+        data["time"]=row.get(0);
+        data["content"]=row.get(3);
+        message["data"]=data;
         res.push_back(message);
     }
 
     json result;
     result["type"]=GET_HISTORY_PRIVATE; 
-    result["contents"]=json(res);
+    result["data"]=json(res);
     int success=sendjson(confd,result);
     if(success==-1)
     {
@@ -469,17 +507,19 @@ void Server::getGroupHistory(int confd,json &request)
         auto row=all_message.fetchOne();
         json message;
         message["type"]=GROUP_MESSAGE;
-        message["group_id"]=row.get(3);
-        message["from_id"]=row.get(2);
-        message["to_id"]=row.get(1);
-        message["time"]=row.get(0);
-        message["content"]=row.get(4);
+        json data;
+        data["group_id"]=row.get(3);
+        data["from_id"]=row.get(2);
+        data["to_id"]=row.get(1);
+        data["time"]=row.get(0);
+        data["content"]=row.get(4);
+        message["data"]=data;
         res.push_back(message);
     }
 
     json result;
     result["type"]=GET_HISTORY_GROUP;
-    result["contents"]=json(res);
+    result["data"]=json(res);
     int success=sendjson(confd,result);
     if(success==-1)
     {
