@@ -16,7 +16,7 @@ CREATE TABLE basic_group_data (
 group_id INT PRIMARY KEY,
 owner_id INT NOT NULL,
 group_name VARCHAR(64) NOT NULL UNIQUE,
-grope_description VARCHAR(256) DEFAULT(""),
+group_description VARCHAR(256) DEFAULT(""),
 CONSTRAINT OWNER_REGISTERED foreign key (owner_id) references basic_user_data(user_id)
 );
 
@@ -72,7 +72,7 @@ CONSTRAINT DST_USER_REGISTERED_4 foreign key (dst_group_id) references basic_gro
 );
 CREATE INDEX unsend_user_group_pair ON unsend_message_from_group(unsend_user_id ASC, send_time ASC);
 
-CREATE TABLE friend_ralation ( -- 为加快查找速度，可以同时插入两对：(1,2)(2,1)
+CREATE TABLE friend_relation ( -- 为加快查找速度，可以同时插入两对：(1,2)(2,1)
 user1_id INT, 
 user2_id INT,
 -- 其它属性？（插入两对后，属性只需要描述一个方向；）
@@ -85,7 +85,9 @@ CREATE TABLE friend_request ( -- 处理后删除，未处理则考虑一直发�
 user_from INT,
 user_to INT,
 request_message VARCHAR(128),
-CONSTRAINT IDENTIFIER_FRIEND_REQUEST PRIMARY KEY(user_from, user_to)
+CONSTRAINT IDENTIFIER_FRIEND_REQUEST PRIMARY KEY(user_from, user_to),
+CONSTRAINT USER_FROM_REGISTERED foreign key (user_from) references basic_user_data(user_id),
+CONSTRAINT USER_TO_REGISTERED foreign key (user_to) references basic_user_data(user_id)
 );
 
 CREATE TABLE group_member (
@@ -96,12 +98,13 @@ CONSTRAINT IDENTIFIER_GROUP_MEMBER PRIMARY KEY(group_id, user_id),
 CONSTRAINT GROUP_CREATED_5 foreign key (group_id) references basic_group_data(group_id),
 CONSTRAINT MEMBER_REGISTERED foreign key (user_id) references basic_user_data(user_id)
 );
+CREATE INDEX GROUPS_OF_A_USER ON group_member(user_id ASC);
 
-CREATE TABLE groups_of_a_user ( -- 为加快查找速度，维护两个表
+CREATE TABLE group_request ( -- 处理后删除，未处理则考虑一直发送？
 user_id INT,
 group_id INT,
--- 其它属性？
-CONSTRAINT IDENTIFIER_GROUP_MEMBER PRIMARY KEY(user_id, group_id),
-CONSTRAINT GROUP_CREATED_6 foreign key (group_id) references basic_group_data(group_id),
-CONSTRAINT USER_REGISTERED_2 foreign key (user_id) references basic_user_data(user_id)
+request_message VARCHAR(128),
+CONSTRAINT IDENTIFIER_REQUEST_GROUP_REGISTERED PRIMARY KEY(user_id, group_id),
+CONSTRAINT REQUEST_USER_REGISTERED foreign key (user_id) references basic_user_data(user_id),
+CONSTRAINT REQUEST_GROUP_REGISTERED foreign key (group_id) references basic_group_data(group_id)
 );
