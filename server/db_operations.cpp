@@ -204,6 +204,14 @@ mysqlx::TableUpdate LiteChatDatabaseAccess::updateUserStatus(){
     return user_status.update();
 }
 
+void LiteChatDatabaseAccess::updateUserStatusWhenLogin(ID user_id, int handle){
+    auto update_user_status_when_login =  updateUserStatus();
+    update_user_status_when_login.where("user_id = '" + std::to_string(user_id) + "'");
+    update_user_status_when_login.set("is_online", true);
+    update_user_status_when_login.set("handle", handle);
+    update_user_status_when_login.execute();
+}
+
 void LiteChatDatabaseAccess::deleteGroup(ID group_id){
     delete_group.where("group_id = " + std::to_string(group_id));
     delete_group.execute();
