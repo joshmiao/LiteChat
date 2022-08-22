@@ -9,7 +9,7 @@
 using json = nlohmann::json;
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class LiteChat; }
+namespace Ui { class LiteChat_Server; }
 QT_END_NAMESPACE
 
 class LiteChat_Login;
@@ -27,17 +27,16 @@ public:
     QString username;
 };
 
-class LiteChatServer : public QMainWindow
+class LiteChat_Server : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    LiteChatServer(QWidget *parent = nullptr);
-    ~LiteChatServer();
+    LiteChat_Server(QWidget *parent = nullptr);
+    ~LiteChat_Server();
     LiteChat_Login* createLoginPage();
     LiteChat_Dialog* createDialog(QString chatName, LiteChat_Dialog::Dialog_Type dialogType, int32_t toId);
     LiteChat_Interface* createInterface(QString loginName, int32_t loginId);
-    LiteChat_ChatList* createChatList();
     LiteChat_Register* createRegister();
     int sendMessage(LiteChat_Dialog::Dialog_Type dialogType, int32_t toId, QString msg);
     int requestLogin(int32_t id, QString pwd);
@@ -50,14 +49,15 @@ private slots:
 
 private:
     int sendtoServer(json j);
-    Ui::LiteChat *ui;
+    Ui::LiteChat_Server *ui;
     QTcpSocket *client;
     bool serverStatus, loginStatus;
     UserInfo userInfo;
     QString token;
 
 signals:
-    void messageReceive(QString msg);
+    void messageReceive(LiteChat_Dialog::Dialog_Type recieveType, int32_t fromId, QString msg);
     void loginSuccess(QString loginName, int32_t loginId);
+
 };
 #endif // LITECHAT_SERVER_H

@@ -7,7 +7,7 @@
 #include <json.hpp>
 using json = nlohmann::json;
 
-LiteChat_Login::LiteChat_Login(LiteChatServer *liteChatServer, QWidget *parent) :
+LiteChat_Login::LiteChat_Login(LiteChat_Server *liteChatServer, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::LiteChat_Login),
     liteChatServer(liteChatServer)
