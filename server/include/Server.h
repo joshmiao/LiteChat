@@ -8,6 +8,8 @@
 #include<db_operations.cpp>
 using json = nlohmann::json;
 
+typedef ID int32_t;
+
 class Server{
 private:
     LiteChatDatabaseAccess *db;
