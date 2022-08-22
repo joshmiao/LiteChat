@@ -4,8 +4,11 @@
 #include "litechat_dialog.h"
 #include "litechat_login.h"
 #include "litechat_register.h"
+#include "litechat_chatlist.h"
 #include "ui_litechat.h"
 
+#include <json.hpp>
+using json = nlohmann::json;
 
 LiteChat::LiteChat(QWidget *parent)
     : QMainWindow(parent)
@@ -57,11 +60,15 @@ void LiteChat::handReadyRead()
         qDebug() << recvString.mid(1);
         emit messageReceive(recvString.mid(1));
     }
+    if (recvString[0] == '*'){
+        emit loginSuccess("testname", 10001);
+    }
     ui->textEdit->append(recvString);
 }
 
-int LiteChat::sendtoServer(QString msg)
+int LiteChat::sendtoServer(json j)
 {
+    QString msg = to_string(j).c_str();
     if (!serverReady) return -1;
     client->write(msg.toUtf8());
     return 0;
@@ -70,18 +77,39 @@ int LiteChat::sendtoServer(QString msg)
 void LiteChat::on_pushButton_2_clicked()
 {
     QString txt = ui->lineEdit_3->text();
-    sendtoServer(txt);
+    client->write(txt.toUtf8());
+}
+
+int LiteChat::sendMessage(LiteChat_Dialog::Dialog_Type dialogType, int32_t id, QString msg)
+{
+    json j;
+    j["type"] = 2;
+    j["token"] = token.toUtf8();
+    j["content"]["dialogType"] = dialogType;
+    j["content"]["id"] = id;
+    j["content"]["msg"] = msg.toUtf8();
+    return sendtoServer(j);
+}
+
+int LiteChat::requestLogin(int32_t id, QString pwd)
+{
+    json j;
+    j["type"] = 1;
+    j["content"]["id"] = id;
+    j["content"]["pwd"] = pwd.toUtf8();
+    return sendtoServer(j);
 }
 
 LiteChat_Login* LiteChat::createLoginPage()
 {
     LiteChat_Login *loginPage = new LiteChat_Login(this);
+    connect(this, &LiteChat::loginSuccess, loginPage, &LiteChat_Login::loginSuccess);
     return loginPage;
 }
 
-LiteChat_Dialog* LiteChat::createDialog()
+LiteChat_Dialog* LiteChat::createDialog(QString chatName, LiteChat_Dialog::Dialog_Type dialogType, int id)
 {
-    LiteChat_Dialog *dialogPage = new LiteChat_Dialog(this, "Test Dialog", LiteChat_Dialog::Private);
+    LiteChat_Dialog *dialogPage = new LiteChat_Dialog(this, chatName, dialogType, id);
     connect(this, &LiteChat::messageReceive, dialogPage, &LiteChat_Dialog::receiveSingalMessage);
     return dialogPage;
 }
@@ -91,8 +119,8 @@ LiteChat_ChatList* LiteChat::createChatList(){
     return chatList;
 }
 
-LiteChat_Interface* LiteChat::createInterface(){
-    LiteChat_Interface *interface = new LiteChat_Interface(this);
+LiteChat_Interface* LiteChat::createInterface(QString loginName, int32_t loginId){
+    LiteChat_Interface *interface = new LiteChat_Interface(this, loginName, loginId);
     return interface;
 }
 

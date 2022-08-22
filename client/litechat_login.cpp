@@ -4,6 +4,8 @@
 #include "litechat_interface.h"
 #include "ui_litechat_login.h"
 
+#include <json.hpp>
+using json = nlohmann::json;
 
 LiteChat_Login::LiteChat_Login(LiteChat *liteChatMain, QWidget *parent) :
     QMainWindow(parent),
@@ -20,25 +22,22 @@ LiteChat_Login::~LiteChat_Login()
 
 void LiteChat_Login::on_pushButton_clicked()
 {
-    QString req = "#usr|" + ui->lineEdit->text() + "|#pwd|" + ui->lineEdit_2->text();
-    QMessageBox msgBox;
-    if (liteChatMain->sendtoServer(req) == 0) {
-        msgBox.setText("Success");
-        LiteChat_Interface *interface = liteChatMain->createInterface();
-        interface->show();
-        this->hide();
-    }
-    else{
-        msgBox.setText("Fail");
-    }
-    msgBox.exec();
+    liteChatMain->requestLogin(ui->lineEdit->text().toInt(), ui->lineEdit_2->text());
 }
-
 
 void LiteChat_Login::on_pushButton_2_clicked()
 {
     LiteChat_Register *Register = liteChatMain->createRegister();
     Register->show();
     this->hide();
+}
+
+void LiteChat_Login::loginSuccess(QString loginName, int32_t loginId){
+    LiteChat_Interface* interface = liteChatMain->createInterface(loginName, loginId);
+    interface->show();
+    this->hide();
+    QMessageBox msgBox;
+    msgBox.setText("Success");
+    msgBox.exec();
 }
 

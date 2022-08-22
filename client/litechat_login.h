@@ -2,11 +2,13 @@
 #define LITECHAT_LOGIN_H
 
 #include <QMainWindow>
-#include "litechat.h"
+
 
 namespace Ui {
 class LiteChat_Login;
 }
+
+class LiteChat;
 
 class LiteChat_Login : public QMainWindow
 {
@@ -16,9 +18,11 @@ public:
     explicit LiteChat_Login(LiteChat *liteChatMain, QWidget *parent = nullptr);
     ~LiteChat_Login();
 
+public slots:
+    void loginSuccess(QString loginName, int32_t loginId);
+
 private slots:
     void on_pushButton_clicked();
-
     void on_pushButton_2_clicked();
 
 private:

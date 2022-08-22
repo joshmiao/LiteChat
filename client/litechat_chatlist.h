@@ -2,11 +2,12 @@
 #define LITECHAT_CHATLIST_H
 
 #include <QWidget>
-#include "litechat.h"
 
 namespace Ui {
 class LiteChat_ChatList;
 }
+
+class LiteChat;
 
 class LiteChat_ChatList : public QWidget
 {

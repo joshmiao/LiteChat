@@ -3,12 +3,13 @@
 
 #include <QWidget>
 #include <QListWidgetItem>
-#include "litechat.h"
 #include "litechat_message.h"
 
 namespace Ui {
 class LiteChat_Dialog;
 }
+
+class LiteChat;
 
 class LiteChat_Dialog : public QWidget
 {
@@ -20,7 +21,7 @@ public:
         Private,
         Group,
     };
-    explicit LiteChat_Dialog(LiteChat *liteChatMain, QString chatName, Dialog_Type dialogType, QWidget *parent = nullptr);
+    explicit LiteChat_Dialog(LiteChat *liteChatMain, QString chatName, Dialog_Type dialogType, int id, QWidget *parent = nullptr);
     ~LiteChat_Dialog();
     void dealMessage(LiteChat_Message *messageW, QListWidgetItem *item, QString text, QString time, LiteChat_Message::User_Type type);
     void dealMessageTime(QString curMsgTime);
@@ -35,9 +36,9 @@ private slots:
 private:
     Ui::LiteChat_Dialog *ui;
     LiteChat *liteChatMain;
+    QString chatName;
     Dialog_Type dialogType;
     int32_t id;
-    QString chatName;
 
 };
 

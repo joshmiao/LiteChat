@@ -3,7 +3,10 @@
 
 #include <QMainWindow>
 #include <QTcpSocket>
+#include "litechat_dialog.h"
 
+#include <json.hpp>
+using json = nlohmann::json;
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class LiteChat; }
@@ -22,12 +25,13 @@ class LiteChat : public QMainWindow
 public:
     LiteChat(QWidget *parent = nullptr);
     ~LiteChat();
-    int sendtoServer(QString msg);
     LiteChat_Login* createLoginPage();
-    LiteChat_Dialog* createDialog();
-    LiteChat_Interface* createInterface();
+    LiteChat_Dialog* createDialog(QString chatName, LiteChat_Dialog::Dialog_Type dialogType, int id);
+    LiteChat_Interface* createInterface(QString loginName, int32_t loginId);
     LiteChat_ChatList* createChatList();
     LiteChat_Register* createRegister();
+    int sendMessage(LiteChat_Dialog::Dialog_Type dialogType, int32_t id, QString msg);
+    int requestLogin(int32_t id, QString pwd);
 
 private slots:
     void on_pushButton_clicked();
@@ -36,11 +40,14 @@ private slots:
     void handReadyRead();
 
 private:
+    int sendtoServer(json j);
     Ui::LiteChat *ui;
     QTcpSocket *client;
     bool serverReady;
+    QString token;
 
 signals:
     void messageReceive(QString msg);
+    void loginSuccess(QString loginName, int32_t loginId);
 };
 #endif // LITECHAT_H
