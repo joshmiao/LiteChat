@@ -7,6 +7,7 @@
 #include<netinet/in.h>
 #include<arpa/inet.h>
 #include<unistd.h>
+#include<random>
 
 #include<set>
 #include<vector>
@@ -18,7 +19,8 @@
 #include<request_type.h>
 using json = nlohmann::json;
 
-#define WAIT_TIME 0.005
+#define WAIT_TIME 5//0.005
+#define TOKEN_LENGTH 32
 
 int Server::sendjson(int confd,json &result){
     std::string str = to_string(result);
@@ -140,10 +142,11 @@ void Server::Receive()
 
 void Server::Start()
 {
+    srand(time(NULL));
     FD_ZERO(&allset);
     FD_SET(lisfd,&allset);
     maxfd=lisfd;
-    
+
     int cnt=0;
 
     while(1)
@@ -165,10 +168,8 @@ void Server::Analyze(int confd,json &request)
     last_request[confd]=(double)clock()/CLOCKS_PER_SEC;
     if(request["type"]==ALIVE)
     return;
-    //std::cout<<std::setw(4)<<request<<'\n';
-
-    if(request["user_id"]==request["null"])
-        return;
+    
+    std::cout<<std::setw(4)<<request<<'\n';
 
     //unfinished
     // std::string token=db->getToken(request["user_id"]);
@@ -190,6 +191,11 @@ void Server::Analyze(int confd,json &request)
         case GET_GROUPS:getGroups(confd,request);break;
         case GET_HISTORY_PRIVATE:getPrivateHistory(confd,request);break;
         case GET_HISTORY_GROUP:getGroupHistory(confd,request);break;
+        case SEARCH_USER:searchUser(confd,request);break;
+        case ADD_FRIEND:addFriend(confd,request);break;
+        case GET_FRIEND_REQUEST:getFriendRequest(confd,request);break;
+        case ACCEPT_FRIEND:acceptFriend(confd,request);break;
+        case DELETE_FRIEND:deleteFriend(confd,request);break;
         default :Error("request type error",confd);break;  
     }
 }
@@ -201,8 +207,7 @@ void Server::userLogin(int confd,json &request)
         request["user_id"]=0;
     if(request["email"]==request["null"])
         request["email"]="";
-    if(request["pwd"]==request["null"])
-        request["pwd"]="";
+
     int res=db->userLogin(request["user_id"],request["email"],request["pwd"]);
     if(res==-3)
     {
@@ -221,16 +226,22 @@ void Server::userLogin(int confd,json &request)
     }
     else if(res>=USER_ID_BEGIN)
     {
-        std::cout<<confd<<" login success\n\n";
         json result;
         result["type"]=LOGIN;
         json data;
         data["result"]="success_login";
+
+        auto row=db->getBasicUserDataByID(res);
         data["user_id"]=res;
-        //unfinished(user information)
+        data["name"]=row.get(1);
+        data["email"]=row.get(2);
+        data["birthday"]=row.get(3);
+        data["avatar_filename"]=row.get(4);
+        data["signature"]=row.get(5);
+        data["token"]=setLogin(confd,res);
         result["data"]=data;
         sendjson(confd,result);
-        setLogin(confd,res);
+        std::cout<<confd<<" login success\n\n";
     }
     else{
         std::cout<<confd<<" login failed\n\n";
@@ -432,12 +443,18 @@ void Server::sendGroupUnreadMessage(int confd,ID user_id)
 //judge if a user login with the fd first
 void Server::setLogout(int confd)
 {
-    //unfinished
+    db->updateUserStatusWhenLogout(confd);
 }
 
-void Server::setLogin(int confd,ID user_id)
+const char charlist[]="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+std::string Server::setLogin(int confd,ID user_id)
 {
-    //unfinished    
+    std::cout<<"set login\n\n";
+    char token[TOKEN_LENGTH];
+    for(int i=0;i<TOKEN_LENGTH;i++)
+    token[i]=charlist[rand()%62];
+    db->updateUserStatusWhenLogin(user_id,confd,std::string(token));
+    return std::string(token);
 }
 
 void Server::getPrivateHistory(int confd,json &request)
@@ -527,5 +544,149 @@ void Server::getGroupHistory(int confd,json &request)
     }
     else{
         std::cout<<confd<<" get group history successfully\n\n";
+    }
+}
+
+void Server::searchUser(int confd,json &request)
+{
+    std::string keyword=(std::string)request["keyword"];
+    bool Name=true;
+    ID id=0;
+    if(keyword.length()<=6)
+    for(auto c:keyword)
+    if(isdigit(c))
+        id=id*10+c-'0';
+    else {
+        id=0;
+        break;
+    }
+
+    auto users=db->searchUser(id,keyword);
+    std::vector<json>res;
+    while(users.count()>0)
+    {
+        auto row=users.fetchOne();
+        json user;
+        user["user_id"]=row.get(0);
+        user["name"]=row.get(1);
+        user["email"]=row.get(2);
+        user["birthday"]=row.get(3);
+        user["signature"]=row.get(5);
+
+        //unfinished
+        //user avatar_filename and resoure?
+        
+        res.push_back(user);
+    }
+    json result;
+    result["type"]=SEARCH_USER;
+    result["data"]=json(res);
+    int success=sendjson(confd,result);
+    if(success==-1)
+    {
+        Error("search failed",confd,SEARCH_USER);
+    }
+    else{
+        std::cout<<confd<<" search user successfully\n\n";
+    }
+}
+
+void Server::addFriend(int confd,json &request)
+{
+    ID from_id=request["user_id"];
+    ID to_id=request["to_id"];
+    std::string message=(std::string)request["message"];
+
+    int res=db->createFriendRequest(from_id,to_id,message);
+    if(res==-1)
+    {
+        Error("you are already friends",confd,ADD_FRIEND);
+    }    
+    else{
+        json result;
+        result["type"]=ADD_FRIEND;
+        json data;
+        data["result"]="send successfully";
+        result["data"]=data;
+        sendjson(confd,result);
+    }
+}
+
+void Server::getFriendRequest(int confd,json &request)
+{
+    auto requests=db->getFriendRequest(0,request["user_id"]);
+    std::vector<json>res;
+    while(requests.count()>0)
+    {
+        auto row=requests.fetchOne();
+        json request;
+        request["from_id"]=row.get(0);
+        request["message"]=row.get(2);
+        res.push_back(request);
+    }
+    json result;
+    result["type"]=GET_FRIEND_REQUEST;
+    result["data"]=json(res);
+    int success=sendjson(confd,result);
+    if(success==-1)
+    {
+        Error("get failed",confd,GET_FRIEND_REQUEST);
+    }
+    else{
+        std::cout<<confd<<" get friend request successfully\n\n";
+    }
+}
+
+void Server::acceptFriend(int confd,json &request)
+{
+    ID from_id=request["from_id"];
+    ID to_id=request["user_id"];
+    bool accept=(bool)request["accept"];
+    db->deleteFriendRequest(from_id,to_id);
+
+    if(!accept)
+    {
+        json result;
+        result["type"]=ACCEPT_FRIEND;
+        json data;
+        data["result"]="refuse successfully";
+        result["data"]=data;
+        sendjson(confd,result);
+        return;
+    }
+
+    db->createFriendRelation(from_id,to_id);
+    json result;
+    result["type"]=ACCEPT_FRIEND;
+    json data;
+    data["result"]="accept successfully";
+    result["data"]=data;
+    int success=sendjson(confd,result);
+    if(success==-1)
+    {
+        Error("accept failed",confd,ACCEPT_FRIEND);
+    }
+    else{
+        std::cout<<confd<<" accept friend successfully\n\n";
+    }
+}
+
+void Server::deleteFriend(int confd,json &request)
+{
+    ID id1=request["friend_id"];
+    ID id2=request["user_id"];
+    db->deleteFriendRelation(id1,id2);
+    json result;
+    result["type"]=DELETE_FRIEND;
+    json data;
+    data["result"]="delete successfully";
+    result["data"]=data;
+    int success=sendjson(confd,result);
+    if(success==-1)
+    {
+        Error("delete failed",confd,DELETE_FRIEND);
+    }
+    else{
+        std::cout<<confd<<" delete friend successfully\n\n";
     }
 }

@@ -44,7 +44,8 @@ public:
     mysqlx::TableUpdate updateBasicUserData();
     mysqlx::TableUpdate updateBasicGroupData();
     mysqlx::TableUpdate updateUserStatus();
-    void updateUserStatusWhenLogin(ID user_id, int handle);
+    void updateUserStatusWhenLogin(ID user_id, int handle, const std::string& token);
+    void updateUserStatusWhenLogout(int handle);
 
     void deleteUserUnsendMessage(ID unsend_user_id);
     void deleteGroupUnsendMessage(ID unsend_user_id);
@@ -55,10 +56,10 @@ public:
     void deleteFriendRequest(ID user_from, ID user_to);
 
 private:
-    std::string sqlString(std::string s);
+    std::string sqlString(const std::string& s);
     int regsiteredUserCount();
     bool emailUnique(const std::string& email); 
-    int existGroupCount();
+    int existGroupCount(); // 等待换成MAX();
     bool groupNameUnique(const std::string& email);
     mysqlx::RowResult searchUG(mysqlx::TableSelect& table_select, const std::string& type, ID id, const std::string& name);
     mysqlx::RowResult searchHistory(mysqlx::TableSelect& table_select, const std::string& type,

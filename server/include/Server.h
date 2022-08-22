@@ -25,17 +25,25 @@ private:
     int sendjson(int confd,json &result);
     void Error(const char *msg,int confd,int type);
 
+    //Login and register
     void userLogin(int confd,json &request);
     void userRegister(int confd,json &request);
     void setLogout(int confd);
-    void setLogin(int confd,ID user_id);
+    std::string setLogin(int confd,ID user_id);
+
+    //Friends and groups
+    void searchUser(int confd,json &request);
+    void addFriend(int confd,json &request);
+    void getFriendRequest(int confd,json &request);
+    void acceptFriend(int confd,json &request);
+    void deleteFriend(int confd,json &request);
+    void getFriends(int confd,json &request);
+    void getGroups(int confd,json &request);
 
     void sendPrivateUnreadMessage(int confd,ID user_id);
     void sendGroupUnreadMessage(int confd,ID user_id);
     void sendPrivateMessage(int confd,json &request);
     void sendGroupMessage(int confd,json &request);
-    void getFriends(int confd,json &request);
-    void getGroups(int confd,json &request);
     void getPrivateHistory(int confd,json &request);
     void getGroupHistory(int confd,json &request);
 public:
