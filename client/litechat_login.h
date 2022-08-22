@@ -8,14 +8,14 @@ namespace Ui {
 class LiteChat_Login;
 }
 
-class LiteChatServer;
+class LiteChat_Server;
 
 class LiteChat_Login : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit LiteChat_Login(LiteChatServer *liteChatServer, QWidget *parent = nullptr);
+    explicit LiteChat_Login(LiteChat_Server *liteChatServer, QWidget *parent = nullptr);
     ~LiteChat_Login();
 
 public slots:
@@ -27,7 +27,7 @@ private slots:
 
 private:
     Ui::LiteChat_Login *ui;
-    LiteChatServer *liteChatServer;
+    LiteChat_Server *liteChatServer;
 };
 
 #endif // LITECHAT_LOGIN_H

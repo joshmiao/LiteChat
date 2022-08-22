@@ -9,7 +9,7 @@ namespace Ui {
 class LiteChat_Dialog;
 }
 
-class LiteChatServer;
+class LiteChat_Server;
 
 class LiteChat_Dialog : public QWidget
 {
@@ -21,12 +21,15 @@ public:
         Private,
         Group,
     };
-    explicit LiteChat_Dialog(LiteChatServer *liteChatServer, QString chatName, Dialog_Type dialogType, int toId, QWidget *parent = nullptr);
+    QString chatName;
+    Dialog_Type dialogType;
+    int32_t userId, toId;
+    explicit LiteChat_Dialog(LiteChat_Server *liteChatServer, QString chatName, Dialog_Type dialogType, int toId, QWidget *parent = nullptr);
     ~LiteChat_Dialog();
     void dealMessage(LiteChat_Message *messageW, QListWidgetItem *item, QString text, QString time, LiteChat_Message::User_Type type);
     void dealMessageTime(QString curMsgTime);
 public slots:
-    void receiveSingalMessage(QString msg);
+    void receiveSingalMessage(Dialog_Type receiveType, int32_t fromId, QString msg);
 protected:
     void resizeEvent(QResizeEvent *event);
 private slots:
@@ -35,10 +38,7 @@ private slots:
 
 private:
     Ui::LiteChat_Dialog *ui;
-    LiteChatServer *liteChatServer;
-    QString chatName;
-    Dialog_Type dialogType;
-    int32_t userId, toId;
+    LiteChat_Server *liteChatServer;
 
 };
 

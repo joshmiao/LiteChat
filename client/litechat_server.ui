@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>LiteChatServer</class>
- <widget class="QMainWindow" name="LiteChatServer">
+ <class>LiteChat_Server</class>
+ <widget class="QMainWindow" name="LiteChat_Server">
   <property name="geometry">
    <rect>
     <x>0</x>

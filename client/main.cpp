@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
             break;
         }
     }
-    LiteChatServer liteChatServer;
+    LiteChat_Server liteChatServer;
     liteChatServer.show();
     return a.exec();
 }

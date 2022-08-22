@@ -5,7 +5,7 @@
 #include <QDateTime>
 #include <QDebug>
 
-LiteChat_Dialog::LiteChat_Dialog(LiteChatServer *liteChatServer, QString chatName, Dialog_Type dialogType, int32_t toId, QWidget *parent) :
+LiteChat_Dialog::LiteChat_Dialog(LiteChat_Server *liteChatServer, QString chatName, Dialog_Type dialogType, int32_t toId, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::LiteChat_Dialog),
     liteChatServer(liteChatServer),
@@ -14,7 +14,7 @@ LiteChat_Dialog::LiteChat_Dialog(LiteChatServer *liteChatServer, QString chatNam
     toId(toId)
 {
     ui->setupUi(this);
-    resize(600, 800);
+    ui->label->setText(chatName);
 }
 
 LiteChat_Dialog::~LiteChat_Dialog()
@@ -41,7 +41,8 @@ void LiteChat_Dialog::on_pushButton_clicked()
     ui->listWidget->setCurrentRow(ui->listWidget->count()-1);
 }
 
-void LiteChat_Dialog::receiveSingalMessage(QString msg){
+void LiteChat_Dialog::receiveSingalMessage(Dialog_Type receiveType, int32_t fromId, QString msg){
+    if (receiveType != dialogType || fromId != toId) return;
     qDebug() << "receive msg : " << msg << '\n';
     QString time = QString::number(QDateTime::currentDateTime().toTime_t()); //时间戳
     if(msg != "") {
@@ -55,7 +56,7 @@ void LiteChat_Dialog::receiveSingalMessage(QString msg){
 
 void LiteChat_Dialog::dealMessage(LiteChat_Message *messageW, QListWidgetItem *item, QString text, QString time,  LiteChat_Message::User_Type type)
 {
-    messageW->setFixedWidth(this->width());
+    messageW->setFixedWidth(this->width() - 10);
     QSize size = messageW->fontRect(text);
     item->setSizeHint(size);
     messageW->setText(text, time, size, type);
@@ -80,7 +81,7 @@ void LiteChat_Dialog::dealMessageTime(QString curMsgTime)
         LiteChat_Message* messageTime = new LiteChat_Message(ui->listWidget->parentWidget());
         QListWidgetItem* itemTime = new QListWidgetItem(ui->listWidget);
 
-        QSize size = QSize(this->width(), 40);
+        QSize size = QSize(this->width() - 10, 20);
         messageTime->resize(size);
         itemTime->setSizeHint(size);
         messageTime->setText(curMsgTime, curMsgTime, size, LiteChat_Message::User_Time);
