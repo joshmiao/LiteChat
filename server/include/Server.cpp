@@ -183,6 +183,14 @@ void Server::Analyze(int confd,json request)
     {
         getFriends(confd,request);
     }
+    else if(request["type"]==GET_HISTORY_PRIVATE)
+    {
+        getPrivateHistory(confd,request);
+    }
+    else if(request["type"]==GET_HISTORY_GROUP)
+    {
+        getGroupHistory(confd,request);
+    }
     else Error("request type error",confd);
 }
 
@@ -366,3 +374,44 @@ void Server::setLogin(int confd,int32_t user_id)
 {
     
 }
+
+void Server::getPrivateHistory(int confd,json &request)
+{
+    if(request["user_id"]==request["null"]||request["from_id"]==request["null"])
+    {
+        Error("empty user_id or to_id",confd,GET_HISTORY_PRIVATE);
+        return;
+    }
+    if(request["begin_time"]==request["null"])
+        request["begin_time"]="'2000-01-01'";
+    else request["begin_time"]="'"+(std::string)request["begin_time"]+"'";
+    if(request["end_time"]==request["null"])
+        request["end_time"]="now()";
+    else request["end_time"]="'"+(std::string)request["end_time"]+"'";
+
+    std::vector<json>result;
+    int32_t user_id=request["user_id"];
+    int32_t from_id=request["from_id"];
+    auto all_message=db->getUserHistory(from_id,user_id,request["begin_time"],request["end_time"]);
+    while(all_message.count()>0)
+    {
+        auto row=all_message.fetchOne();
+        json message;
+        message["type"]=PRIVATE_MESSAGE;
+        message["from_id"]=row.get(2);
+        message["to_id"]=row.get(1);
+        message["time"]=row.get(0);
+        message["content"]=row.get(3);
+        result.push_back(message);
+    }
+    int success=sendjson(confd,(json)result);
+    if(success==-1)
+    {
+        Error("send failed",confd,GET_HISTORY_PRIVATE);
+    }
+    else{
+        std::cout<<confd<<" get private history successfully\n\n";
+    }
+}
+
+void Server::
