@@ -1,5 +1,5 @@
-#include<Server.h>
-#include<Server.cpp>
+#include "Server.h"
+
 int main()
 {
     Server server(2333);

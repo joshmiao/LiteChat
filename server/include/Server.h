@@ -1,11 +1,10 @@
 #pragma once
-#include<set>
-#include<sys/socket.h>
-#include<sys/types.h>
-#include<string>
-#include<json.hpp>
-#include<db_operations.h>
-#include<db_operations.cpp>
+#include <set>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <string>
+#include "json.hpp"
+#include "db_operations.h"
 using json = nlohmann::json;
 
 typedef ID int32_t;

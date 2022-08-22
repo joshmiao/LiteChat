@@ -14,8 +14,8 @@
 #include<string>
 #include<iostream>
 
-#include<Server.h>
-#include<json.hpp>
+#include "Server.h"
+#include "json.hpp"
 #include<request_type.h>
 using json = nlohmann::json;
 
@@ -72,7 +72,8 @@ Server::Server(int port)
         Error("listen error");
 
     //link database
-    db=new LiteChatDatabaseAccess("mysqlx://LiteChat:Z0136z0136@127.0.0.1");
+    //db=new LiteChatDatabaseAccess("mysqlx://LiteChat:Z0136z0136@127.0.0.1");
+    db=new LiteChatDatabaseAccess("mysqlx://root:Sail2Boat3A@127.0.0.1");
 }
 
 //accept client
