@@ -1,4 +1,4 @@
-#include "litechat.h"
+#include "litechat_server.h"
 
 #include <QApplication>
 #include <QLocale>
@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
             break;
         }
     }
-    LiteChat liteChatMain;
-    liteChatMain.show();
+    LiteChatServer liteChatServer;
+    liteChatServer.show();
     return a.exec();
 }

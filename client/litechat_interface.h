@@ -2,7 +2,7 @@
 #define LITECHAT_INTERFACE_H
 
 #include <QMainWindow>
-#include "litechat.h"
+#include "litechat_server.h"
 #include "litechat_dialog.h"
 
 namespace Ui {
@@ -16,15 +16,14 @@ class LiteChat_Interface : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit LiteChat_Interface(LiteChat *liteChatMain, QString loginName, int32_t loginId, QWidget *parent = nullptr);
+    explicit LiteChat_Interface(LiteChatServer *liteChatServer, QString loginName, int32_t loginId, QWidget *parent = nullptr);
     ~LiteChat_Interface();
 
 private:
     Ui::LiteChat_Interface *ui;
-    LiteChat *liteChatMain;
+    LiteChatServer *liteChatServer;
 
-    QString loginName;
-    int32_t loginId;
+    UserInfo userinfo;
 
     LiteChat_Dialog *currentDialog;
     LiteChat_ChatList *chatList;

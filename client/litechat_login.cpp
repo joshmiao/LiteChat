@@ -7,10 +7,10 @@
 #include <json.hpp>
 using json = nlohmann::json;
 
-LiteChat_Login::LiteChat_Login(LiteChat *liteChatMain, QWidget *parent) :
+LiteChat_Login::LiteChat_Login(LiteChatServer *liteChatServer, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::LiteChat_Login),
-    liteChatMain(liteChatMain)
+    liteChatServer(liteChatServer)
 {
     ui->setupUi(this);
 }
@@ -22,22 +22,22 @@ LiteChat_Login::~LiteChat_Login()
 
 void LiteChat_Login::on_pushButton_clicked()
 {
-    liteChatMain->requestLogin(ui->lineEdit->text().toInt(), ui->lineEdit_2->text());
+    liteChatServer->requestLogin(ui->lineEdit->text().toInt(), ui->lineEdit_2->text());
 }
 
 void LiteChat_Login::on_pushButton_2_clicked()
 {
-    LiteChat_Register *Register = liteChatMain->createRegister();
+    LiteChat_Register *Register = liteChatServer->createRegister();
     Register->show();
     this->hide();
 }
 
 void LiteChat_Login::loginSuccess(QString loginName, int32_t loginId){
-    LiteChat_Interface* interface = liteChatMain->createInterface(loginName, loginId);
+    LiteChat_Interface* interface = liteChatServer->createInterface(loginName, loginId);
     interface->show();
-    this->hide();
     QMessageBox msgBox;
     msgBox.setText("Success");
     msgBox.exec();
+    delete this;
 }
 
