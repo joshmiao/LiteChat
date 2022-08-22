@@ -31,8 +31,8 @@ private:
     void setLogin(int confd,int32_t user_id);
 
     void sendUnreadMessage(int confd,int32_t user_id);
-    void sendPrivateMessage(json &request);
-    void sendGroupMessage(json &request);
+    void sendPrivateMessage(int confd,json &request);
+    void sendGroupMessage(int confd,json &request);
     void getFriends(int confd,json &request);
     void getPrivateHistory(int confd,json &request);
     void getGroupHistory(int confd,json &request);

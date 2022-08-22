@@ -173,11 +173,11 @@ void Server::Analyze(int confd,json request)
     }
     else if(request["type"]==PRIVATE_MESSAGE)
     {
-        sendPrivateMessage(request);
+        sendPrivateMessage(confd,request);
     }
     else if(request["type"]==GROUP_MESSAGE)
     {
-        sendPrivateMessage(request);
+        sendPrivateMessage(confd,request);
     }
     else if(request["type"]==GET_FREIENDS)
     {
@@ -249,7 +249,7 @@ void Server::userRegister(int confd,json &request)
         json result;
         result["type"]=REGISTER;
         result["result"]="success_register";
-        result["id"]=(ID)res;
+        result["user_id"]=(ID)res;
         sendjson(confd,result);
     }
 }
@@ -268,7 +268,7 @@ void Server::getFriends(int confd,json &request)
     sendUnreadMessage(confd,request["user_id"]);
 }
 
-void Server::sendPrivateMessage(json &request)
+void Server::sendPrivateMessage(int confd,json &request)
 {
     ID user_id=request["user_id"];
     ID to_id=request["to_id"];
@@ -290,20 +290,42 @@ void Server::sendPrivateMessage(json &request)
     }
     if(to_online==false||success==-1)
     {
+        json result;
+        result["type"]=PRIVATE_MESSAGE;
+        result["result"]="wait_send";
+        sendjson(confd,result);
         db->addUnsendMessageFromUser(time,to_id,user_id,content);
     }
     else {
+        json result;
+        result["type"]=PRIVATE_MESSAGE;
+        result["result"]="success_send";
+        sendjson(confd,result);
         std::cout<<"send to "<<to_id<<" private message success\n\n";
     }
 }
 
-void Server::sendGroupMessage(json &request)
+void Server::sendGroupMessage(int confd,json &request)
 {
     ID user_id=request["user_id"];
     ID group_id=request["group_id"];
     std::string content=request["content"];
     std::string time=request["time"];
+
+    json message;
+    message["type"]=GROUP_MESSAGE;
+    message["from_id"]=user_id;
+    message["group_id"]=group_id;
+    message["content"]=content;
+    message["time"]=time;
+    
     db->addGroupHistory(time,user_id,group_id,content);
+    json result;
+    result["type"]=GROUP_MESSAGE;
+    result["result"]="success_send";
+    std::cout<<"send to "<<group_id<<" group message success\n\n";
+    sendjson(confd,result);
+
     auto group_member=db->getGroupMember(group_id);
     while(group_member.count()>0)
     {
@@ -315,7 +337,8 @@ void Server::sendGroupMessage(json &request)
         int to_fd=statu.get(2),success=-1;
         if(to_online==true)
         {
-            success=sendjson(to_fd,request);
+            message["to_id"]=to_id;
+            success=sendjson(to_fd,message);
         }
         if(to_online==false||success==-1)
         {
@@ -343,7 +366,10 @@ void Server::sendUnreadMessage(int confd,ID user_id)
         message["content"]=row.get(3);
         message_bundle.push_back(message);
     }
-    int success=sendjson(confd,(json)message_bundle);
+    json result;
+    result["type"]=UNREAD_PRIVATE_MESSAGE;
+    result["contents"]=json(message_bundle);
+    int success=sendjson(confd,result);
     if(success==0)db->deleteUnsendMessageFromUser(user_id);
 
     message_bundle.clear();
@@ -361,7 +387,9 @@ void Server::sendUnreadMessage(int confd,ID user_id)
         message_bundle.push_back(message);
     }
 
-    success=sendjson(confd,(json)message_bundle);
+    result["type"]=UNREAD_GROUP_MESSAGE;
+    result["contents"]=json(message_bundle);
+    success=sendjson(confd,result);
     if(success==0)db->deleteUnsendMessageFromGroup(user_id);
 }
 
@@ -390,7 +418,7 @@ void Server::getPrivateHistory(int confd,json &request)
         request["end_time"]="now()";
     else request["end_time"]="'"+(std::string)request["end_time"]+"'";
 
-    std::vector<json>result;
+    std::vector<json>res;
     ID user_id=request["user_id"];
     ID from_id=request["from_id"];
     auto all_message=db->searchUserHistory(from_id,user_id,request["begin_time"],request["end_time"]);
@@ -403,9 +431,13 @@ void Server::getPrivateHistory(int confd,json &request)
         message["to_id"]=row.get(1);
         message["time"]=row.get(0);
         message["content"]=row.get(3);
-        result.push_back(message);
+        res.push_back(message);
     }
-    int success=sendjson(confd,(json)result);
+
+    json result;
+    result["type"]=GET_HISTORY_PRIVATE; 
+    result["contents"]=json(res);
+    int success=sendjson(confd,result);
     if(success==-1)
     {
         Error("send failed",confd,GET_HISTORY_PRIVATE);
@@ -428,7 +460,7 @@ void Server::getGroupHistory(int confd,json &request)
     if(request["end_time"]==request["null"])
         request["end_time"]="now()";
     else request["end_time"]="'"+(std::string)request["end_time"]+"'";
-    std::vector<json>result;
+    std::vector<json>res;
     ID group_id=request["group_id"];
     ID to_id=request["user_id"];
     auto all_message=db->searchGroupHistory(to_id,group_id,request["begin_time"],request["end_time"]);
@@ -442,9 +474,13 @@ void Server::getGroupHistory(int confd,json &request)
         message["to_id"]=row.get(1);
         message["time"]=row.get(0);
         message["content"]=row.get(4);
-        result.push_back(message);
+        res.push_back(message);
     }
-    int success=sendjson(confd,(json)result);
+
+    json result;
+    result["type"]=GET_HISTORY_GROUP;
+    result["contents"]=json(res);
+    int success=sendjson(confd,result);
     if(success==-1)
     {
         Error("send failed",confd,GET_HISTORY_GROUP);

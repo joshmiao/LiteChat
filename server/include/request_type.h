@@ -8,6 +8,9 @@
 #define GET_HISTORY_GROUP 1006
 #define ALIVE 999
 
+#define UNREAD_PRIVATE_MESSAGE 2001
+#define UNREAD_GROUP_MESSAGE 2002
+
 #define ERROR -1
 #define REQUEST -2
 #define RECEIVE -3
