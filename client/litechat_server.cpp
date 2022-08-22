@@ -64,7 +64,7 @@ void LiteChat_Server::handReadyRead()
     QString recvString = QString::fromUtf8(recvArray);
     if (recvString[0] == '#'){
         qDebug() << recvString.mid(1);
-        emit messageReceive(LiteChat_Dialog::Private, 10002, recvString.mid(1));
+        emit messageReceive(LiteChat_Dialog::Private, 10002, "新建私聊", recvString.mid(1));
     }
     if (recvString[0] == '*'){
         loginStatus = true;
@@ -122,12 +122,13 @@ LiteChat_Login* LiteChat_Server::createLoginPage()
 LiteChat_Dialog* LiteChat_Server::createDialog(QString chatName, LiteChat_Dialog::Dialog_Type dialogType, int32_t toId)
 {
     LiteChat_Dialog *dialogPage = new LiteChat_Dialog(this, chatName, dialogType, toId);
-    connect(this, &LiteChat_Server::messageReceive, dialogPage, &LiteChat_Dialog::receiveSingalMessage);
+//    connect(this, &LiteChat_Server::messageReceive, dialogPage, &LiteChat_Dialog::receiveSingalMessage);
     return dialogPage;
 }
 
 LiteChat_Interface* LiteChat_Server::createInterface(QString loginName, int32_t loginId){
     LiteChat_Interface *interface = new LiteChat_Interface(this, loginName, loginId);
+    connect(this, &LiteChat_Server::messageReceive, interface, &LiteChat_Interface::messageReceive);
     return interface;
 }
 
