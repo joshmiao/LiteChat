@@ -2,11 +2,12 @@
 #define LITECHAT_REGISTER_H
 
 #include <QMainWindow>
-#include "litechat.h"
 
 namespace Ui {
 class LiteChat_Register;
 }
+
+class LiteChat;
 
 class LiteChat_Register : public QMainWindow
 {
