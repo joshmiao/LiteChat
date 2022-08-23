@@ -251,7 +251,7 @@ void Server::userLogin(int confd,json &request)
         json result;
         result["type"]=LOGIN;
         json data;
-        data["result"]="success_login";
+        data["result"]="login successfully";
 
         auto row=db->getBasicUserDataByID(res);
         data["user_id"]=(ID)res;
@@ -263,7 +263,7 @@ void Server::userLogin(int confd,json &request)
         data["token"]=setLogin(confd,res);
         result["data"]=data;
         sendjson(confd,result);
-        std::cout<<confd<<" login success\n\n";
+        std::cout<<confd<<" login successfully\n\n";
     }
     else{
         std::cout<<confd<<" login failed\n\n";
@@ -282,11 +282,11 @@ void Server::userRegister(int confd,json &request)
         Error("email already exist",confd,REGISTER);
     }
     else {
-        std::cout<<confd<<" success_register\n\n";
+        std::cout<<confd<<" register successfully\n\n";
         json result;
         result["type"]=REGISTER;
         json data;
-        data["result"]="success_register";
+        data["result"]="register successfully";
         data["user_id"]=(ID)res;
         result["data"]=data;
         sendjson(confd,result);
@@ -359,10 +359,10 @@ void Server::sendPrivateMessage(int confd,json &request)
         json result;
         result["type"]=PRIVATE_MESSAGE;
         json data;
-        data["result"]="success_send";
+        data["result"]="send successfully";
         result["data"]=data;
         sendjson(confd,result);
-        std::cout<<"send to "<<to_id<<" private message success\n\n";
+        std::cout<<"send to "<<to_id<<" private message successfully\n\n";
     }
 }
 
@@ -386,9 +386,9 @@ void Server::sendGroupMessage(int confd,json &request)
     json result;
     result["type"]=GROUP_MESSAGE;
     json rdata;
-    rdata["result"]="success_send";
+    rdata["result"]="send successfully";
     result["data"]=rdata;
-    std::cout<<"send to "<<group_id<<" group message success\n\n";
+    std::cout<<"send to "<<group_id<<" group message successfully\n\n";
     sendjson(confd,result);
 
     auto group_member=db->getGroupMember(group_id);
@@ -410,7 +410,7 @@ void Server::sendGroupMessage(int confd,json &request)
             db->addGroupUnsendMessage(time,to_id,user_id,group_id,content);
         }
         else {
-            std::cout<<"send to "<<to_id<<" group message success\n\n";
+            std::cout<<"send to "<<to_id<<" group message successfully\n\n";
         }
     }
 }
