@@ -23,7 +23,7 @@ CONSTRAINT OWNER_REGISTERED foreign key (owner_id) references basic_user_data(us
 CREATE TABLE user_status ( -- 储存客户端最后一次回应的时间。当再次上线时，查询send_time > last_response的消息发送给客户端
 user_id INT PRIMARY KEY,
 is_online BOOL DEFAULT(FALSE),
-handle INT UNIQUE DEFAULT(NULL),
+handle INT DEFAULT(NULL),
 token CHAR(32) UNIQUE DEFAULT(NULL),
 -- 其它数据（ip等）？
 CONSTRAINT USER_REGISTERED_1 foreign key (user_id) references basic_user_data(user_id)
