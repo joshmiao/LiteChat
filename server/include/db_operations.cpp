@@ -35,7 +35,7 @@ LiteChatDatabaseAccess::LiteChatDatabaseAccess(const std::string& url):
         registered_user_count(basic_user_data, "COUNT(*)"),
         existed_group_id_max(basic_group_data, "MAX(group_id)"),
         get_basic_user_data(basic_user_data, "user_id", "user_name", "email", "DATE_FORMAT(birthday, '%Y-%m-%d')", "avatar_filename", "signature"), 
-        get_basic_group_data(basic_group_data, "group_id", "group_name", "owner_id", "group_description"),
+        get_basic_group_data(basic_group_data, "group_name", "owner_id", "group_description"),
         search_user_history(message_to_user, "DATE_FORMAT(send_time, '%Y-%m-%d %T:%f')", "src_user_id", "dst_user_id", "content"),
         search_group_history(message_to_group, "DATE_FORMAT(send_time, '%Y-%m-%d %T:%f')", "src_user_id", "dst_group_id", "content"),
         search_user_unsend_messgae(user_unsend_messgae, "DATE_FORMAT(send_time, '%Y-%m-%d %T:%f')", "src_user_id", "content"), 
@@ -51,7 +51,7 @@ LiteChatDatabaseAccess::LiteChatDatabaseAccess(const std::string& url):
         delete_user_unsend_messgae(user_unsend_messgae.remove()),
         delete_group_unsend_messgae(group_unsend_messgae.remove()),
         remove_user_from_group(group_member.remove()),
-        remove_group_request(group_request.remove()),
+        delete_group_request(group_request.remove()),
         delete_friend_relation(friend_relation.remove()), 
         delete_friend_request(friend_request.remove())
 {};
@@ -315,9 +315,9 @@ void LiteChatDatabaseAccess::removeUserFromGroup(ID group_id, ID user_id){
     remove_user_from_group.execute();
 }
 
-void LiteChatDatabaseAccess::removeGroupRequest(ID user_id, ID group_id){
-    remove_group_request.where("user_id = " + std::to_string(user_id) + " AND group_id = " + std::to_string(group_id));
-    remove_group_request.execute();
+void LiteChatDatabaseAccess::deleteGroupRequest(ID user_id, ID group_id){
+    delete_group_request.where("user_id = " + std::to_string(user_id) + " AND group_id = " + std::to_string(group_id));
+    delete_group_request.execute();
 }
 
 void LiteChatDatabaseAccess::deleteFriendRelation(ID user1_id, ID user2_id){

@@ -52,7 +52,7 @@ public:
     void deleteGroup(ID group_id);
     void deleteGroupHistory(ID group_id);
     void removeUserFromGroup(ID group_id, ID user_id = 0);
-    void removeGroupRequest(ID user_id, ID group_id);
+    void deleteGroupRequest(ID user_id, ID group_id);
     void deleteFriendRelation(ID user1_id, ID user2_id);
     void deleteFriendRequest(ID user_from, ID user_to);
 
@@ -83,7 +83,7 @@ private:
         get_group_member, get_group_request;
     mysqlx::TableRemove delete_group, delete_group_history,
         delete_user_unsend_messgae, delete_group_unsend_messgae,
-        remove_user_from_group, remove_group_request,
+        remove_user_from_group, delete_group_request,
         delete_friend_relation, delete_friend_request;
 };
         
