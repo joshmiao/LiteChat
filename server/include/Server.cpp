@@ -45,7 +45,11 @@ void Server::Error(const char *msg,int confd=-1,int type=ERROR)
         result["data"]=data;
         sendjson(confd,result);
     }
-    else if(confd==-1)exit(1);
+    else if(confd==-1)
+    {
+        std::cout<<response<<'\n';
+        exit(1);
+    }
 }
 
 Server::Server(int port)
@@ -72,8 +76,8 @@ Server::Server(int port)
         Error("listen error");
 
     //link database
-    //db=new LiteChatDatabaseAccess("mysqlx://LiteChat:Z0136z0136@127.0.0.1");
-    db=new LiteChatDatabaseAccess("mysqlx://root:Sail2Boat3A@127.0.0.1");
+    db=new LiteChatDatabaseAccess("mysqlx://LiteChat:Z0136z0136@127.0.0.1");
+    //db=new LiteChatDatabaseAccess("mysqlx://root:Sail2Boat3A@127.0.0.1");
 }
 
 //accept client
