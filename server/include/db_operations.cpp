@@ -98,8 +98,13 @@ mysqlx::RowResult LiteChatDatabaseAccess::searchGroup(ID group_id, const std::st
     return searchUG(get_basic_group_data, "group", group_id, group_name);
 }
 
-mysqlx::RowResult LiteChatDatabaseAccess::searchUserHistory(ID src_user_id, ID dst_user_id, const std::string& time_begin, const std::string& time_end){
-    return searchHistory(search_user_history, "user", src_user_id, dst_user_id, time_begin, time_end);
+mysqlx::RowResult LiteChatDatabaseAccess::searchUserHistory(ID user1_id, ID user2_id, const std::string& time_begin, const std::string& time_end){
+    std::string command = "(send_time BETWEEN " + time_begin + " AND " + time_end + 
+        ") AND ((dst_user_id = " + std::to_string(user1_id) + " AND src_user_id = " + std::to_string(user2_id) + ") OR (dst_user_id = "
+         + std::to_string(user2_id) + " AND src_user_id = " + std::to_string(user1_id) + "))";
+
+    search_user_history.where(command);
+    return search_user_history.execute();
 }
 
 mysqlx::RowResult LiteChatDatabaseAccess::searchGroupHistory(ID src_user_id, ID dst_group_id, const std::string& time_begin, const std::string& time_end){ // id=0为群中所有人的发言
