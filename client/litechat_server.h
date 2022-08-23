@@ -46,8 +46,10 @@ public:
     int requestLogin(int32_t id, QString pwd);
     int requestFriends();
     int requestMessages(int32_t toId);
+    int getFriendRequest();
+    int acceptFriend(int32_t id, int32_t accept);
 
-    int searchUser(QString username);
+    int searchUser(QString str);
     int makeFriendRequest(int32_t id);
 
 private slots:
@@ -69,6 +71,6 @@ signals:
     void newFriendRecieve(LiteChat_Dialog::Dialog_Type recieveType, int32_t id, QString name);
     void loginSuccess(QString loginName, int32_t loginId);
     void searchResultReceive(QString name, int32_t id);
-
+    void friendRequestReceive(QString name, int32_t id);
 };
 #endif // LITECHAT_SERVER_H

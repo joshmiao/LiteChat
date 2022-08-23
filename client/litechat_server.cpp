@@ -1,4 +1,5 @@
 #include <QDebug>
+#include <QDateTime>
 #include "litechat_server.h"
 #include "litechat_interface.h"
 #include "litechat_dialog.h"
@@ -74,7 +75,8 @@ void LiteChat_Server::handReadyRead()
         qDebug() << "this is valid to parse:" << QString::fromStdString(to_string(j))<< '\n';
         if (!j["type"].is_number_integer()) throw std::runtime_error("the format is invalid!");
 
-        if (j["type"] == _GET_FRIENDS){
+        if (j["type"] == _GET_FRIENDS)
+        {
             j = j["data"];
             if (std::string(j["result"]) != "success_get_friends") return;
             for (const auto &f : j["friends"])
@@ -87,13 +89,36 @@ void LiteChat_Server::handReadyRead()
 
 //      {"data":[{"content":"i am your first friend","from_id":66666,"to_id":10001},{"content":"i am your second friend","from_id":88888,"to_id":10001}],"type":1002}
 
-        else if (j["type"] == _PRIVATE_MESSAGE || j["type"] == _GET_HISTORY_PRIVATE){
+        else if (j["type"] == _PRIVATE_MESSAGE || j["type"] == _GET_HISTORY_PRIVATE)
+        {
             j = j["data"];
             for (const auto &f : j)
             {
                 int32_t id = f["from_id"];
                 QString msg = QString::fromStdString(std::string(f["content"]));
                 emit messageReceive(LiteChat_Dialog::Private, id, msg);
+            }
+        }
+
+        else if (j["type"] == _GET_FRIEND_REQUEST)
+        {
+            j = j["data"];
+            for (const auto &r : j)
+            {
+                int32_t id = r["from_id"];
+                QString name = QString::fromStdString(std::string(r["name"]));
+                emit friendRequestReceive(name, id);
+            }
+        }
+
+        else if (j["type"] == _SEARCH_USER)
+        {
+            j = j["data"];
+            for (const auto &u : j)
+            {
+                int32_t id = u["id"];
+                QString name = QString::fromStdString(std::string(u["name"]));
+                emit searchResultReceive(name, id);
             }
         }
 
@@ -138,13 +163,14 @@ int LiteChat_Server::sendMessage(LiteChat_Dialog::Dialog_Type dialogType, int32_
     j["data"]["user_id"] = userInfo.id;
     j["data"]["to_id"] = toId;
     j["data"]["content"] = msg.toUtf8();
+    j["data"]["time"] = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz").toUtf8();
     return sendtoServer(j);
 }
 
 int LiteChat_Server::requestLogin(int32_t id, QString pwd)
 {
     json j;
-    j["type"] = 1;
+    j["type"] = _LOGIN;
     j["data"]["user_id"] = id;
     j["data"]["pwd"] = pwd.toUtf8();
     return sendtoServer(j);
@@ -169,6 +195,42 @@ int LiteChat_Server::requestFriends()
     return sendtoServer(j);
 }
 
+int LiteChat_Server::searchUser(QString str)
+{
+    if (!loginStatus) return -1;
+    json j;
+    j["type"] = _SEARCH_USER;
+    j["data"]["keyword"] = str.toUtf8();
+    return sendtoServer(j);
+}
+
+int LiteChat_Server::makeFriendRequest(int32_t id)
+{
+    if (!loginStatus) return -1;
+    json j;
+    j["type"] = _ADD_FRIEND;
+    j["data"]["user_id"] = userInfo.id;
+    j["data"]["to_id"] = id;
+    return sendtoServer(j);
+}
+
+int LiteChat_Server::getFriendRequest(){
+    if (!loginStatus) return -1;
+    json j;
+    j["type"] = _GET_FRIEND_REQUEST;
+    j["data"]["user_id"] = userInfo.id;
+    return sendtoServer(j);
+}
+
+int LiteChat_Server::acceptFriend(int32_t id, int32_t accept){
+    if (!loginStatus) return -1;
+    json j;
+    j["type"] = _ACCEPT_FRIEND;
+    j["data"]["from_id"] = id;
+    j["data"]["user_id"] = userInfo.id;
+    j["data"]["accept"] = accept;
+    return sendtoServer(j);
+}
 
 LiteChat_Login* LiteChat_Server::createLoginPage()
 {
@@ -198,5 +260,7 @@ LiteChat_Register* LiteChat_Server::createRegister(){
 LiteChat_FindUser* LiteChat_Server::createFindUser(){
     LiteChat_FindUser* findPage = new LiteChat_FindUser(this);
     connect(this, &LiteChat_Server::searchResultReceive, findPage, &LiteChat_FindUser::addSearchResult);
+    connect(this, &LiteChat_Server::friendRequestReceive, findPage, &LiteChat_FindUser::addfriendRequest);
+    getFriendRequest();
     return findPage;
 }

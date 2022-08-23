@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>200</width>
+    <width>400</width>
     <height>400</height>
    </rect>
   </property>
@@ -49,7 +49,7 @@ background-color: rgb(240, 240, 240);</string>
     <rect>
      <x>140</x>
      <y>0</y>
-     <width>61</width>
+     <width>51</width>
      <height>31</height>
     </rect>
    </property>
@@ -71,10 +71,45 @@ border-radius:10px;</string>
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>41</y>
-     <width>201</width>
-     <height>361</height>
+     <y>31</y>
+     <width>200</width>
+     <height>371</height>
     </rect>
+   </property>
+  </widget>
+  <widget class="QListWidget" name="listWidget_2">
+   <property name="geometry">
+    <rect>
+     <x>200</x>
+     <y>31</y>
+     <width>201</width>
+     <height>371</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>200</x>
+     <y>0</y>
+     <width>201</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color:rgb(208, 208, 208);
+border-radius:10px;</string>
+   </property>
+   <property name="text">
+    <string>待处理的好友申请</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
    </property>
   </widget>
  </widget>
