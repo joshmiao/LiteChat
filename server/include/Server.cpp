@@ -752,7 +752,23 @@ void Server::deleteFriend(int confd,json &request)
 
 void Server::createGroup(int confd,json &request)
 {
-    
+    if(request["group_desription"]==request["null"])
+        request["group_desription"]="";
+    ID res=db->createGroup(request["group_name"],request["user_id"],request["group_description"]);
+    json result;
+    result["type"]=CREATE_GROUP;
+    if(res==-1)
+    {
+        std::cout<<"group name exists\n";
+        Error("group name exists",confd,CREATE_GROUP);
+    }
+    else{
+        json data;
+        data["group_id"]=res;
+        result["data"]=data;
+        sendjson(confd,result);
+        std::cout<<"create group successfully\n";
+    }
 }
 
 void Server::searchGroup(int confd,json &request)
