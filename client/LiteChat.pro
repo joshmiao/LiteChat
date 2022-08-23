@@ -24,7 +24,8 @@ HEADERS += \
     litechat_login.h \
     litechat_message.h \
     litechat_register.h \
-    litechat_server.h
+    litechat_server.h \
+    request_type.h
 
 FORMS += \
     litechat_dialog.ui \

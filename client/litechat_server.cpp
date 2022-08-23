@@ -5,6 +5,7 @@
 #include "litechat_login.h"
 #include "litechat_register.h"
 #include "ui_litechat_server.h"
+#include "request_type.h"
 
 #include <json.hpp>
 using json = nlohmann::json;
@@ -55,23 +56,30 @@ void LiteChat_Server::handConnected()
     connect(client, SIGNAL(readyRead()), this, SLOT(handReadyRead()));
     LiteChat_Login *loginPage = createLoginPage();
     loginPage->show();
-    this->hide();
+//    this->hide();
 }
 
 void LiteChat_Server::handReadyRead()
 {
     QByteArray recvArray = client->readAll();
     QString recvString = QString::fromUtf8(recvArray);
-    if (recvString[0] == '#'){
-        qDebug() << recvString.mid(1);
-        emit messageReceive(LiteChat_Dialog::Private, 10002, "新建私聊", recvString.mid(1));
-    }
-    if (recvString[0] == '*'){
-        loginStatus = true;
-        token = recvString.mid(1);
-        userInfo.id = 10001;
-        userInfo.username = "test username";
-        emit loginSuccess("test username", 10001);
+    json j;
+    try {
+        j = json::parse(recvString.toStdString());
+
+    } catch (...) {
+        qDebug() << "Invalid sequence received\n";
+        if (recvString[0] == '#'){
+            qDebug() << recvString.mid(1);
+            emit messageReceive(LiteChat_Dialog::Private, 10002, "新建私聊", recvString.mid(1));
+        }
+        if (recvString[0] == '*'){
+            loginStatus = true;
+            token = recvString.mid(1);
+            userInfo.id = 10001;
+            userInfo.username = "test username";
+            emit loginSuccess("test username", 10001);
+        }
     }
     ui->textEdit->append(recvString);
 }
@@ -94,12 +102,11 @@ int LiteChat_Server::sendMessage(LiteChat_Dialog::Dialog_Type dialogType, int32_
 {
     if (!loginStatus) return -1;
     json j;
-    j["type"] = 2;
+    j["type"] = dialogType == LiteChat_Dialog::Private ? _PRIVATE_MESSAGE : _GROUP_MESSAGE;
     j["token"] = token.toUtf8();
-    j["userId"] = userInfo.id;
-    j["content"]["dialogType"] = dialogType;
-    j["content"]["toId"] = toId;
-    j["content"]["msg"] = msg.toUtf8();
+    j["data"]["user_id"] = userInfo.id;
+    j["data"]["to_id"] = toId;
+    j["data"]["content"] = msg.toUtf8();
     return sendtoServer(j);
 }
 
@@ -107,8 +114,8 @@ int LiteChat_Server::requestLogin(int32_t id, QString pwd)
 {
     json j;
     j["type"] = 1;
-    j["content"]["id"] = id;
-    j["content"]["pwd"] = pwd.toUtf8();
+    j["data"]["user_id"] = id;
+    j["data"]["pwd"] = pwd.toUtf8();
     return sendtoServer(j);
 }
 

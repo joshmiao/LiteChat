@@ -88,3 +88,15 @@ void LiteChat_Interface::messageReceive(LiteChat_Dialog::Dialog_Type dialogType,
         newDialog->receiveSingalMessage(msg);
     }
 }
+
+void LiteChat_Interface::on_pushButton_clicked()
+{
+
+}
+
+
+void LiteChat_Interface::on_pushButton_2_clicked()
+{
+
+}
+

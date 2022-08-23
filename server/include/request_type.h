@@ -1,4 +1,3 @@
-#pragma once
 #define LOGIN 1000
 #define REGISTER 1001
 #define PRIVATE_MESSAGE 1002

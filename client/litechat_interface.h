@@ -47,6 +47,9 @@ private:
 public slots:
     void changeCurrentDialog(int currentRow);
     void messageReceive(LiteChat_Dialog::Dialog_Type dialogType, int32_t toId, QString chatName, QString msg);
+private slots:
+    void on_pushButton_clicked();
+    void on_pushButton_2_clicked();
 };
 
 
