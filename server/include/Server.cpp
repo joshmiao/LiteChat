@@ -176,7 +176,8 @@ void Server::Analyze(int confd,json &request)
     return;
     
     std::cout<<std::setw(4)<<request<<'\n';
-
+    
+    //finished
     // std::string token=(std::string)db->getUserStatus((ID)request["data"]["user_id"]).get(2);
     // if(token!=(std::string)request["token"])
     // {
@@ -320,7 +321,7 @@ void Server::sendPrivateMessage(int confd,json &request)
     std::string time=request["time"];
     db->addUserHistory(time,user_id,to_id,content);
     auto statu=db->getUserStatus(to_id);
-    bool to_online=bool(statu.get(1));
+    bool to_online=bool(statu.get(0));
     int to_fd=statu.get(1),success=-1;
     if(to_online==true)
     {
