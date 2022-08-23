@@ -24,6 +24,7 @@ using json = nlohmann::json;
 
 int Server::sendjson(int confd,json &result){
     std::string str = to_string(result);
+    std::cout << std::setw(4) << result << std::endl;
     int ret=send(confd,str.c_str(),str.size(),0);
     if(ret<0){
         printf("send to %d failed\n",confd);
@@ -76,8 +77,8 @@ Server::Server(int port)
         Error("listen error");
 
     //link database
-    db=new LiteChatDatabaseAccess("mysqlx://LiteChat:Z0136z0136@127.0.0.1");
-    //db=new LiteChatDatabaseAccess("mysqlx://root:Sail2Boat3A@127.0.0.1");
+    // db=new LiteChatDatabaseAccess("mysqlx://LiteChat:Z0136z0136@127.0.0.1");
+    db=new LiteChatDatabaseAccess("mysqlx://root:Sail2Boat3A@127.0.0.1");
 }
 
 //accept client
@@ -572,7 +573,7 @@ void Server::searchUser(int confd,json &request)
     {
         auto row=users.fetchOne();
         json user;
-        user["user_id"]=row.get(0);
+        user["user_id"]=(ID)row.get(0);
         user["name"]=row.get(1);
         user["email"]=row.get(2);
         user["birthday"]=row.get(3);
