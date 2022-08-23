@@ -750,32 +750,34 @@ void Server::deleteFriend(int confd,json &request)
 }
 
 void Server::inviteMember(int confd,json &request){
-    ID inviter = request["inviter"];
-    ID invitee = request["invitee"];
+    ID user_id = request["user_id"];
+    ID to_id = request["to_id"];
     ID group_id = request["group_id"];
 
-    db->addUserToGroup(group_id, invitee);
+    db->addUserToGroup(group_id,to_id);
     
-    // to inviter
     json result, data;
     result["type"] = INVITE_MEMBER;
-    data["result"] = "user " +  std::to_string(invitee) + " invited";
+    data["result"] = "invited successfully";
     result["data"] = data;
     int success=sendjson(confd,result);
     if(success==-1)
     {
-        Error("Invitation message sending failed",confd,DELETE_FRIEND);
+        Error("Invitation message sending failed",confd,INVITE_MEMBER);
     }
     else{
         std::cout<<confd<<" Invitation message sent successfully\n\n";
     }
 }
 
-int Server::deleteGroup(int confd,json &request){
+void Server::deleteGroup(int confd,json &request){
     ID user_id = request["user_id"];
     ID group_id = request["group_id"];
-    if (confd != (int)db->getUserStatus(user_id).get(1) || user_id != (int)db->getBasicGroupData(group_id).get(2))
-        return -1;
+    if(user_id != (ID)db->getBasicGroupData(group_id).get(2))
+    {
+        Error("you are not the owner of this group",confd,DELETE_GROUP);
+        return;
+    }
 
     db->deleteGroupUnsendMessage(0, group_id);
     db->deleteGroupHistory(group_id);
@@ -784,64 +786,37 @@ int Server::deleteGroup(int confd,json &request){
 
     json result, data;
     result["type"] = DELETE_GROUP;
-    data["result"] = "group " + std::to_string(group_id) + "deleted";
+    data["result"] = "delete successfully";
     result["data"] = data;
     int success=sendjson(confd,result);
     if(success==-1)
     {
-        Error("Deletion message sending failed",confd,DELETE_FRIEND);
+        Error("Deletion message sending failed",confd,DELETE_GROUP);
     }
     else{
         std::cout<<confd<<" Deletion message sent successfully\n\n";
-    }
-
-    return 0;
-}
-
-void Server::getGroups(int confd,json &request){
-    ID user_id = request["user_id"];
-
-    auto result = db->getGroupsOfAUser(user_id);
-    std::vector<json>data;
-    while(result.count() > 0){
-        json tmp;
-        auto row=result.fetchOne();
-        tmp["group_id"] = row.get(0);
-        data.push_back(tmp);
-    }
-    json groups;
-    groups["type"]=GET_GROUPS;
-    groups["data"]=data;
-    int success = sendjson(confd, groups);
-
-    if(success == -1)
-    {
-        Error("Groups info sending failed",confd,DELETE_FRIEND);
-    }
-    else{
-        std::cout<<confd<<" Groups info sent successfully\n\n";
     }
 }
 
 void Server::getGroupMembers(int confd,json &request){
     ID group_id = request["group_id"];
 
-    auto result = db->getGroupMember(group_id);
+    auto members = db->getGroupMember(group_id);
     std::vector<json>data;
-    while(result.count() > 0){
-        json tmp;
-        auto row=result.fetchOne();
-        tmp["user_id"] = row.get(0);
-        data.push_back(tmp);
+    while(members.count() > 0){
+        json res;
+        auto row=members.fetchOne();
+        res["user_id"] =(ID)row.get(0);
+        data.push_back(res);
     }
-    json members;
-    members["type"]=GET_GROUPS;
-    members["data"]=data;
-    int success = sendjson(confd, members);
+    json result;
+    result["type"]=GET_GROUP_MEMBERS;
+    result["data"]=data;
+    int success = sendjson(confd, result);
 
     if(success == -1)
     {
-        Error("Members info sending failed",confd,DELETE_FRIEND);
+        Error("Members info sending failed",confd,GET_GROUP_MEMBERS);
     }
     else{
         std::cout<<confd<<" Members info sent successfully\n\n";
