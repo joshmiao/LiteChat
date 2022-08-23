@@ -39,41 +39,6 @@
 //login 10001
 
 {
-    "type":1008,
-    "data":{
-        "keyword":10001
-    }
-}
-//10000 search 10001 as id or name
-
-{
-    "type":1009,
-    "data":{
-        "user_id":10000,
-        "to_id":10001
-    }
-}
-//10000 add 10001
-
-{
-    "type":1010,
-    "data":{
-        "user_id":10001,
-    }
-}
-//10001 get all friend requests
-
-{
-    "type":1011,
-    "data":{
-        "from_id":10000,
-        "user_id":10001,
-        "accept":0
-    }
-}
-//10001 refuse 10000
-
-{
     "type":1009,
     "data":{
         "user_id":10000,
@@ -87,35 +52,7 @@
     "data":{
         "from_id":10000,
         "user_id":10001,
-        "accept":1
-    }
-}
-//10001 accept 10000
-
-{
-    "type":1012,
-    "data":{
-        "user_id":10001,
-        "friend_id":10000
-    }
-}
-//10001 delete 10000
-
-{
-    "type":1009,
-    "data":{
-        "user_id":10000,
-        "to_id":10001
-    }
-}
-//10000 add 10001
-
-{
-    "type":1011,
-    "data":{
-        "from_id":10000,
-        "user_id":10001,
-        "accept":1
+        "accept":true
     }
 }
 //10001 accept 10000
@@ -133,15 +70,81 @@
     "data":{
         "user_id":10000,
         "to_id":10001,
-        "time":"2022-01-01",
+        "time":"2022-01-01 01:31:00",
         "content":"hello"
     }
 }
 // 10000 send private message to 10001
 
 {
-    "type":1006,
+    "type":1002,
     "data":{
-        ""
+        "user_id":10000,
+        "to_id":10001,
+        "time":"2022-01-01 01:32:00",
+        "content":"I know you're online"
     }
 }
+// 10000 send private message to 10001
+
+{
+    "type":1013,
+    "data":{
+        "user_id":10001
+    }
+}
+//10001 logout
+
+{
+    "type":1002,
+    "data":{
+        "user_id":10000,
+        "to_id":10001,
+        "time":"2022-01-01 01:33:00",
+        "content":"hey, quickly reply"
+    }
+}
+// 10000 send private message to 10001
+
+
+{
+    "type":1002,
+    "data":{
+        "user_id":10000,
+        "to_id":10001,
+        "time":"2022-01-01 01:34:00",
+        "content":"are you kidding me?"
+    }
+}
+// 10000 send private message to 10001
+
+{
+    "type":1000,
+    "data":{
+        "pwd":"00000000000000000000000000000000",
+        "user_id":10001
+    }
+}
+//login 10001
+
+{
+    "type":1006,
+    "data":{
+        "user_id":10001,
+        "from_id":10000,
+        "begin_time":"2022-01-01 01:30:00",
+        "end_time":"2022-01-01 02:34:00"
+    }
+}
+//10001 get history message from 10000
+
+{
+    "type":1006,
+    "data":{
+        "user_id":10001,
+        "from_id":10000,
+        "begin_time":"2022-01-01 01:32:00",
+        "end_time":"2022-01-01 02:34:00"
+    }
+}
+//10001 get history message from 10000
