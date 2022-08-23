@@ -605,6 +605,10 @@ void Server::addFriend(int confd,json &request)
     int res=db->createFriendRequest(from_id,to_id,message);
     if(res==-1)
     {
+        Error("you have already invited",confd,ADD_FRIEND);
+    }
+    else if(res==-2)
+    {
         Error("you are already friends",confd,ADD_FRIEND);
     }    
     else{
