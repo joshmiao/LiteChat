@@ -189,6 +189,7 @@ void Server::Analyze(int confd,json &request)
     switch(type)
     {
         case LOGIN:userLogin(confd,request);break;
+        case LOGOUT:userLogout(confd,request);break;
         case REGISTER:userRegister(confd,request);break;
         case PRIVATE_MESSAGE:sendPrivateMessage(confd,request);break;
         case GROUP_MESSAGE:sendGroupMessage(confd,request);break;
@@ -203,6 +204,11 @@ void Server::Analyze(int confd,json &request)
         case DELETE_FRIEND:deleteFriend(confd,request);break;
         default :Error("request type error",confd);break;  
     }
+}
+
+void Server::userLogout(int confd,json &request)
+{
+    setLogout(confd);
 }
 
 //Login with user_id or email and password
