@@ -110,9 +110,7 @@ void Server::Receive()
         {
             char buf[2048]={0};
             int ret=recv(confd,buf,sizeof(char)*2048,0);
-            if(ret==-1)
-                Error("receive error",confd,RECEIVE);
-            else if(ret==0)
+            if(ret<=0)
             {
                 printf("client %d close\n",confd);
                 FD_CLR(confd,&allset);
@@ -346,12 +344,12 @@ void Server::sendPrivateMessage(int confd,json &request)
     std::string content=request["content"];
     std::string time=request["time"];
     db->addUserHistory(time,user_id,to_id,content);
-    auto statu=db->getUserStatus(to_id);
-    bool to_online=bool(statu.get(0));
+    auto status=db->getUserStatus(to_id);
+    bool to_online=bool(status.get(0));
     int success=-1;
     if(to_online==true)
     {
-        int to_fd=(int)statu.get(1);
+        int to_fd=(int)status.get(1);
 
         json result;
         result["type"]=PRIVATE_MESSAGE;
