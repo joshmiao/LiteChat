@@ -20,7 +20,7 @@
 #include<request_type.h>
 using json = nlohmann::json;
 
-#define WAIT_TIME 5//0.005
+#define WAIT_TIME 500//0.005
 #define TOKEN_LENGTH 32
 
 int Server::sendjson(int confd,json &result){
