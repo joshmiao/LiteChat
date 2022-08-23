@@ -602,7 +602,6 @@ void Server::getGroupHistory(int confd,json &request)
 void Server::searchUser(int confd,json &request)
 {
     std::string keyword=(std::string)request["keyword"];
-    bool Name=true;
     ID id=0;
     if(keyword.length()<=6)
     for(auto c:keyword)
@@ -773,7 +772,39 @@ void Server::createGroup(int confd,json &request)
 
 void Server::searchGroup(int confd,json &request)
 {
+    std::string keyword=(std::string)request["keyword"];
+    ID id=0;
+    if(keyword.length()<=6)
+    for(auto c:keyword)
+    if(isdigit(c))
+        id=id*10+c-'0';
+    else {
+        id=0;
+        break;
+    }
 
+    auto groups=db->searchGroup(id,keyword);
+    std::vector<json>res;
+    while(groups.count()>0)
+    {
+        auto row=groups.fetchOne();
+        json group;
+        group["group_id"]=(ID)row.get(0);
+        group["group_name"]=row.get(1);
+        group["group_desciption"]=row.get(2);
+        res.push_back(group);
+    }
+    json result;
+    result["type"]=SEARCH_GROUP;
+    result["data"]=json(res);
+    int success=sendjson(confd,result);
+    if(success==-1)
+    {
+        Error("search failed",confd,SEARCH_GROUP);
+    }
+    else{
+        std::cout<<confd<<" search group successfully\n\n";
+    }
 }
 
 void Server::addGroup(int confd,json &request)
