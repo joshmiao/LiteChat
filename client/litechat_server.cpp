@@ -93,9 +93,9 @@ void LiteChat_Server::handReadyRead()
 
         else if (j["type"] == _PRIVATE_MESSAGE){
              j = j["data"];
-             int32_t id = j["from_id"];
+             int32_t fromId = j["from_id"], toId = j["to_id"];
              QString msg = QString::fromStdString(std::string(j["content"]));
-             emit messageReceive(LiteChat_Dialog::Private, id, msg);
+             emit messageReceive(LiteChat_Dialog::Private, fromId, toId, msg);
         }
 
         else if (j["type"] == _GET_HISTORY_PRIVATE)
@@ -103,9 +103,9 @@ void LiteChat_Server::handReadyRead()
             j = j["data"];
             for (const auto &f : j)
             {
-                int32_t id = f["data"]["from_id"];
+                int32_t fromId = f["data"]["from_id"], toId = f["data"]["to_id"];
                 QString msg = QString::fromStdString(std::string(f["data"]["content"]));
-                emit messageReceive(LiteChat_Dialog::Private, id, msg);
+                emit messageReceive(LiteChat_Dialog::Private, fromId, toId, msg);
             }
         }
 
