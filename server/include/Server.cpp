@@ -763,6 +763,30 @@ void Server::acceptFriend(int confd,json &request)
     else{
         std::cout<<confd<<" accept friend successfully\n\n";
     }
+
+    auto status=db->getUserStatus(from_id);
+    bool is_online=(bool)status.get(0);
+    if(is_online==true)
+    {
+        json _friend;
+        ID friend_id=from_id;
+        _friend["friend_id"]=friend_id;
+        _friend["is_online"]=(int)status.get(0);
+        auto row=db->getBasicUserDataByID(friend_id);
+        _friend["friend_name"]=row.get(1);
+        _friend["email"]=row.get(2);
+        _friend["birthday"]=row.get(3);
+        _friend["avatar_filename"]=row.get(4);
+        _friend["signature"]=row.get(5);
+        std::vector<json>data;
+        data.push_back(_friend);
+        json result;
+        result["type"]=GET_FRIENDS;
+        result["data"]=data;
+        int fd=(int)status.get(1);
+        sendjson(fd,result);
+        std::cout<<fd<<" get a new friend\n"; 
+    }
 }
 
 void Server::deleteFriend(int confd,json &request)
