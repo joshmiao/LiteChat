@@ -37,7 +37,6 @@ void LiteChat_Dialog::on_pushButton_clicked()
     dealMessage(messageW, item, msg, time, LiteChat_Message::User_Me);
 
     if(liteChatServer->sendMessage(dialogType, toId, msg) == 0) messageW->setTextSuccess();
-
     ui->listWidget->setCurrentRow(ui->listWidget->count()-1);
 }
 

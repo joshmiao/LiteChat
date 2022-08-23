@@ -1,5 +1,6 @@
 #include <QMessageBox>
 #include <QListWidget>
+#include <QThread>
 
 #include "litechat_server.h"
 #include "litechat_finduser.h"
@@ -42,7 +43,7 @@ void LiteChat_FindUser::on_pushButton_clicked()
 {
     disconnect(ui->listWidget, &QListWidget::currentRowChanged, this, &LiteChat_FindUser::addFriendConfirm);
     ui->listWidget->clear();
-    disconnect(ui->listWidget, &QListWidget::currentRowChanged, this, &LiteChat_FindUser::addFriendConfirm);
+    connect(ui->listWidget, &QListWidget::currentRowChanged, this, &LiteChat_FindUser::addFriendConfirm);
     searchList.clear();
     liteChatServer->searchUser(ui->lineEdit->text());
 }
@@ -87,13 +88,19 @@ void LiteChat_FindUser::acceptFriend(int currentRow){
     qDebug() << "current accept" << id << '\n';
     if (!requestSet.count({id, name})) return;
     QMessageBox message(QMessageBox::Question, "确认通过好友申请", "你想要通过 " + name + "(ID:" + QString::fromStdString(std::to_string(id)) + ") 的好友申请吗？", QMessageBox::Yes | QMessageBox::No, NULL);
-    if(message.exec() == QMessageBox::Yes)
+    auto result = message.exec();
+    if(result == QMessageBox::Yes)
     {
             liteChatServer->acceptFriend(id, true);
+            QThread::msleep(50);
             liteChatServer->requestFriends();
             requestSet.erase({id, name});
     }
-    else liteChatServer->acceptFriend(id, false);
+    else if (result == QMessageBox::No)
+    {
+        liteChatServer->acceptFriend(id, false);
+        requestSet.erase({id, name});
+    }
 
     disconnect(ui->listWidget_2, &QListWidget::currentRowChanged, this, &LiteChat_FindUser::acceptFriend);
     ui->listWidget_2->clear();
