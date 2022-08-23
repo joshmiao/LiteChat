@@ -213,7 +213,7 @@ int LiteChat_Server::requestMessages(int32_t toId)
     j["type"] = _GET_HISTORY_PRIVATE;
     j["token"] = token.toUtf8();
     j["data"]["user_id"] = userInfo.id;
-    j["data"]["to_id"] = toId;
+    j["data"]["from_id"] = toId;
     return sendtoServer(j);
 }
 
