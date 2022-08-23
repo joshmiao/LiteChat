@@ -58,7 +58,7 @@
 {
     "type":1010,
     "data":{
-        "user_id":10001,
+        "user_id":10001
     }
 }
 //10001 get all friend requests

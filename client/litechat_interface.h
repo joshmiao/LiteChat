@@ -24,6 +24,7 @@ private:
     QLabel *dialogNameLabel, *dialogContentLabel;
 };
 
+
 class LiteChat_Interface : public QMainWindow
 {
     Q_OBJECT
@@ -42,7 +43,8 @@ private:
     LiteChat_Dialog *currentDialog;
 
     std::map<std::pair<LiteChat_Dialog::Dialog_Type, int32_t>, LiteChat_Dialog*> openedDialog;
-    std::map<int32_t, LiteChat_DialogListItem*> dialogList;
+    std::map<uint32_t, LiteChat_DialogListItem*> dialogList;
+    std::map<std::pair<LiteChat_Dialog::Dialog_Type, int32_t>, uint32_t> dialogListIndex;
 
 public slots:
     void changeCurrentDialog(int currentRow);

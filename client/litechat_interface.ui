@@ -148,6 +148,9 @@ background-color: rgb(240, 240, 240);</string>
       <height>461</height>
      </rect>
     </property>
+    <property name="horizontalScrollBarPolicy">
+     <enum>Qt::ScrollBarAlwaysOff</enum>
+    </property>
    </widget>
   </widget>
  </widget>
