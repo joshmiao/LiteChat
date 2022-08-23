@@ -16,6 +16,7 @@
 
 #include "Server.h"
 #include "json.hpp"
+#include "db_operations.h"
 #include<request_type.h>
 using json = nlohmann::json;
 
@@ -308,10 +309,9 @@ void Server::getFriends(int confd,json &request)
     std::vector<json>data;
     while(friends.count()>0)
     {
-        auto row=friends.fetchOne();
         json _friend;
         ID friend_id;
-        _friend["friend_id"]=friend_id=(ID)row.get(1);
+        _friend["friend_id"]=friend_id=(ID)friends.fetchOne().get(1);
         _friend["is_online"]=db->getUserStatus(friend_id).get(0);
         auto row=db->getBasicUserDataByID(friend_id);
         _friend["friend_name"]=row.get(1);
@@ -481,7 +481,7 @@ void Server::sendGroupUnreadMessage(int confd,ID user_id)
     result["type"]=UNREAD_GROUP_MESSAGE;
     result["data"]=json(message_bundle);
     int success=sendjson(confd,result);
-    if(success==0)db->deleteGroupUnsendMessage(user_id);
+    if(success==0)db->deleteGroupUnsendMessage(user_id, 0);
 }
 
 //judge if a user login with the fd first
@@ -622,9 +622,9 @@ void Server::searchUser(int confd,json &request)
         user["user_name"]=row.get(1);
         user["email"]=row.get(2);
         user["birthday"]=row.get(3);
+        user["avatar_filename"]=row.get(4);
         user["signature"]=row.get(5);
         
-        user["avatar_filename"]="default.jpg";
         //unfinished
         //user avatar_filename and resoure?
         
@@ -654,7 +654,7 @@ void Server::addFriend(int confd,json &request)
     int res=db->createFriendRequest(from_id,to_id, message);
     if(res==-1)
     {
-        Error("you have already invited",confd,ADD_FRIEND);
+        Error("you have already requested",confd,ADD_FRIEND);
     }
     else if(res==-2)
     {
@@ -749,6 +749,105 @@ void Server::deleteFriend(int confd,json &request)
     }
 }
 
+void Server::inviteMember(int confd,json &request){
+    ID inviter = request["inviter"];
+    ID invitee = request["invitee"];
+    ID group_id = request["group_id"];
+
+    db->addUserToGroup(group_id, invitee);
+    
+    // to inviter
+    json result, data;
+    result["type"] = INVITE_MEMBER;
+    data["result"] = "user " +  std::to_string(invitee) + " invited";
+    result["data"] = data;
+    int success=sendjson(confd,result);
+    if(success==-1)
+    {
+        Error("Invitation message sending failed",confd,DELETE_FRIEND);
+    }
+    else{
+        std::cout<<confd<<" Invitation message sent successfully\n\n";
+    }
+}
+
+int Server::deleteGroup(int confd,json &request){
+    ID user_id = request["user_id"];
+    ID group_id = request["group_id"];
+    if (confd != (int)db->getUserStatus(user_id).get(1) || user_id != (int)db->getBasicGroupData(group_id).get(2))
+        return -1;
+
+    db->deleteGroupUnsendMessage(0, group_id);
+    db->deleteGroupHistory(group_id);
+    db->removeUserFromGroup(group_id);
+    db->deleteGroup(group_id);
+
+    json result, data;
+    result["type"] = DELETE_GROUP;
+    data["result"] = "group " + std::to_string(group_id) + "deleted";
+    result["data"] = data;
+    int success=sendjson(confd,result);
+    if(success==-1)
+    {
+        Error("Deletion message sending failed",confd,DELETE_FRIEND);
+    }
+    else{
+        std::cout<<confd<<" Deletion message sent successfully\n\n";
+    }
+
+    return 0;
+}
+
+void Server::getGroups(int confd,json &request){
+    ID user_id = request["user_id"];
+
+    auto result = db->getGroupsOfAUser(user_id);
+    std::vector<json>data;
+    while(result.count() > 0){
+        json tmp;
+        auto row=result.fetchOne();
+        tmp["group_id"] = row.get(0);
+        data.push_back(tmp);
+    }
+    json groups;
+    groups["type"]=GET_GROUPS;
+    groups["data"]=data;
+    int success = sendjson(confd, groups);
+
+    if(success == -1)
+    {
+        Error("Groups info sending failed",confd,DELETE_FRIEND);
+    }
+    else{
+        std::cout<<confd<<" Groups info sent successfully\n\n";
+    }
+}
+
+void Server::getGroupMembers(int confd,json &request){
+    ID group_id = request["group_id"];
+
+    auto result = db->getGroupMember(group_id);
+    std::vector<json>data;
+    while(result.count() > 0){
+        json tmp;
+        auto row=result.fetchOne();
+        tmp["user_id"] = row.get(0);
+        data.push_back(tmp);
+    }
+    json members;
+    members["type"]=GET_GROUPS;
+    members["data"]=data;
+    int success = sendjson(confd, members);
+
+    if(success == -1)
+    {
+        Error("Members info sending failed",confd,DELETE_FRIEND);
+    }
+    else{
+        std::cout<<confd<<" Members info sent successfully\n\n";
+    }
+}
+
 void Server::createGroup(int confd,json &request)
 {
     if(request["group_desription"]==request["null"])
@@ -809,22 +908,110 @@ void Server::searchGroup(int confd,json &request)
 
 void Server::addGroup(int confd,json &request)
 {
+    ID user_id=request["user_id"];
+    ID group_id=request["group_id"];
+    if (request["message"]==request["null"])
+        request["message"]=(std::string) "My id is "+std::to_string(user_id);
+    std::string message=(std::string)request["message"];
 
+    int res=db->createGroupRequest(user_id,group_id,message);
+    if(res==-1)
+    {
+        Error("you have already requested",confd,ADD_GROUP);
+    }
+    else if(res==-2)
+    {
+        Error("you are already in this group",confd,ADD_GROUP);
+    }    
+    else{
+        json result;
+        result["type"]=ADD_GROUP;
+        json data;
+        data["result"]="send successfully";
+        result["data"]=data;
+        sendjson(confd,result);
+    }   
 }
 
 void Server::getMemberRequest(int confd,json &request)
 {
-
+    ID group_id=request["group_id"];
+    auto requests=db->getGroupRequest(0,group_id);
+    std::vector<json>res;
+    while(requests.count()>0)
+    {
+        auto row=requests.fetchOne();
+        json request;
+        request["member_id"]=(ID)row.get(0);
+        request["group_id"]=group_id;
+        request["message"]=row.get(2);
+        res.push_back(request);
+    }
+    json result;
+    result["type"]=GET_MEMBER_REQUEST;
+    result["data"]=json(res);
+    int success=sendjson(confd,result);
+    if(success==-1)
+    {
+        Error("get failed",confd,GET_MEMBER_REQUEST);
+    }
+    else{
+        std::cout<<confd<<" get member request successfully\n\n";
+    }
 }
 
 void Server::acceptMember(int confd,json &request)
 {
+    ID member_id=request["member_id"];
+    ID group_id=request["group_id"];
+    bool accept=(bool)request["accept"];
+    db->deleteGroupRequest(member_id,group_id);
 
+    if(!accept)
+    {
+        json result;
+        result["type"]=ACCEPT_MEMBER;
+        json data;
+        data["result"]="refuse successfully";
+        result["data"]=data;
+        sendjson(confd,result);
+        return;
+    }
+
+    db->addUserToGroup(group_id,member_id);
+    json result;
+    result["type"]=ACCEPT_MEMBER;
+    json data;
+    data["result"]="accept successfully";
+    result["data"]=data;
+    int success=sendjson(confd,result);
+    if(success==-1)
+    {
+        Error("accept failed",confd,ACCEPT_MEMBER);
+    }
+    else{
+        std::cout<<confd<<" accept member successfully\n\n";
+    }
 }
 
 void Server::deleteMember(int confd,json &request)
 {
-
+    ID member_id=request["member_id"];
+    ID group_id=request["group_id"];
+    db->removeUserFromGroup(group_id,member_id);
+    json result;
+    result["type"]=DELETE_MEMBER;
+    json data;
+    data["result"]="delete successfully";
+    result["data"]=data;
+    int success=sendjson(confd,result);
+    if(success==-1)
+    {
+        Error("delete failed",confd,DELETE_MEMBER);
+    }
+    else{
+        std::cout<<confd<<" delete friend successfully\n\n";
+    }
 }
 
 void Server::getGroups(int confd,json &request)
@@ -835,7 +1022,26 @@ void Server::getGroups(int confd,json &request)
         Error("empty user_id",confd,GET_GROUPS);
         return;
     }
+    
     ID user_id=request["user_id"];
-    //unfinished
-    sendGroupUnreadMessage(confd,request["user_id"]);
+    auto groups=db->getGroupsOfAUser(user_id);
+    std::vector<json>data;
+    while(groups.count()>0)
+    {
+        json group;
+        ID group_id;
+        group["group_id"]=group_id=(ID)groups.fetchOne().get(0);
+        auto row=db->getBasicGroupData(group_id);
+        group["group_name"]=row.get(1);
+        group["owner_id"]=row.get(2);
+        group["description"]=row.get(3);
+
+        data.push_back(group);
+    }
+    json result;
+    result["type"]=GET_GROUPS;
+    result["data"]=data;
+    sendjson(confd,result);
+
+    sendGroupUnreadMessage(confd,user_id);
 }
