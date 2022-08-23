@@ -49,9 +49,9 @@ private:
     void deleteMember(int confd,json &request);
     void inviteMember(int confd,json &request);
     int deleteGroup(int confd,json &request);
-    void getGroups(int confd,json &request);
     void getGroupMembers(int confd,json &request);
     void getGroupHistory(int confd,json &request);
+    void getGroups(int confd,json &request);
 
     void sendPrivateUnreadMessage(int confd,ID user_id);
     void sendGroupUnreadMessage(int confd,ID user_id);
