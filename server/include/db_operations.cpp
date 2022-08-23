@@ -155,8 +155,11 @@ mysqlx::RowResult LiteChatDatabaseAccess::getGroupMember(ID group_id){
     return get_group_member.execute();
 }
 
-mysqlx::RowResult LiteChatDatabaseAccess::getGroupsOfAUser(ID user_id){
-    get_group_member.where("user_id = " + std::to_string(user_id));
+mysqlx::RowResult LiteChatDatabaseAccess::getGroupsOfAUser(ID user_id, ID group_id = 0){
+    std::string command = "user_id = " + std::to_string(user_id);
+    if(group_id != 0)
+        command += "AND group_id = " + std::to_string(group_id);
+    get_group_member.where(command);
     return get_group_member.execute();
 }
 
@@ -220,6 +223,8 @@ void LiteChatDatabaseAccess::addUserToGroup(ID group_id, ID user_id){
 int LiteChatDatabaseAccess::createGroupRequest(ID user_id, ID group_id, const std::string& request_message){
     if(!groupRequestUnique(user_id, group_id))
         return -1;
+    if(getGroupsOfAUser(user_id, group_id).count() != 0)
+        return -2;
 
     mysqlx::TableInsert create_group_request = group_request.insert("user_id", "group_id", "request_message");
 

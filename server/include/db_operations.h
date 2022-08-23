@@ -28,7 +28,7 @@ public:
     mysqlx::RowResult getFriendRequest(ID user_from, ID user_to);
     mysqlx::RowResult getGroupRequest(ID user_id, ID group_id);
     mysqlx::RowResult getGroupMember(ID group_id);
-    mysqlx::RowResult getGroupsOfAUser(ID user_id);
+    mysqlx::RowResult getGroupsOfAUser(ID user_id, ID group_id = 0);
     
     ID userRegister(const std::string& user_name, const std::string& pwd, const std::string& email, const std::string& birthday);
     void addUserHistory(const std::string& send_time, ID src_user_id, ID dst_user_id, const std::string& content);
