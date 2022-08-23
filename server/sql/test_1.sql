@@ -1,10 +1,11 @@
+DELETE FROM user_status;
 DELETE FROM message_to_user;
+DELETE FROM message_to_group;
 DELETE FROM unsend_message_from_user;
 DELETE FROM unsend_message_from_group;
 DELETE FROM friend_relation;
 DELETE FROM friend_request;
 DELETE FROM group_member;
 DELETE FROM group_request;
-DELETE FROM basic_group_data;
-DELETE FROM user_status;
 DELETE FROM basic_user_data;
+DELETE FROM basic_group_data;
