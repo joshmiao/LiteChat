@@ -255,7 +255,7 @@ void Server::userLogin(int confd,json &request)
 
         auto row=db->getBasicUserDataByID(res);
         data["user_id"]=(ID)res;
-        data["name"]=row.get(1);
+        data["user_name"]=row.get(1);
         data["email"]=row.get(2);
         data["birthday"]=row.get(3);
         data["avatar_filename"]=row.get(4);
@@ -310,7 +310,19 @@ void Server::getFriends(int confd,json &request)
     {
         auto row=friends.fetchOne();
         json _friend;
-        _friend["friend_id"]=(ID)row.get(1);
+        ID friend_id;
+        _friend["friend_id"]=friend_id=(ID)row.get(1);
+        _friend["is_online"]=db->getUserStatus(friend_id).get(0);
+        auto row=db->getBasicUserDataByID(friend_id);
+        _friend["friend_name"]=row.get(1);
+        _friend["email"]=row.get(2);
+        _friend["birthday"]=row.get(3);
+        _friend["signature"]=row.get(5);
+        
+        _friend["avatar_filename"]="default.jpg";
+        //unfinished
+        //user avatar_filename and resoure?
+
         data.push_back(_friend);
     }
     json result;
@@ -611,11 +623,12 @@ void Server::searchUser(int confd,json &request)
         auto row=users.fetchOne();
         json user;
         user["user_id"]=(ID)row.get(0);
-        user["name"]=row.get(1);
+        user["user_name"]=row.get(1);
         user["email"]=row.get(2);
         user["birthday"]=row.get(3);
         user["signature"]=row.get(5);
-
+        
+        user["avatar_filename"]="default.jpg";
         //unfinished
         //user avatar_filename and resoure?
         
