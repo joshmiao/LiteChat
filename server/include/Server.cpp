@@ -24,6 +24,7 @@ using json = nlohmann::json;
 
 int Server::sendjson(int confd,json &result){
     std::string str = to_string(result);
+    std::cout << std::setw(4) << result << std::endl;
     int ret=send(confd,str.c_str(),str.size(),0);
     if(ret<0){
         printf("send to %d failed\n",confd);
@@ -45,7 +46,11 @@ void Server::Error(const char *msg,int confd=-1,int type=ERROR)
         result["data"]=data;
         sendjson(confd,result);
     }
-    else if(confd==-1)exit(1);
+    else if(confd==-1)
+    {
+        std::cout<<response<<'\n';
+        exit(1);
+    }
 }
 
 Server::Server(int port)
@@ -233,7 +238,7 @@ void Server::userLogin(int confd,json &request)
         data["result"]="success_login";
 
         auto row=db->getBasicUserDataByID(res);
-        data["user_id"]=res;
+        data["user_id"]=(ID)res;
         data["name"]=row.get(1);
         data["email"]=row.get(2);
         data["birthday"]=row.get(3);
@@ -312,8 +317,8 @@ void Server::sendPrivateMessage(int confd,json &request)
         json result;
         result["type"]=PRIVATE_MESSAGE;
         json data;
-        data["from_id"]=user_id;
-        data["to_id"]=to_id;
+        data["from_id"]=(ID)user_id;
+        data["to_id"]=(ID)to_id;
         data["content"]=content;
         data["time"]=time;
         result["data"]=data;
@@ -350,8 +355,8 @@ void Server::sendGroupMessage(int confd,json &request)
     json message;
     message["type"]=GROUP_MESSAGE;
     json data;
-    data["from_id"]=user_id;
-    data["group_id"]=group_id;
+    data["from_id"]=(ID)user_id;
+    data["group_id"]=(ID)group_id;
     data["content"]=content;
     data["time"]=time;
     message["data"]=data;
@@ -376,7 +381,7 @@ void Server::sendGroupMessage(int confd,json &request)
         int to_fd=statu.get(2),success=-1;
         if(to_online==true)
         {
-            message["data"]["to_id"]=to_id;
+            message["data"]["to_id"]=(ID)to_id;
             success=sendjson(to_fd,message);
         }
         if(to_online==false||success==-1)
@@ -400,8 +405,8 @@ void Server::sendPrivateUnreadMessage(int confd,ID user_id)
         json message;
         message["type"]=PRIVATE_MESSAGE;
         json data;
-        data["from_id"]=row.get(2);
-        data["to_id"]=row.get(1);
+        data["from_id"]=(ID)row.get(2);
+        data["to_id"]=(ID)row.get(1);
         data["content"]=row.get(3);
         data["time"]=row.get(0);
         message["data"]=data;
@@ -425,9 +430,9 @@ void Server::sendGroupUnreadMessage(int confd,ID user_id)
         json message;
         message["type"]=GROUP_MESSAGE;
         json data;
-        data["group_id"]=row.get(3);
-        data["from_id"]=row.get(2);
-        data["to_id"]=row.get(1);
+        data["group_id"]=(ID)row.get(3);
+        data["from_id"]=(ID)row.get(2);
+        data["to_id"]=(ID)row.get(1);
         data["time"]=row.get(0);
         data["content"]=row.get(4);
         message["data"]=data;
@@ -482,8 +487,8 @@ void Server::getPrivateHistory(int confd,json &request)
         json message;
         message["type"]=PRIVATE_MESSAGE;
         json data;
-        data["from_id"]=row.get(2);
-        data["to_id"]=row.get(1);
+        data["from_id"]=(ID)row.get(2);
+        data["to_id"]=(ID)row.get(1);
         data["time"]=row.get(0);
         data["content"]=row.get(3);
         message["data"]=data;
@@ -526,9 +531,9 @@ void Server::getGroupHistory(int confd,json &request)
         json message;
         message["type"]=GROUP_MESSAGE;
         json data;
-        data["group_id"]=row.get(3);
-        data["from_id"]=row.get(2);
-        data["to_id"]=row.get(1);
+        data["group_id"]=(ID)row.get(3);
+        data["from_id"]=(ID)row.get(2);
+        data["to_id"]=(ID)row.get(1);
         data["time"]=row.get(0);
         data["content"]=row.get(4);
         message["data"]=data;
@@ -568,7 +573,7 @@ void Server::searchUser(int confd,json &request)
     {
         auto row=users.fetchOne();
         json user;
-        user["user_id"]=row.get(0);
+        user["user_id"]=(ID)row.get(0);
         user["name"]=row.get(1);
         user["email"]=row.get(2);
         user["birthday"]=row.get(3);
@@ -621,7 +626,7 @@ void Server::getFriendRequest(int confd,json &request)
     {
         auto row=requests.fetchOne();
         json request;
-        request["from_id"]=row.get(0);
+        request["from_id"]=(ID)row.get(0);
         request["message"]=row.get(2);
         res.push_back(request);
     }

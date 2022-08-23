@@ -37,6 +37,17 @@ private:
     void acceptFriend(int confd,json &request);
     void deleteFriend(int confd,json &request);
     void getFriends(int confd,json &request);
+    
+    //unfinished
+    void searchGroup(int confd,json &request);
+    void addGroup(int confd,json &request);
+    void getMemberRequest(int confd,json &request);
+    void acceptMember(int confd,json &request);
+    void deleteMember(int confd,json &request);
+    void addMember(int confd,json &request);
+    void getGroupMemeber(int confd,json &request);
+    void acceptGroup(int confd,json &request);
+    void deleteGroup(int confd,json &request);
     void getGroups(int confd,json &request);
 
     void sendPrivateUnreadMessage(int confd,ID user_id);
