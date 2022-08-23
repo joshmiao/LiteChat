@@ -41,7 +41,7 @@
 {
     "type":1008,
     "data":{
-        "keyword":10001
+        "keyword":"10001"
     }
 }
 //10000 search 10001 as id or name
@@ -138,10 +138,3 @@
     }
 }
 // 10000 send private message to 10001
-
-{
-    "type":1006,
-    "data":{
-        ""
-    }
-}
