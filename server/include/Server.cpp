@@ -654,7 +654,7 @@ void Server::addFriend(int confd,json &request)
     int res=db->createFriendRequest(from_id,to_id, message);
     if(res==-1)
     {
-        Error("you have already invited",confd,ADD_FRIEND);
+        Error("you have already requested",confd,ADD_FRIEND);
     }
     else if(res==-2)
     {
@@ -791,6 +791,7 @@ void Server::searchGroup(int confd,json &request)
         json group;
         group["group_id"]=(ID)row.get(0);
         group["group_name"]=row.get(1);
+        //unfinished
         group["group_desciption"]=row.get(2);
         res.push_back(group);
     }
@@ -809,12 +810,55 @@ void Server::searchGroup(int confd,json &request)
 
 void Server::addGroup(int confd,json &request)
 {
+    ID user_id=request["user_id"];
+    ID group_id=request["group_id"];
+    if (request["message"]==request["null"])
+        request["message"]=(std::string) "My id is "+std::to_string(user_id);
+    std::string message=(std::string)request["message"];
 
+    int res=db->createGroupRequest(user_id,group_id,message);
+    if(res==-1)
+    {
+        Error("you have already requested",confd,ADD_GROUP);
+    }
+    else if(res==-2)
+    {
+        //unfinished
+        Error("you are already in this group",confd,ADD_GROUP);
+    }    
+    else{
+        json result;
+        result["type"]=ADD_GROUP;
+        json data;
+        data["result"]="send successfully";
+        result["data"]=data;
+        sendjson(confd,result);
+    }   
 }
 
 void Server::getMemberRequest(int confd,json &request)
 {
-
+    auto requests=db->getGroupRequest(0,request["group_id"]);
+    std::vector<json>res;
+    while(requests.count()>0)
+    {
+        auto row=requests.fetchOne();
+        json request;
+        request["user_id"]=(ID)row.get(0);
+        request["message"]=row.get(2);
+        res.push_back(request);
+    }
+    json result;
+    result["type"]=GET_MEMBER_REQUEST;
+    result["data"]=json(res);
+    int success=sendjson(confd,result);
+    if(success==-1)
+    {
+        Error("get failed",confd,GET_MEMBER_REQUEST);
+    }
+    else{
+        std::cout<<confd<<" get member request successfully\n\n";
+    }
 }
 
 void Server::acceptMember(int confd,json &request)
