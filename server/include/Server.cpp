@@ -311,7 +311,7 @@ void Server::sendPrivateMessage(int confd,json &request)
     db->addUserHistory(time,user_id,to_id,content);
     auto statu=db->getUserStatus(to_id);
     bool to_online=bool(statu.get(1));
-    int to_fd=statu.get(2),success=-1;
+    int to_fd=statu.get(1),success=-1;
     if(to_online==true)
     {
         json result;

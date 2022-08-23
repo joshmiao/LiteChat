@@ -97,7 +97,7 @@ int main(){
     "data":{
         "from_id":10000,
         "user_id":10001,
-        "accept":0
+        "accept":false
     }
 })";
     send(sock1, final_message.c_str(), final_message.size(), 0);
@@ -118,7 +118,7 @@ int main(){
     "data":{
         "from_id":10000,
         "user_id":10001,
-        "accept":1
+        "accept":true
     }
 })";
     send(sock1, final_message.c_str(), final_message.size(), 0);
@@ -149,7 +149,7 @@ int main(){
     "data":{
         "from_id":10000,
         "user_id":10001,
-        "accept":1
+        "accept":true
     }
 })";
     send(sock1, final_message.c_str(), final_message.size(), 0);
