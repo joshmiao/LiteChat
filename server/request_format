@@ -119,6 +119,7 @@ getFriendRequest
     "data":[
         {
             "from_id":
+            "name":
             "message":
         },
         ...
@@ -241,7 +242,7 @@ getHistoryMessage
     "token":
     "data":{
         "user_id":
-        "to_id":
+        "from_id":
         "begin_time":
         "end_time":
     }
