@@ -52,7 +52,7 @@
     "data":{
         "from_id":10000,
         "user_id":10001,
-        "accept":1
+        "accept":true
     }
 }
 //10001 accept 10000

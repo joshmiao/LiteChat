@@ -68,7 +68,7 @@
     "data":{
         "from_id":10000,
         "user_id":10001,
-        "accept":0
+        "accept":false
     }
 }
 //10001 refuse 10000
@@ -87,7 +87,7 @@
     "data":{
         "from_id":10000,
         "user_id":10001,
-        "accept":1
+        "accept":true
     }
 }
 //10001 accept 10000
@@ -105,7 +105,8 @@
     "type":1009,
     "data":{
         "user_id":10000,
-        "to_id":10001
+        "to_id":10001,
+        "message":"whe delele me?"
     }
 }
 //10000 add 10001
@@ -115,7 +116,7 @@
     "data":{
         "from_id":10000,
         "user_id":10001,
-        "accept":1
+        "accept":true
     }
 }
 //10001 accept 10000
