@@ -26,6 +26,7 @@ private:
 
     //Login and register
     void userLogin(int confd,json &request);
+    void userLogout(int confd,json &request);
     void userRegister(int confd,json &request);
     void setLogout(int confd);
     std::string setLogin(int confd,ID user_id);
