@@ -26,8 +26,14 @@ using json = nlohmann::json;
 int Server::sendjson(int confd,json &result){
     std::string str = to_string(result);
     std::cout << std::setw(4) << result << std::endl;
-    int ret=send(confd,str.c_str(),str.size(),0);
-    if(ret<0){
+    try{
+        int ret=send(confd,str.c_str(),str.size(),0);
+        if(ret<0){
+            printf("send to %d failed\n",confd);
+            return -1;
+        }
+    }
+    catch(...){
         printf("send to %d failed\n",confd);
         return -1;
     }
@@ -178,13 +184,15 @@ void Server::Analyze(int confd,json &request)
     
     std::cout<<std::setw(4)<<request<<'\n';
     
-    //finished
-    // std::string token=(std::string)db->getUserStatus((ID)request["data"]["user_id"]).get(2);
-    // if(token!=(std::string)request["token"])
-    // {
-    //     Error("token error",confd,TOKEN);
-    //     return;
-    // }
+    if(request["token"]!=request["null"])
+    {
+        std::string token(db->getUserStatus((ID)request["data"]["user_id"]).get(2));
+        if(token!=(std::string)request["token"])
+        {
+            Error("token error",confd,TOKEN);
+            return;
+        }
+    }
 
     int type=(int)request["type"];
     request=request["data"];
@@ -312,7 +320,7 @@ void Server::getFriends(int confd,json &request)
         json _friend;
         ID friend_id;
         _friend["friend_id"]=friend_id=(ID)friends.fetchOne().get(1);
-        _friend["is_online"]=db->getUserStatus(friend_id).get(0);
+        _friend["is_online"]=(int)db->getUserStatus(friend_id).get(0);
         auto row=db->getBasicUserDataByID(friend_id);
         _friend["friend_name"]=row.get(1);
         _friend["email"]=row.get(2);
@@ -326,6 +334,7 @@ void Server::getFriends(int confd,json &request)
     result["type"]=GET_FRIENDS;
     result["data"]=data;
     sendjson(confd,result);
+    std::cout<<"get friends successfully\n";
 
     sendPrivateUnreadMessage(confd,request["user_id"]);
 }
@@ -505,7 +514,7 @@ void Server::getPrivateHistory(int confd,json &request)
 {
     if(request["user_id"]==request["null"]||request["from_id"]==request["null"])
     {
-        Error("empty user_id or to_id",confd,GET_HISTORY_PRIVATE);
+        Error("empty user_id or from_id",confd,GET_HISTORY_PRIVATE);
         return;
     }
     if(request["begin_time"]==request["null"])
@@ -679,6 +688,7 @@ void Server::getFriendRequest(int confd,json &request)
         auto row=requests.fetchOne();
         json request;
         request["from_id"]=(ID)row.get(0);
+        request["name"]=db->getBasicUserDataByID((ID)request["from_id"]).get(1);
         request["message"]=row.get(2);
         res.push_back(request);
     }
