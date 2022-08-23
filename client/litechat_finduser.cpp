@@ -40,7 +40,9 @@ LiteChat_FindUser::~LiteChat_FindUser()
 
 void LiteChat_FindUser::on_pushButton_clicked()
 {
+    disconnect(ui->listWidget, &QListWidget::currentRowChanged, this, &LiteChat_FindUser::addFriendConfirm);
     ui->listWidget->clear();
+    disconnect(ui->listWidget, &QListWidget::currentRowChanged, this, &LiteChat_FindUser::addFriendConfirm);
     searchList.clear();
     liteChatServer->searchUser(ui->lineEdit->text());
 }
@@ -88,6 +90,7 @@ void LiteChat_FindUser::acceptFriend(int currentRow){
     if(message.exec() == QMessageBox::Yes)
     {
             liteChatServer->acceptFriend(id, true);
+            liteChatServer->requestFriends();
             requestSet.erase({id, name});
     }
     else liteChatServer->acceptFriend(id, false);
