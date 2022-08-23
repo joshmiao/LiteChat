@@ -5,16 +5,16 @@
 #include <QDateTime>
 #include <QDebug>
 
-LiteChat_Dialog::LiteChat_Dialog(LiteChat_Server *liteChatServer, QString chatName, Dialog_Type dialogType, int32_t toId, QWidget *parent) :
+LiteChat_Dialog::LiteChat_Dialog(LiteChat_Server *liteChatServer, QString dialogName, Dialog_Type dialogType, int32_t toId, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::LiteChat_Dialog),
     liteChatServer(liteChatServer),
-    chatName(chatName),
+    dialogName(dialogName),
     dialogType(dialogType),
     toId(toId)
 {
     ui->setupUi(this);
-    ui->label->setText(chatName);
+    ui->label->setText(dialogName);
 }
 
 LiteChat_Dialog::~LiteChat_Dialog()
