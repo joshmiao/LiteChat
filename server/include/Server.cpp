@@ -317,11 +317,8 @@ void Server::getFriends(int confd,json &request)
         _friend["friend_name"]=row.get(1);
         _friend["email"]=row.get(2);
         _friend["birthday"]=row.get(3);
+        _friend["avatar_filename"]=row.get(4);
         _friend["signature"]=row.get(5);
-        
-        _friend["avatar_filename"]="default.jpg";
-        //unfinished
-        //user avatar_filename and resoure?
 
         data.push_back(_friend);
     }
