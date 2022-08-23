@@ -204,6 +204,15 @@ void Server::Analyze(int confd,json &request)
         case GET_FRIEND_REQUEST:getFriendRequest(confd,request);break;
         case ACCEPT_FRIEND:acceptFriend(confd,request);break;
         case DELETE_FRIEND:deleteFriend(confd,request);break;
+        case CREATE_GROUP:createGroup(confd,request);break;
+        case SEARCH_GROUP:searchGroup(confd,request);break;
+        case ADD_GROUP:addGroup(confd,request);break;
+        case GET_MEMBER_REQUEST:getMemberRequest(confd,request);break;
+        case ACCEPT_MEMBER:acceptMember(confd,request);break;
+        case DELETE_MEMBER:deleteMember(confd,request);break;
+        case INVITE_MEMBER:inviteMember(confd,request);break;
+        case DELETE_GROUP:deleteGroup(confd,request);break;
+        case GET_GROUP_MEMBERS:getGroupMembers(confd,request);break;
         default :Error("request type error",confd);break;  
     }
 }
@@ -243,11 +252,11 @@ void Server::userLogin(int confd,json &request)
         json result;
         result["type"]=LOGIN;
         json data;
-        data["result"]="success_login";
+        data["result"]="login successfully";
 
         auto row=db->getBasicUserDataByID(res);
         data["user_id"]=(ID)res;
-        data["name"]=row.get(1);
+        data["user_name"]=row.get(1);
         data["email"]=row.get(2);
         data["birthday"]=row.get(3);
         data["avatar_filename"]=row.get(4);
@@ -255,7 +264,7 @@ void Server::userLogin(int confd,json &request)
         data["token"]=setLogin(confd,res);
         result["data"]=data;
         sendjson(confd,result);
-        std::cout<<confd<<" login success\n\n";
+        std::cout<<confd<<" login successfully\n\n";
     }
     else{
         std::cout<<confd<<" login failed\n\n";
@@ -274,11 +283,11 @@ void Server::userRegister(int confd,json &request)
         Error("email already exist",confd,REGISTER);
     }
     else {
-        std::cout<<confd<<" success_register\n\n";
+        std::cout<<confd<<" register successfully\n\n";
         json result;
         result["type"]=REGISTER;
         json data;
-        data["result"]="success_register";
+        data["result"]="register successfully";
         data["user_id"]=(ID)res;
         result["data"]=data;
         sendjson(confd,result);
@@ -302,7 +311,16 @@ void Server::getFriends(int confd,json &request)
     {
         auto row=friends.fetchOne();
         json _friend;
-        _friend["friend_id"]=(ID)row.get(1);
+        ID friend_id;
+        _friend["friend_id"]=friend_id=(ID)row.get(1);
+        _friend["is_online"]=db->getUserStatus(friend_id).get(0);
+        auto row=db->getBasicUserDataByID(friend_id);
+        _friend["friend_name"]=row.get(1);
+        _friend["email"]=row.get(2);
+        _friend["birthday"]=row.get(3);
+        _friend["avatar_filename"]=row.get(4);
+        _friend["signature"]=row.get(5);
+
         data.push_back(_friend);
     }
     json result;
@@ -311,19 +329,6 @@ void Server::getFriends(int confd,json &request)
     sendjson(confd,result);
 
     sendPrivateUnreadMessage(confd,request["user_id"]);
-}
-
-void Server::getGroups(int confd,json &request)
-{
-    if(request["user_id"]==request["null"])
-    {
-        std::cout<<confd<<" get groups failed\n\n";
-        Error("empty user_id",confd,GET_GROUPS);
-        return;
-    }
-    ID user_id=request["user_id"];
-    //unfinished
-    sendGroupUnreadMessage(confd,request["user_id"]);
 }
 
 void Server::sendPrivateMessage(int confd,json &request)
@@ -364,10 +369,10 @@ void Server::sendPrivateMessage(int confd,json &request)
         json result;
         result["type"]=PRIVATE_MESSAGE;
         json data;
-        data["result"]="success_send";
+        data["result"]="send successfully";
         result["data"]=data;
         sendjson(confd,result);
-        std::cout<<"send to "<<to_id<<" private message success\n\n";
+        std::cout<<"send to "<<to_id<<" private message successfully\n\n";
     }
 }
 
@@ -391,9 +396,9 @@ void Server::sendGroupMessage(int confd,json &request)
     json result;
     result["type"]=GROUP_MESSAGE;
     json rdata;
-    rdata["result"]="success_send";
+    rdata["result"]="send successfully";
     result["data"]=rdata;
-    std::cout<<"send to "<<group_id<<" group message success\n\n";
+    std::cout<<"send to "<<group_id<<" group message successfully\n\n";
     sendjson(confd,result);
 
     auto group_member=db->getGroupMember(group_id);
@@ -415,7 +420,7 @@ void Server::sendGroupMessage(int confd,json &request)
             db->addGroupUnsendMessage(time,to_id,user_id,group_id,content);
         }
         else {
-            std::cout<<"send to "<<to_id<<" group message success\n\n";
+            std::cout<<"send to "<<to_id<<" group message successfully\n\n";
         }
     }
 }
@@ -598,7 +603,6 @@ void Server::getGroupHistory(int confd,json &request)
 void Server::searchUser(int confd,json &request)
 {
     std::string keyword=(std::string)request["keyword"];
-    bool Name=true;
     ID id=0;
     if(keyword.length()<=6)
     for(auto c:keyword)
@@ -616,11 +620,12 @@ void Server::searchUser(int confd,json &request)
         auto row=users.fetchOne();
         json user;
         user["user_id"]=(ID)row.get(0);
-        user["name"]=row.get(1);
+        user["user_name"]=row.get(1);
         user["email"]=row.get(2);
         user["birthday"]=row.get(3);
         user["signature"]=row.get(5);
-
+        
+        user["avatar_filename"]="default.jpg";
         //unfinished
         //user avatar_filename and resoure?
         
@@ -650,7 +655,7 @@ void Server::addFriend(int confd,json &request)
     int res=db->createFriendRequest(from_id,to_id, message);
     if(res==-1)
     {
-        Error("you have already invited",confd,ADD_FRIEND);
+        Error("you have already requested",confd,ADD_FRIEND);
     }
     else if(res==-2)
     {
@@ -842,4 +847,139 @@ void Server::getGroupMembers(int confd,json &request){
     else{
         std::cout<<confd<<" Members info sent successfully\n\n";
     }
+}
+
+void Server::createGroup(int confd,json &request)
+{
+    if(request["group_desription"]==request["null"])
+        request["group_desription"]="";
+    ID res=db->createGroup(request["group_name"],request["user_id"],request["group_description"]);
+    json result;
+    result["type"]=CREATE_GROUP;
+    if(res==-1)
+    {
+        std::cout<<"group name exists\n";
+        Error("group name exists",confd,CREATE_GROUP);
+    }
+    else{
+        json data;
+        data["group_id"]=res;
+        result["data"]=data;
+        sendjson(confd,result);
+        std::cout<<"create group successfully\n";
+    }
+}
+
+void Server::searchGroup(int confd,json &request)
+{
+    std::string keyword=(std::string)request["keyword"];
+    ID id=0;
+    if(keyword.length()<=6)
+    for(auto c:keyword)
+    if(isdigit(c))
+        id=id*10+c-'0';
+    else {
+        id=0;
+        break;
+    }
+
+    auto groups=db->searchGroup(id,keyword);
+    std::vector<json>res;
+    while(groups.count()>0)
+    {
+        auto row=groups.fetchOne();
+        json group;
+        group["group_id"]=(ID)row.get(0);
+        group["group_name"]=row.get(1);
+        //unfinished
+        group["group_desciption"]=row.get(2);
+        res.push_back(group);
+    }
+    json result;
+    result["type"]=SEARCH_GROUP;
+    result["data"]=json(res);
+    int success=sendjson(confd,result);
+    if(success==-1)
+    {
+        Error("search failed",confd,SEARCH_GROUP);
+    }
+    else{
+        std::cout<<confd<<" search group successfully\n\n";
+    }
+}
+
+void Server::addGroup(int confd,json &request)
+{
+    ID user_id=request["user_id"];
+    ID group_id=request["group_id"];
+    if (request["message"]==request["null"])
+        request["message"]=(std::string) "My id is "+std::to_string(user_id);
+    std::string message=(std::string)request["message"];
+
+    int res=db->createGroupRequest(user_id,group_id,message);
+    if(res==-1)
+    {
+        Error("you have already requested",confd,ADD_GROUP);
+    }
+    else if(res==-2)
+    {
+        //unfinished
+        Error("you are already in this group",confd,ADD_GROUP);
+    }    
+    else{
+        json result;
+        result["type"]=ADD_GROUP;
+        json data;
+        data["result"]="send successfully";
+        result["data"]=data;
+        sendjson(confd,result);
+    }   
+}
+
+void Server::getMemberRequest(int confd,json &request)
+{
+    auto requests=db->getGroupRequest(0,request["group_id"]);
+    std::vector<json>res;
+    while(requests.count()>0)
+    {
+        auto row=requests.fetchOne();
+        json request;
+        request["user_id"]=(ID)row.get(0);
+        request["message"]=row.get(2);
+        res.push_back(request);
+    }
+    json result;
+    result["type"]=GET_MEMBER_REQUEST;
+    result["data"]=json(res);
+    int success=sendjson(confd,result);
+    if(success==-1)
+    {
+        Error("get failed",confd,GET_MEMBER_REQUEST);
+    }
+    else{
+        std::cout<<confd<<" get member request successfully\n\n";
+    }
+}
+
+void Server::acceptMember(int confd,json &request)
+{
+
+}
+
+void Server::deleteMember(int confd,json &request)
+{
+
+}
+
+void Server::getGroups(int confd,json &request)
+{
+    if(request["user_id"]==request["null"])
+    {
+        std::cout<<confd<<" get groups failed\n\n";
+        Error("empty user_id",confd,GET_GROUPS);
+        return;
+    }
+    ID user_id=request["user_id"];
+    //unfinished
+    sendGroupUnreadMessage(confd,request["user_id"]);
 }

@@ -31,15 +31,16 @@ private:
     void setLogout(int confd);
     std::string setLogin(int confd,ID user_id);
 
-    //Friends and groups
+    //Friends
     void searchUser(int confd,json &request);
     void addFriend(int confd,json &request);
     void getFriendRequest(int confd,json &request);
     void acceptFriend(int confd,json &request);
     void deleteFriend(int confd,json &request);
     void getFriends(int confd,json &request);
+    void getPrivateHistory(int confd,json &request);
     
-    //unfinished
+    //Groups
     void createGroup(int confd,json &request);
     void searchGroup(int confd,json &request);
     void addGroup(int confd,json &request);
@@ -50,13 +51,13 @@ private:
     int deleteGroup(int confd,json &request);
     void getGroups(int confd,json &request);
     void getGroupMembers(int confd,json &request);
+    void getGroupHistory(int confd,json &request);
 
     void sendPrivateUnreadMessage(int confd,ID user_id);
     void sendGroupUnreadMessage(int confd,ID user_id);
     void sendPrivateMessage(int confd,json &request);
     void sendGroupMessage(int confd,json &request);
-    void getPrivateHistory(int confd,json &request);
-    void getGroupHistory(int confd,json &request);
+    
 public:
     Server(int port);
     void Start();

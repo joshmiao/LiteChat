@@ -1,3 +1,4 @@
+#include "litechat_finduser.h"
 #include "litechat_interface.h"
 #include "ui_litechat_interface.h"
 
@@ -10,8 +11,6 @@ LiteChat_Interface::LiteChat_Interface(LiteChat_Server *liteChatServer, QString 
     ui->setupUi(this);
     connect(ui->listWidget, &QListWidget::currentRowChanged, this, &LiteChat_Interface::changeCurrentDialog);
     currentDialog = nullptr;
-//    addSingleDialogListItem(LiteChat_Dialog::Private, 10002, "测试私聊10002");
-//    addSingleDialogListItem(LiteChat_Dialog::Private, 10003, "测试私聊10003");
 }
 
 LiteChat_Interface::~LiteChat_Interface()
@@ -73,12 +72,13 @@ void LiteChat_Interface::addSingleDialogListItem(LiteChat_Dialog::Dialog_Type di
     liteChatServer->requestMessages(toId);
 
     LiteChat_DialogListItem *newFriend = new LiteChat_DialogListItem(dialogType, toId, dialogName, ui->listWidget);
+    dialogList[dialogList.size()] = newFriend;
+    dialogListIndex[{dialogType, toId}] = dialogList.size() - 1;
+
     QListWidgetItem *newItem = new QListWidgetItem(ui->listWidget);
     newItem->setSizeHint(QSize(ui->listWidget->size().width() - 10, 60));
     ui->listWidget->setItemWidget(newItem, newFriend);
 
-    dialogList[ui->listWidget->count() - 1] = newFriend;
-    dialogListIndex[{dialogType, toId}] = ui->listWidget->count() - 1;
 }
 
 void LiteChat_Interface::messageReceive(LiteChat_Dialog::Dialog_Type dialogType, int32_t fromId, QString msg){
@@ -106,6 +106,9 @@ void LiteChat_Interface::on_pushButton_clicked()
 
 void LiteChat_Interface::on_pushButton_2_clicked()
 {
-
+    LiteChat_FindUser *findUserPage = liteChatServer->createFindUser();
+    findUserPage->show();
 }
+
+
 
