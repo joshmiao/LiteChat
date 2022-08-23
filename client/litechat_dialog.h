@@ -32,7 +32,7 @@ public:
     void dealMessage(LiteChat_Message *messageW, QListWidgetItem *item, QString text, QString time, LiteChat_Message::User_Type type);
     void dealMessageTime(QString curMsgTime);
 public slots:
-    void receiveSingalMessage(QString msg);
+    void receiveSingalMessage(QString msg, bool myMessage);
 protected:
     void resizeEvent(QResizeEvent *event);
 private slots:

@@ -81,20 +81,33 @@ void LiteChat_Interface::addSingleDialogListItem(LiteChat_Dialog::Dialog_Type di
 
 }
 
-void LiteChat_Interface::messageReceive(LiteChat_Dialog::Dialog_Type dialogType, int32_t fromId, QString msg){
+void LiteChat_Interface::messageReceive(LiteChat_Dialog::Dialog_Type dialogType, int32_t fromId, int32_t toId, QString msg){
+    if (fromId == userinfo.id){
+        auto iter = openedDialog.find({dialogType, toId});
+        if (iter != openedDialog.end()) {
+            iter->second->receiveSingalMessage(msg, true);
+        }
+        else{
+            QString dialogName = dialogList[dialogListIndex[{dialogType, toId}]]->dialogName;
+            LiteChat_Dialog *newDialog = liteChatServer->createDialog(dialogName, dialogType, toId);
+            openedDialog[{dialogType, toId}] = newDialog;
+            newDialog->receiveSingalMessage(msg, true);
+        }
+        return;
+    }
     if (!dialogListIndex.count({dialogType, fromId})){
         qDebug() << "Message recieved from stranger.\n";
         return;
     }
     auto iter = openedDialog.find({dialogType, fromId});
     if (iter != openedDialog.end()) {
-        iter->second->receiveSingalMessage(msg);
+        iter->second->receiveSingalMessage(msg, false);
     }
     else{
         QString dialogName = dialogList[dialogListIndex[{dialogType, fromId}]]->dialogName;
         LiteChat_Dialog *newDialog = liteChatServer->createDialog(dialogName, dialogType, fromId);
         openedDialog[{dialogType, fromId}] = newDialog;
-        newDialog->receiveSingalMessage(msg);
+        newDialog->receiveSingalMessage(msg, false);
     }
 }
 

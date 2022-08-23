@@ -41,14 +41,15 @@ void LiteChat_Dialog::on_pushButton_clicked()
     ui->listWidget->setCurrentRow(ui->listWidget->count()-1);
 }
 
-void LiteChat_Dialog::receiveSingalMessage(QString msg){
+void LiteChat_Dialog::receiveSingalMessage(QString msg, bool myMessage){
     qDebug() << "receive msg : " << msg << '\n';
     QString time = QString::number(QDateTime::currentDateTime().toTime_t()); //时间戳
     if(msg != "") {
         dealMessageTime(time);
         LiteChat_Message* messageW = new LiteChat_Message(ui->listWidget->parentWidget());
         QListWidgetItem* item = new QListWidgetItem(ui->listWidget);
-        dealMessage(messageW, item, msg, time, LiteChat_Message::User_She);
+        if (myMessage) dealMessage(messageW, item, msg, time, LiteChat_Message::User_Me);
+        else dealMessage(messageW, item, msg, time, LiteChat_Message::User_She);
     }
     ui->listWidget->setCurrentRow(ui->listWidget->count()-1);
 }
