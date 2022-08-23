@@ -155,7 +155,7 @@ mysqlx::RowResult LiteChatDatabaseAccess::getGroupMember(ID group_id){
     return get_group_member.execute();
 }
 
-mysqlx::RowResult LiteChatDatabaseAccess::getGroupsOfAUser(ID user_id, ID group_id = 0){
+mysqlx::RowResult LiteChatDatabaseAccess::getGroupsOfAUser(ID user_id, ID group_id){
     std::string command = "user_id = " + std::to_string(user_id);
     if(group_id != 0)
         command += "AND group_id = " + std::to_string(group_id);
