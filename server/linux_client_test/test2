@@ -52,7 +52,7 @@
     "data":{
         "from_id":10000,
         "user_id":10001,
-        "accept":1
+        "accept":true
     }
 }
 //10001 accept 10000
@@ -126,6 +126,14 @@
     }
 }
 //login 10001
+
+{
+    "type":1004,
+    "data";{
+        "user_id":10001
+    }
+}
+//10001's all friends and get unread message
 
 {
     "type":1006,
