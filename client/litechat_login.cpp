@@ -22,6 +22,13 @@ LiteChat_Login::~LiteChat_Login()
 
 void LiteChat_Login::on_pushButton_clicked()
 {
+    if (ui->lineEdit->text() == "" || ui->lineEdit_2->text() == ""){
+        QMessageBox msg;
+        msg.setIcon(QMessageBox::Warning);
+        msg.setText("用户名或密码为空！请重新输入");
+        msg.exec();
+        return;
+    }
     liteChatServer->requestLogin(ui->lineEdit->text().toInt(), ui->lineEdit_2->text());
 }
 
@@ -36,7 +43,7 @@ void LiteChat_Login::loginSuccess(QString loginName, int32_t loginId){
     LiteChat_Interface* interface = liteChatServer->createInterface(loginName, loginId);
     interface->show();
     QMessageBox msgBox;
-    msgBox.setText("登录成功！欢迎您" + loginName);
+    msgBox.setText("登录成功！\n欢迎您 " + loginName + "!");
     msgBox.exec();
     liteChatServer->requestFriends();
     delete this;

@@ -83,7 +83,7 @@ void LiteChat_Server::handReadyRead()
         else if (j["type"] == _GET_FRIENDS)
         {
             j = j["data"];
-            for (const auto &f : j["friends"])
+            for (const auto &f : j)
             {
                 int32_t id = f["friend_id"];
                 QString name = QString::fromStdString(std::string(f["friend_name"]));
@@ -139,6 +139,7 @@ void LiteChat_Server::handReadyRead()
                 userInfo.id = j["user_id"];
                 userInfo.username = QString::fromStdString(std::string(j["user_name"]));
                 token = QString::fromStdString(std::string(j["token"]));
+                loginStatus = true;
                 emit loginSuccess(userInfo.username, userInfo.id);
             }
         }
@@ -212,7 +213,7 @@ int LiteChat_Server::requestMessages(int32_t toId)
     j["type"] = _GET_HISTORY_PRIVATE;
     j["token"] = token.toUtf8();
     j["data"]["user_id"] = userInfo.id;
-    j["data"]["to_id"] = toId;
+    j["data"]["from_id"] = toId;
     return sendtoServer(j);
 }
 
