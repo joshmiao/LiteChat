@@ -130,6 +130,9 @@ border: 2px solid gray; </string>
 border: 2px groove gray;
 border: 2px solid gray; </string>
     </property>
+    <property name="echoMode">
+     <enum>QLineEdit::PasswordEchoOnEdit</enum>
+    </property>
    </widget>
    <widget class="QLabel" name="label_5">
     <property name="geometry">
@@ -181,6 +184,9 @@ border: 2px solid gray; </string>
     </property>
     <property name="text">
      <string/>
+    </property>
+    <property name="echoMode">
+     <enum>QLineEdit::PasswordEchoOnEdit</enum>
     </property>
    </widget>
    <widget class="QLabel" name="label_8">
@@ -297,7 +303,7 @@ border: 2px groove lightblue;</string>
      <x>0</x>
      <y>0</y>
      <width>398</width>
-     <height>26</height>
+     <height>17</height>
     </rect>
    </property>
   </widget>

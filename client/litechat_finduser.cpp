@@ -87,10 +87,10 @@ void LiteChat_FindUser::acceptFriend(int currentRow){
     QMessageBox message(QMessageBox::Question, "确认通过好友申请", "你想要通过 " + name + "(ID:" + QString::fromStdString(std::to_string(id)) + ") 的好友申请吗？", QMessageBox::Yes | QMessageBox::No, NULL);
     if(message.exec() == QMessageBox::Yes)
     {
-            liteChatServer->acceptFriend(id, 1);
+            liteChatServer->acceptFriend(id, true);
             requestSet.erase({id, name});
     }
-    else liteChatServer->acceptFriend(id, 0);
+    else liteChatServer->acceptFriend(id, false);
 
     disconnect(ui->listWidget_2, &QListWidget::currentRowChanged, this, &LiteChat_FindUser::acceptFriend);
     ui->listWidget_2->clear();

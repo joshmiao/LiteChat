@@ -13,9 +13,15 @@ class LiteChat_Register : public QMainWindow
 {
     Q_OBJECT
 
+public slots:
+    void registerSuccess(int32_t id);
+
 public:
     explicit LiteChat_Register(LiteChat_Server *liteChatServer ,QWidget *parent = nullptr);
     ~LiteChat_Register();
+
+private slots:
+    void on_pushButton_clicked();
 
 private:
     Ui::LiteChat_Register *ui;

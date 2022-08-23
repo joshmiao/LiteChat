@@ -29,14 +29,14 @@ void LiteChat_Login::on_pushButton_2_clicked()
 {
     LiteChat_Register *Register = liteChatServer->createRegister();
     Register->show();
-    this->hide();
+    delete this;
 }
 
 void LiteChat_Login::loginSuccess(QString loginName, int32_t loginId){
     LiteChat_Interface* interface = liteChatServer->createInterface(loginName, loginId);
     interface->show();
     QMessageBox msgBox;
-    msgBox.setText("Success");
+    msgBox.setText("登录成功！欢迎您" + loginName);
     msgBox.exec();
     delete this;
 }

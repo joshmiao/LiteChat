@@ -74,28 +74,37 @@ void LiteChat_Server::handReadyRead()
         j = json::parse(recvString.toStdString());
         qDebug() << "this is valid to parse:" << QString::fromStdString(to_string(j))<< '\n';
         if (!j["type"].is_number_integer()) throw std::runtime_error("the format is invalid!");
-
-        if (j["type"] == _GET_FRIENDS)
+        if (j["type"] == _REGISTER)
         {
             j = j["data"];
-            if (std::string(j["result"]) != "success_get_friends") return;
+            int32_t id = j["user_id"];
+            emit registerSuccess(id);
+        }
+        else if (j["type"] == _GET_FRIENDS)
+        {
+            j = j["data"];
             for (const auto &f : j["friends"])
             {
-                int32_t id = f["user_id"];
-                QString name = QString::fromStdString(std::string(f["user_name"]));
+                int32_t id = f["friend_id"];
+                QString name = QString::fromStdString(std::string(f["friend_name"]));
                 emit newFriendRecieve(LiteChat_Dialog::Private, id, name);
             }
         }
 
-//      {"data":[{"content":"i am your first friend","from_id":66666,"to_id":10001},{"content":"i am your second friend","from_id":88888,"to_id":10001}],"type":1002}
+        else if (j["type"] == _PRIVATE_MESSAGE){
+             j = j["data"];
+             int32_t id = j["from_id"];
+             QString msg = QString::fromStdString(std::string(j["content"]));
+             emit messageReceive(LiteChat_Dialog::Private, id, msg);
+        }
 
-        else if (j["type"] == _PRIVATE_MESSAGE || j["type"] == _GET_HISTORY_PRIVATE)
+        else if (j["type"] == _GET_HISTORY_PRIVATE)
         {
             j = j["data"];
             for (const auto &f : j)
             {
-                int32_t id = f["from_id"];
-                QString msg = QString::fromStdString(std::string(f["content"]));
+                int32_t id = f["data"]["from_id"];
+                QString msg = QString::fromStdString(std::string(f["data"]["content"]));
                 emit messageReceive(LiteChat_Dialog::Private, id, msg);
             }
         }
@@ -116,19 +125,27 @@ void LiteChat_Server::handReadyRead()
             j = j["data"];
             for (const auto &u : j)
             {
-                int32_t id = u["id"];
-                QString name = QString::fromStdString(std::string(u["name"]));
+                int32_t id = u["user_id"];
+                QString name = QString::fromStdString(std::string(u["user_name"]));
                 emit searchResultReceive(name, id);
+            }
+        }
+
+        else if (j["type"] == _LOGIN)
+        {
+            j = j["data"];
+            if (j["result"] == "login successfully")
+            {
+                userInfo.id = j["user_id"];
+                userInfo.username = QString::fromStdString(std::string(j["user_name"]));
+                token = QString::fromStdString(std::string(j["token"]));
+                emit loginSuccess(userInfo.username, userInfo.id);
             }
         }
 
     } catch (...)
     {
         qDebug() << "Invalid sequence received\n";
-        if (recvString[0] == '#'){
-            qDebug() << recvString.mid(1);
-            emit messageReceive(LiteChat_Dialog::Private, 10002, recvString.mid(1));
-        }
         if (recvString[0] == '*'){
             loginStatus = true;
             token = recvString.mid(1);
@@ -152,6 +169,18 @@ void LiteChat_Server::on_pushButton_2_clicked()
 {
     QString txt = ui->lineEdit_3->text();
     client->write(txt.toUtf8());
+}
+
+int LiteChat_Server::requestRegister(QString name, QString pwd, QString email)
+{
+    json j;
+    j["type"] = _REGISTER;
+    j["data"]["username"] = name.toUtf8();
+    j["data"]["pwd"] = pwd.toUtf8();
+    j["data"]["email"] = email.toUtf8();
+    j["data"]["birthday"] = "2002-01-01";
+
+    return sendtoServer(j);
 }
 
 int LiteChat_Server::sendMessage(LiteChat_Dialog::Dialog_Type dialogType, int32_t toId, QString msg)
@@ -181,6 +210,7 @@ int LiteChat_Server::requestMessages(int32_t toId)
     if (!loginStatus) return -1;
     json j;
     j["type"] = _GET_HISTORY_PRIVATE;
+    j["token"] = token.toUtf8();
     j["data"]["user_id"] = userInfo.id;
     j["data"]["to_id"] = toId;
     return sendtoServer(j);
@@ -191,6 +221,7 @@ int LiteChat_Server::requestFriends()
     if (!loginStatus) return -1;
     json j;
     j["type"] = _GET_FRIENDS;
+    j["token"] = token.toUtf8();
     j["data"]["user_id"] = userInfo.id;
     return sendtoServer(j);
 }
@@ -200,6 +231,8 @@ int LiteChat_Server::searchUser(QString str)
     if (!loginStatus) return -1;
     json j;
     j["type"] = _SEARCH_USER;
+    j["token"] = token.toUtf8();
+    j["data"]["user_id"] = userInfo.id;
     j["data"]["keyword"] = str.toUtf8();
     return sendtoServer(j);
 }
@@ -209,8 +242,10 @@ int LiteChat_Server::makeFriendRequest(int32_t id)
     if (!loginStatus) return -1;
     json j;
     j["type"] = _ADD_FRIEND;
+    j["token"] = token.toUtf8();
     j["data"]["user_id"] = userInfo.id;
     j["data"]["to_id"] = id;
+    j["data"]["message"] = "I dont need a message now!";
     return sendtoServer(j);
 }
 
@@ -218,14 +253,17 @@ int LiteChat_Server::getFriendRequest(){
     if (!loginStatus) return -1;
     json j;
     j["type"] = _GET_FRIEND_REQUEST;
+    j["token"] = token.toUtf8();
     j["data"]["user_id"] = userInfo.id;
     return sendtoServer(j);
 }
 
-int LiteChat_Server::acceptFriend(int32_t id, int32_t accept){
+int LiteChat_Server::acceptFriend(int32_t id, bool accept)
+{
     if (!loginStatus) return -1;
     json j;
     j["type"] = _ACCEPT_FRIEND;
+    j["token"] = token.toUtf8();
     j["data"]["from_id"] = id;
     j["data"]["user_id"] = userInfo.id;
     j["data"]["accept"] = accept;
@@ -254,6 +292,7 @@ LiteChat_Interface* LiteChat_Server::createInterface(QString loginName, int32_t 
 
 LiteChat_Register* LiteChat_Server::createRegister(){
     LiteChat_Register *Register = new LiteChat_Register(this);
+    connect(this, &LiteChat_Server::registerSuccess, Register, &LiteChat_Register::registerSuccess);
     return Register;
 }
 

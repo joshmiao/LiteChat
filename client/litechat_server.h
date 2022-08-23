@@ -42,12 +42,13 @@ public:
     LiteChat_Register* createRegister();
     LiteChat_FindUser* createFindUser();
 
-    int sendMessage(LiteChat_Dialog::Dialog_Type dialogType, int32_t toId, QString msg);
+    int requestRegister(QString name, QString pwd, QString email);
     int requestLogin(int32_t id, QString pwd);
     int requestFriends();
     int requestMessages(int32_t toId);
+    int sendMessage(LiteChat_Dialog::Dialog_Type dialogType, int32_t toId, QString msg);
     int getFriendRequest();
-    int acceptFriend(int32_t id, int32_t accept);
+    int acceptFriend(int32_t id, bool accept);
 
     int searchUser(QString str);
     int makeFriendRequest(int32_t id);
@@ -67,6 +68,7 @@ private:
     QString token;
 
 signals:
+    void registerSuccess(int32_t id);
     void messageReceive(LiteChat_Dialog::Dialog_Type recieveType, int32_t fromId, QString msg);
     void newFriendRecieve(LiteChat_Dialog::Dialog_Type recieveType, int32_t id, QString name);
     void loginSuccess(QString loginName, int32_t loginId);
