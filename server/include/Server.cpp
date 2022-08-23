@@ -262,6 +262,8 @@ void Server::userLogin(int confd,json &request)
 
 void Server::userRegister(int confd,json &request)
 {
+    if(request["birthday"]==request["null"])
+        request["birthday"]="2002-01-01";
     int res=db->userRegister(request["username"],request["pwd"],request["email"],request["birthday"]);
     if(res==-1)
     {
@@ -413,7 +415,11 @@ void Server::sendPrivateUnreadMessage(int confd,ID user_id)
         json message;
         message["type"]=PRIVATE_MESSAGE;
         json data;
-        data["time"]=row.get(0);
+        std::string time=(std::string)row.get(0);
+        reverse(time.begin(),time.end());
+        time=time.substr(3);
+        reverse(time.begin(),time.end());
+        data["time"]=time;
         data["to_id"]=(ID)row.get(1);
         data["from_id"]=(ID)row.get(2);
         data["content"]=row.get(3);
@@ -438,7 +444,11 @@ void Server::sendGroupUnreadMessage(int confd,ID user_id)
         json message;
         message["type"]=GROUP_MESSAGE;
         json data;
-        data["time"]=row.get(0);
+        std::string time=(std::string)row.get(0);
+        reverse(time.begin(),time.end());
+        time=time.substr(3);
+        reverse(time.begin(),time.end());
+        data["time"]=time;
         data["to_id"]=(ID)row.get(1);
         data["from_id"]=(ID)row.get(2);
         data["group_id"]=(ID)row.get(3);
@@ -495,7 +505,11 @@ void Server::getPrivateHistory(int confd,json &request)
         json message;
         message["type"]=PRIVATE_MESSAGE;
         json data;
-        data["time"]=row.get(0);
+        std::string time=(std::string)row.get(0);
+        reverse(time.begin(),time.end());
+        time=time.substr(3);
+        reverse(time.begin(),time.end());
+        data["time"]=time;
         data["to_id"]=(ID)row.get(1);
         data["from_id"]=(ID)row.get(2);
         data["content"]=row.get(3);
@@ -539,7 +553,11 @@ void Server::getGroupHistory(int confd,json &request)
         json message;
         message["type"]=GROUP_MESSAGE;
         json data;
-        data["time"]=row.get(0);
+        std::string time=(std::string)row.get(0);
+        reverse(time.begin(),time.end());
+        time=time.substr(3);
+        reverse(time.begin(),time.end());
+        data["time"]=time;
         data["to_id"]=(ID)row.get(1);
         data["from_id"]=(ID)row.get(2);
         data["group_id"]=(ID)row.get(3);
