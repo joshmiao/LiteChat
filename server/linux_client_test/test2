@@ -128,6 +128,14 @@
 //login 10001
 
 {
+    "type":1004,
+    "data";{
+        "user_id":10001
+    }
+}
+//10001's all friends and get unread message
+
+{
     "type":1006,
     "data":{
         "user_id":10001,

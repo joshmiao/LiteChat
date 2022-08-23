@@ -640,7 +640,7 @@ void Server::addFriend(int confd,json &request)
     ID from_id=request["user_id"];
     ID to_id=request["to_id"];
     if (request["message"] == request["null"])
-        request["message"] = "";
+        request["message"] = "I',";
     std::string message=(std::string)request["message"];
 
     int res=db->createFriendRequest(from_id,to_id, message);
