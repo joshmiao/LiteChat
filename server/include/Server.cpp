@@ -190,6 +190,7 @@ void Server::Analyze(int confd,json &request)
     switch(type)
     {
         case LOGIN:userLogin(confd,request);break;
+        case LOGOUT:userLogout(confd,request);break;
         case REGISTER:userRegister(confd,request);break;
         case PRIVATE_MESSAGE:sendPrivateMessage(confd,request);break;
         case GROUP_MESSAGE:sendGroupMessage(confd,request);break;
@@ -204,6 +205,11 @@ void Server::Analyze(int confd,json &request)
         case DELETE_FRIEND:deleteFriend(confd,request);break;
         default :Error("request type error",confd);break;  
     }
+}
+
+void Server::userLogout(int confd,json &request)
+{
+    setLogout(confd);
 }
 
 //Login with user_id or email and password
@@ -285,7 +291,10 @@ void Server::getFriends(int confd,json &request)
         return;
     }
     ID user_id=request["user_id"];
+    
     //unfinished
+    auto friends=db->getFriendRelation(0,user_id);
+
     sendPrivateUnreadMessage(confd,request["user_id"]);
 }
 
@@ -378,7 +387,7 @@ void Server::sendGroupMessage(int confd,json &request)
         if(to_id==user_id)
             continue;
         bool to_online=bool(statu.get(1));
-        int to_fd=statu.get(2),success=-1;
+        int to_fd=(int)statu.get(2),success=-1;
         if(to_online==true)
         {
             message["data"]["to_id"]=(ID)to_id;
@@ -430,10 +439,10 @@ void Server::sendGroupUnreadMessage(int confd,ID user_id)
         json message;
         message["type"]=GROUP_MESSAGE;
         json data;
-        data["group_id"]=(ID)row.get(3);
-        data["from_id"]=(ID)row.get(2);
-        data["to_id"]=(ID)row.get(1);
         data["time"]=row.get(0);
+        data["to_id"]=(ID)row.get(1);
+        data["from_id"]=(ID)row.get(2);
+        data["group_id"]=(ID)row.get(3);
         data["content"]=row.get(4);
         message["data"]=data;
         message_bundle.push_back(message);
@@ -487,9 +496,9 @@ void Server::getPrivateHistory(int confd,json &request)
         json message;
         message["type"]=PRIVATE_MESSAGE;
         json data;
-        data["from_id"]=(ID)row.get(2);
-        data["to_id"]=(ID)row.get(1);
         data["time"]=row.get(0);
+        data["to_id"]=(ID)row.get(1);
+        data["from_id"]=(ID)row.get(2);
         data["content"]=row.get(3);
         message["data"]=data;
         res.push_back(message);
@@ -531,10 +540,10 @@ void Server::getGroupHistory(int confd,json &request)
         json message;
         message["type"]=GROUP_MESSAGE;
         json data;
-        data["group_id"]=(ID)row.get(3);
-        data["from_id"]=(ID)row.get(2);
-        data["to_id"]=(ID)row.get(1);
         data["time"]=row.get(0);
+        data["to_id"]=(ID)row.get(1);
+        data["from_id"]=(ID)row.get(2);
+        data["group_id"]=(ID)row.get(3);
         data["content"]=row.get(4);
         message["data"]=data;
         res.push_back(message);
