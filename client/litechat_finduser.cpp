@@ -1,5 +1,6 @@
 #include <QMessageBox>
 #include <QListWidget>
+#include <QThread>
 
 #include "litechat_server.h"
 #include "litechat_finduser.h"
@@ -91,6 +92,7 @@ void LiteChat_FindUser::acceptFriend(int currentRow){
     if(result == QMessageBox::Yes)
     {
             liteChatServer->acceptFriend(id, true);
+            QThread::msleep(50);
             liteChatServer->requestFriends();
             requestSet.erase({id, name});
     }
