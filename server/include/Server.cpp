@@ -333,9 +333,11 @@ void Server::sendPrivateMessage(int confd,json &request)
     db->addUserHistory(time,user_id,to_id,content);
     auto statu=db->getUserStatus(to_id);
     bool to_online=bool(statu.get(0));
-    int to_fd=statu.get(1),success=-1;
+    int success=-1;
     if(to_online==true)
     {
+        int to_fd=(int)statu.get(1);
+
         json result;
         result["type"]=PRIVATE_MESSAGE;
         json data;
@@ -432,9 +434,9 @@ void Server::sendPrivateUnreadMessage(int confd,ID user_id)
         time=time.substr(3);
         reverse(time.begin(),time.end());
         data["time"]=time;
-        data["to_id"]=(ID)row.get(1);
-        data["from_id"]=(ID)row.get(2);
-        data["content"]=row.get(3);
+        data["to_id"]=user_id;
+        data["from_id"]=(ID)row.get(1);
+        data["content"]=row.get(2);
         message["data"]=data;
         message_bundle.push_back(message);
     }

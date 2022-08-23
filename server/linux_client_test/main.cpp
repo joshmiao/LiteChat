@@ -143,6 +143,7 @@ int main(){
     "type":1013,
     "data":{
         "user_id":10001
+    }
 })";
     send(sock1, final_message.c_str(), final_message.size(), 0);
     usleep(100000);
@@ -186,6 +187,15 @@ int main(){
     usleep(100000);
 
     final_message = R"({
+    "type":1004,
+    "data":{
+        "user_id":10001
+    }
+})";
+    send(sock1, final_message.c_str(), final_message.size(), 0);
+    usleep(100000);
+
+    final_message = R"({
     "type":1006,
     "data":{
         "user_id":10001,
@@ -208,6 +218,15 @@ int main(){
     }
 })";
     // 10001 get history message from 10000
+    send(sock1, final_message.c_str(), final_message.size(), 0);
+    usleep(100000);
+
+    final_message = R"({
+    "type":1004,
+    "data":{
+        "user_id":10001
+    }
+})";
     send(sock1, final_message.c_str(), final_message.size(), 0);
     usleep(100000);
 
