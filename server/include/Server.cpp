@@ -118,7 +118,6 @@ void Server::Receive()
             }
             else
             {
-                puts(buf);
                 std::string str(buf);
                 int begin=0;
                 while(1)
