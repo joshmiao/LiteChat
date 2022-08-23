@@ -57,6 +57,7 @@ private:
 
 signals:
     void messageReceive(LiteChat_Dialog::Dialog_Type recieveType, int32_t fromId, QString chatName, QString msg);
+    void newFriendRecieve(LiteChat_Dialog::Dialog_Type recieveType, int32_t id, QString name);
     void loginSuccess(QString loginName, int32_t loginId);
 
 };

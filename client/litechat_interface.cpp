@@ -69,12 +69,13 @@ void LiteChat_Interface::changeCurrentDialog(int currentRow)
 
 void LiteChat_Interface::addSingleDialogListItem(LiteChat_Dialog::Dialog_Type dialogType, int32_t toId, QString chatName)
 {
+    if (dialogListIndex.count({dialogType, toId})) return;
     LiteChat_DialogListItem *newFriend = new LiteChat_DialogListItem(dialogType, toId, chatName, ui->listWidget);
-    qDebug() << "****" << ui->listWidget->count() << '\n';
     QListWidgetItem *newItem = new QListWidgetItem(ui->listWidget);
     newItem->setSizeHint(QSize(ui->listWidget->size().width() - 10, 60));
     ui->listWidget->setItemWidget(newItem, newFriend);
     dialogList[ui->listWidget->count() - 1] = newFriend;
+    dialogListIndex[{dialogType, toId}] = ui->listWidget->count() - 1;
 }
 
 void LiteChat_Interface::messageReceive(LiteChat_Dialog::Dialog_Type dialogType, int32_t fromId, QString chatName, QString msg){
