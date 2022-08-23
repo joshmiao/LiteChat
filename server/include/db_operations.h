@@ -63,9 +63,7 @@ private:
     int existGroupIDMax(); // 等待换成MAX();
     bool groupNameUnique(const std::string& email);
     mysqlx::RowResult searchUG(mysqlx::TableSelect& table_select, const std::string& type, ID id, const std::string& name);
-    mysqlx::RowResult searchHistory(mysqlx::TableSelect& table_select, const std::string& type,
-        ID src_id, ID dst_id, const std::string& time_begin, const std::string& time_end);
-    mysqlx::RowResult searchHistory(mysqlx::TableSelect& table_select, const std::string& type, ID unsend_user_id);
+    mysqlx::RowResult searchUnsendMessage(mysqlx::TableSelect& table_select, const std::string& type, ID unsend_user_id);
     void addHistory(mysqlx::Table& table, const std::string& type, 
         const std::string& send_time, ID src_id, ID dst_id, const std::string& content);
     bool friendRequestUnique(ID user_from, ID user_to);

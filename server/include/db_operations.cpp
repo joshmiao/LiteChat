@@ -108,15 +108,21 @@ mysqlx::RowResult LiteChatDatabaseAccess::searchUserHistory(ID user1_id, ID user
 }
 
 mysqlx::RowResult LiteChatDatabaseAccess::searchGroupHistory(ID src_user_id, ID dst_group_id, const std::string& time_begin, const std::string& time_end){ // id=0为群中所有人的发言
-    return searchHistory(search_group_history, "group", src_user_id, dst_group_id, time_begin, time_end);
+    std::string command = "dst_group_id = " + std::to_string(dst_group_id) + 
+        " AND send_time BETWEEN " + time_begin + " AND " + time_end;
+    if(src_user_id != 0)
+        command += " AND src_user_id = " + std::to_string(src_user_id);
+
+    search_group_history.where(command);
+    return search_group_history.execute();
 }
 
 mysqlx::RowResult LiteChatDatabaseAccess::searchUserUnsendMessage(ID unsend_user_id){
-    return searchHistory(search_user_unsend_messgae, "user", unsend_user_id);
+    return searchUnsendMessage(search_user_unsend_messgae, "user", unsend_user_id);
 }
 
 mysqlx::RowResult LiteChatDatabaseAccess::searchGroupUnsendMessage(ID unsend_user_id){
-    return searchHistory(search_group_unsend_messgae, "group", unsend_user_id);
+    return searchUnsendMessage(search_group_unsend_messgae, "group", unsend_user_id);
 }
 
 mysqlx::Row LiteChatDatabaseAccess::getUserStatus(ID user_id){
@@ -377,18 +383,7 @@ mysqlx::RowResult LiteChatDatabaseAccess::searchUG(mysqlx::TableSelect& table_se
     return table_select.execute();
 }
 
-mysqlx::RowResult LiteChatDatabaseAccess::searchHistory(mysqlx::TableSelect& table_select, const std::string& type,
-        ID src_id, ID dst_id, const std::string& time_begin, const std::string& time_end){
-    std::string command = "dst_" + type + "_id = " + std::to_string(dst_id) + 
-        " AND send_time BETWEEN " + time_begin + " AND " + time_end;
-    if(src_id != 0)
-        command += " AND src_user_id = " + std::to_string(src_id);
-
-    table_select.where(command);
-    return table_select.execute();
-}
-
-mysqlx::RowResult LiteChatDatabaseAccess::searchHistory(mysqlx::TableSelect& table_select, const std::string& type, ID unsend_user_id){
+mysqlx::RowResult LiteChatDatabaseAccess::searchUnsendMessage(mysqlx::TableSelect& table_select, const std::string& type, ID unsend_user_id){
     table_select.where("unsend_" + type + "_id = " + std::to_string(unsend_user_id));
     return table_select.execute();
 }
