@@ -48,7 +48,10 @@ void LiteChat_Dialog::receiveSingalMessage(QString msg, bool myMessage){
         dealMessageTime(time);
         LiteChat_Message* messageW = new LiteChat_Message(ui->listWidget->parentWidget());
         QListWidgetItem* item = new QListWidgetItem(ui->listWidget);
-        if (myMessage) dealMessage(messageW, item, msg, time, LiteChat_Message::User_Me);
+        if (myMessage) {
+            dealMessage(messageW, item, msg, time, LiteChat_Message::User_Me);
+            messageW->setTextSuccess();
+        }
         else dealMessage(messageW, item, msg, time, LiteChat_Message::User_She);
     }
     ui->listWidget->setCurrentRow(ui->listWidget->count()-1);
