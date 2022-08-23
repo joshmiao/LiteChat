@@ -77,11 +77,7 @@ Server::Server(int port)
         Error("listen error");
 
     //link database
-<<<<<<< HEAD
-    // db=new LiteChatDatabaseAccess("mysqlx://LiteChat:Z0136z0136@127.0.0.1");
-=======
     //db=new LiteChatDatabaseAccess("mysqlx://LiteChat:Z0136z0136@127.0.0.1");
->>>>>>> 15296679687f493a8beca08b4c2692ceea28ca05
     db=new LiteChatDatabaseAccess("mysqlx://root:Sail2Boat3A@127.0.0.1");
 }
 
