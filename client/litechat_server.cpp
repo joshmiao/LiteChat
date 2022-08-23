@@ -147,6 +147,7 @@ void LiteChat_Server::handReadyRead()
     } catch (...)
     {
         qDebug() << "Invalid sequence received\n";
+        qDebug() << recvString << '\n';
         if (recvString[0] == '*'){
             loginStatus = true;
             token = recvString.mid(1);
