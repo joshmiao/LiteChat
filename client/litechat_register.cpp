@@ -4,6 +4,8 @@
 #include "litechat_register.h"
 #include "ui_litechat_register.h"
 
+#include <regex>
+
 LiteChat_Register::LiteChat_Register(LiteChat_Server *liteChatServer ,QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::LiteChat_Register),
@@ -26,6 +28,15 @@ void LiteChat_Register::on_pushButton_clicked()
         msg.exec();
         ui->lineEdit_2->setText("");
         ui->lineEdit_3->setText("");
+        return;
+    }
+    std::regex pattern("([0-9A-Za-z\\-_\\.]+)@([0-9a-z]+\\.[a-z]{2,3}(\\.[a-z]{2})?)");
+    if (!std::regex_match(ui->lineEdit_4->text().toStdString(), pattern)){
+        QMessageBox msg;
+        msg.setIcon(QMessageBox::Warning);
+        msg.setText("您输入的邮箱不合法！请重新输入");
+        msg.exec();
+        ui->lineEdit_4->setText("");
         return;
     }
     liteChatServer->requestRegister(ui->lineEdit->text(), ui->lineEdit_2->text(), ui->lineEdit_4->text());
