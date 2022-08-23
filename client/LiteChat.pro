@@ -10,6 +10,7 @@ CONFIG += c++17
 
 SOURCES += \
     litechat_dialog.cpp \
+    litechat_finduser.cpp \
     litechat_interface.cpp \
     litechat_login.cpp \
     litechat_message.cpp \
@@ -20,6 +21,7 @@ SOURCES += \
 HEADERS += \
     json.hpp \
     litechat_dialog.h \
+    litechat_finduser.h \
     litechat_interface.h \
     litechat_login.h \
     litechat_message.h \
@@ -29,6 +31,7 @@ HEADERS += \
 
 FORMS += \
     litechat_dialog.ui \
+    litechat_finduser.ui \
     litechat_interface.ui \
     litechat_login.ui \
     litechat_register.ui \

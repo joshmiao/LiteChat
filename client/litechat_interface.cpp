@@ -10,8 +10,8 @@ LiteChat_Interface::LiteChat_Interface(LiteChat_Server *liteChatServer, QString 
     ui->setupUi(this);
     connect(ui->listWidget, &QListWidget::currentRowChanged, this, &LiteChat_Interface::changeCurrentDialog);
     currentDialog = nullptr;
-    addSingleDialogListItem(LiteChat_Dialog::Private, 10002, "测试私聊10002");
-    addSingleDialogListItem(LiteChat_Dialog::Private, 10003, "测试私聊10003");
+//    addSingleDialogListItem(LiteChat_Dialog::Private, 10002, "测试私聊10002");
+//    addSingleDialogListItem(LiteChat_Dialog::Private, 10003, "测试私聊10003");
 }
 
 LiteChat_Interface::~LiteChat_Interface()

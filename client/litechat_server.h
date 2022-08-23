@@ -17,6 +17,7 @@ class LiteChat_Dialog;
 class LiteChat_Interface;
 class LiteChat_ChatList;
 class LiteChat_Register;
+class LiteChat_FindUser;
 
 class UserInfo
 {
@@ -34,14 +35,20 @@ class LiteChat_Server : public QMainWindow
 public:
     LiteChat_Server(QWidget *parent = nullptr);
     ~LiteChat_Server();
+
     LiteChat_Login* createLoginPage();
     LiteChat_Dialog* createDialog(QString dialogName, LiteChat_Dialog::Dialog_Type dialogType, int32_t toId);
     LiteChat_Interface* createInterface(QString loginName, int32_t loginId);
     LiteChat_Register* createRegister();
+    LiteChat_FindUser* createFindUser();
+
     int sendMessage(LiteChat_Dialog::Dialog_Type dialogType, int32_t toId, QString msg);
     int requestLogin(int32_t id, QString pwd);
     int requestFriends();
     int requestMessages(int32_t toId);
+
+    int searchUser(QString username);
+    int makeFriendRequest(int32_t id);
 
 private slots:
     void on_pushButton_clicked();
@@ -61,6 +68,7 @@ signals:
     void messageReceive(LiteChat_Dialog::Dialog_Type recieveType, int32_t fromId, QString msg);
     void newFriendRecieve(LiteChat_Dialog::Dialog_Type recieveType, int32_t id, QString name);
     void loginSuccess(QString loginName, int32_t loginId);
+    void searchResultReceive(QString name, int32_t id);
 
 };
 #endif // LITECHAT_SERVER_H
