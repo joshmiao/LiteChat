@@ -36,7 +36,7 @@ int main(){
     message["data"] = data;
     final_message = to_string(message);
     send(sock0, final_message.c_str(), final_message.size(), 0);
-    usleep(1000000);
+    usleep(100000);
 
     message["type"] = 1000;
     data["email"] = "ne#1231.com";
@@ -44,7 +44,7 @@ int main(){
     message["data"] = data;
     final_message = to_string(message);
     send(sock0, final_message.c_str(), final_message.size(), 0);
-    usleep(1000000);
+    usleep(100000);
 
     message["type"] = 1001;
     data["username"] = "abab";
@@ -54,7 +54,7 @@ int main(){
     message["data"] = data;
     final_message = to_string(message);
     send(sock1, final_message.c_str(), final_message.size(), 0);
-    usleep(1000000);
+    usleep(100000);
 
     message["type"] = 1000;
     data["user_id"] = 10001;
@@ -62,7 +62,7 @@ int main(){
     message["data"] = data;
     final_message = to_string(message);
     send(sock1, final_message.c_str(), final_message.size(), 0);
-    usleep(1000000);
+    usleep(100000);
     
     final_message = R"({
     "type":1008,
@@ -71,7 +71,7 @@ int main(){
     }
 })";
     send(sock0, final_message.c_str(), final_message.size(), 0);
-    usleep(1000000);
+    usleep(100000);
 
     final_message = R"({
     "type":1009,
@@ -81,27 +81,27 @@ int main(){
     }
 })";
     send(sock0, final_message.c_str(), final_message.size(), 0);
-    usleep(1000000);
+    usleep(100000);
 
     final_message = R"({
     "type":1010,
     "data":{
-        "user_id":10001,
+        "user_id":10001
     }
 })";
     send(sock1, final_message.c_str(), final_message.size(), 0);
-    usleep(1000000);
+    usleep(100000);
 
     final_message = R"({
     "type":1011,
     "data":{
         "from_id":10000,
         "user_id":10001,
-        "accept":0
+        "accept":false
     }
 })";
     send(sock1, final_message.c_str(), final_message.size(), 0);
-    usleep(1000000);
+    usleep(100000);
 
     final_message = R"({
     "type":1009,
@@ -111,18 +111,18 @@ int main(){
     }
 })";
     send(sock0, final_message.c_str(), final_message.size(), 0);
-    usleep(1000000);
+    usleep(100000);
     
     final_message = R"({
     "type":1011,
     "data":{
         "from_id":10000,
         "user_id":10001,
-        "accept":1
+        "accept":true
     }
 })";
     send(sock1, final_message.c_str(), final_message.size(), 0);
-    usleep(1000000);
+    usleep(100000);
 
     final_message = R"({
     "type":1012,
@@ -132,7 +132,7 @@ int main(){
     }
 })";
     send(sock1, final_message.c_str(), final_message.size(), 0);
-    usleep(1000000);
+    usleep(100000);
 
     final_message = R"({
     "type":1009,
@@ -142,18 +142,18 @@ int main(){
     }
 })";
     send(sock0, final_message.c_str(), final_message.size(), 0);
-    usleep(1000000);
+    usleep(100000);
 
     final_message = R"({
     "type":1011,
     "data":{
         "from_id":10000,
         "user_id":10001,
-        "accept":1
+        "accept":true
     }
 })";
     send(sock1, final_message.c_str(), final_message.size(), 0);
-    usleep(1000000);
+    usleep(100000);
 
     final_message = R"({
     "type":1004,
@@ -162,7 +162,7 @@ int main(){
     }
 })";
     send(sock0, final_message.c_str(), final_message.size(), 0);
-    usleep(1000000);
+    usleep(100000);
 
     final_message = R"({
     "type":1002,
@@ -174,7 +174,7 @@ int main(){
     }
 })";
     send(sock0, final_message.c_str(), final_message.size(), 0);
-    usleep(1000000);
+    usleep(100000);
 
 
 //     final_message = R"({
@@ -184,7 +184,7 @@ int main(){
 //     }
 // })";
 //     send(sock1, final_message.c_str(), final_message.size(), 0);
-//     usleep(1000000);
+//     usleep(100000);
 
 
     getchar();

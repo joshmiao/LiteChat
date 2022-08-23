@@ -311,7 +311,7 @@ void Server::sendPrivateMessage(int confd,json &request)
     db->addUserHistory(time,user_id,to_id,content);
     auto statu=db->getUserStatus(to_id);
     bool to_online=bool(statu.get(1));
-    int to_fd=statu.get(2),success=-1;
+    int to_fd=statu.get(1),success=-1;
     if(to_online==true)
     {
         json result;
@@ -601,10 +601,16 @@ void Server::addFriend(int confd,json &request)
 {
     ID from_id=request["user_id"];
     ID to_id=request["to_id"];
+    if (request["message"] == request["null"])
+        request["message"] = "";
     std::string message=(std::string)request["message"];
 
-    int res=db->createFriendRequest(from_id,to_id,message);
+    int res=db->createFriendRequest(from_id,to_id, message);
     if(res==-1)
+    {
+        Error("you have already invited",confd,ADD_FRIEND);
+    }
+    else if(res==-2)
     {
         Error("you are already friends",confd,ADD_FRIEND);
     }    

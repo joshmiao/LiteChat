@@ -239,6 +239,8 @@ void LiteChatDatabaseAccess::createFriendRelation(ID user1_id, ID user2_id){
 int LiteChatDatabaseAccess::createFriendRequest(ID user_from, ID user_to, const std::string& request_message){
     if(!friendRequestUnique(user_from, user_to))
         return -1;
+    if(getFriendRelation(user_from, user_to).count() != 0)
+        return -2;
 
     mysqlx::TableInsert create_friend_request = friend_request.insert("user_from", "user_to", "request_message");
 
