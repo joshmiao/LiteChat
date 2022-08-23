@@ -203,6 +203,15 @@ void Server::Analyze(int confd,json &request)
         case GET_FRIEND_REQUEST:getFriendRequest(confd,request);break;
         case ACCEPT_FRIEND:acceptFriend(confd,request);break;
         case DELETE_FRIEND:deleteFriend(confd,request);break;
+        case CREATE_GROUP:createGroup(confd,request);break;
+        case SEARCH_GROUP:searchGroup(confd,request);break;
+        case ADD_GROUP:addGroup(confd,request);break;
+        case GET_MEMBER_REQUEST:getMemberRequest(confd,request);break;
+        case ACCEPT_MEMBER:acceptMember(confd,request);break;
+        case DELETE_MEMBER:deleteMember(confd,request);break;
+        case INVITE_MEMBER:inviteMember(confd,request);break;
+        case DELETE_GROUP:deleteGroup(confd,request);break;
+        case GET_GROUP_MEMBERS:getGroupMembers(confd,request);break;
         default :Error("request type error",confd);break;  
     }
 }
@@ -310,19 +319,6 @@ void Server::getFriends(int confd,json &request)
     sendjson(confd,result);
 
     sendPrivateUnreadMessage(confd,request["user_id"]);
-}
-
-void Server::getGroups(int confd,json &request)
-{
-    if(request["user_id"]==request["null"])
-    {
-        std::cout<<confd<<" get groups failed\n\n";
-        Error("empty user_id",confd,GET_GROUPS);
-        return;
-    }
-    ID user_id=request["user_id"];
-    //unfinished
-    sendGroupUnreadMessage(confd,request["user_id"]);
 }
 
 void Server::sendPrivateMessage(int confd,json &request)
@@ -742,4 +738,47 @@ void Server::deleteFriend(int confd,json &request)
     else{
         std::cout<<confd<<" delete friend successfully\n\n";
     }
+}
+
+void Server::createGroup(int confd,json &request)
+{
+    
+}
+
+void Server::searchGroup(int confd,json &request)
+{
+
+}
+
+void Server::addGroup(int confd,json &request)
+{
+
+}
+
+void Server::getMemberRequest(int confd,json &request)
+{
+
+}
+
+void Server::acceptMember(int confd,json &request)
+{
+
+}
+
+void Server::deleteMember(int confd,json &request)
+{
+
+}
+
+void Server::getGroups(int confd,json &request)
+{
+    if(request["user_id"]==request["null"])
+    {
+        std::cout<<confd<<" get groups failed\n\n";
+        Error("empty user_id",confd,GET_GROUPS);
+        return;
+    }
+    ID user_id=request["user_id"];
+    //unfinished
+    sendGroupUnreadMessage(confd,request["user_id"]);
 }

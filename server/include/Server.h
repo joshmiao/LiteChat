@@ -39,7 +39,6 @@ private:
     void deleteFriend(int confd,json &request);
     void getFriends(int confd,json &request);
     
-    //unfinished
     void createGroup(int confd,json &request);
     void searchGroup(int confd,json &request);
     void addGroup(int confd,json &request);
