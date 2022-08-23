@@ -156,15 +156,6 @@ int main(){
     usleep(100000);
 
     final_message = R"({
-    "type":1004,
-    "data":{
-        "user_id":10000
-    }
-})";
-    send(sock0, final_message.c_str(), final_message.size(), 0);
-    usleep(100000);
-
-    final_message = R"({
     "type":1002,
     "data":{
         "user_id":10000,
@@ -175,6 +166,14 @@ int main(){
 })";
     send(sock0, final_message.c_str(), final_message.size(), 0);
     usleep(100000);
+
+    final_message = R"({
+    "type":1004,
+    "data":{
+        "user_id":10001
+    }
+})";
+    send(sock1, final_message.c_str(), final_message.size(), 0);
 
 
 //     final_message = R"({

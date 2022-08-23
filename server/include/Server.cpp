@@ -176,13 +176,14 @@ void Server::Analyze(int confd,json &request)
     return;
     
     std::cout<<std::setw(4)<<request<<'\n';
-
-    std::string token=(std::string)db->getUserStatus((ID)request["data"]["user_id"]).get(2);
-    if(token!=(std::string)request["token"])
-    {
-        Error("token error",confd,TOKEN);
-        return;
-    }
+    
+    //finished
+    // std::string token=(std::string)db->getUserStatus((ID)request["data"]["user_id"]).get(2);
+    // if(token!=(std::string)request["token"])
+    // {
+    //     Error("token error",confd,TOKEN);
+    //     return;
+    // }
 
     int type=(int)request["type"];
     request=request["data"];
@@ -309,7 +310,7 @@ void Server::sendPrivateMessage(int confd,json &request)
     std::string time=request["time"];
     db->addUserHistory(time,user_id,to_id,content);
     auto statu=db->getUserStatus(to_id);
-    bool to_online=bool(statu.get(1));
+    bool to_online=bool(statu.get(0));
     int to_fd=statu.get(1),success=-1;
     if(to_online==true)
     {
@@ -404,10 +405,10 @@ void Server::sendPrivateUnreadMessage(int confd,ID user_id)
         json message;
         message["type"]=PRIVATE_MESSAGE;
         json data;
-        data["from_id"]=(ID)row.get(2);
-        data["to_id"]=(ID)row.get(1);
-        data["content"]=row.get(3);
-        data["time"]=row.get(0);
+        data["from_id"]=(ID)row.get(1);
+        data["to_id"]=(ID)user_id;
+        data["content"]=row.get(2);
+        data["time"]=(std::string)row.get(0);
         message["data"]=data;
         message_bundle.push_back(message);
     }
