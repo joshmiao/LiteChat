@@ -65,13 +65,30 @@ void LiteChat_Server::handReadyRead()
 {
     QByteArray recvArray = client->readAll();
     QString recvString = QString::fromUtf8(recvArray);
-    json j;
+    int begin = 0;
+    while (true){
+        int k = begin + 1, seq = 1;
+        for(; seq && k < recvString.length(); k++)
+        if(recvString[k] == '{') seq++;
+        else if(recvString[k] == '}')seq--;
+
+        QString str=recvString.mid(begin,k-begin);
+        settleJson(str);
+
+        if(k==recvString.length())break;
+        else begin=k;
+    }
+
+    ui->textEdit->append(recvString);
+}
+
+void LiteChat_Server::settleJson(QString str)
+{
     try
     {
-
+        json j;
 //      {"data":{"friends":[{"user_id":66666,"user_name":"nonono1"},{"user_id":88888,"user_name":"nonono2"}],"result":"success_get_friends"},"type":1004}
-
-        j = json::parse(recvString.toStdString());
+        j = json::parse(str.toStdString());
         qDebug() << "this is valid to parse:" << QString::fromStdString(to_string(j))<< '\n';
         if (!j["type"].is_number_integer()) throw std::runtime_error("the format is invalid!");
         if (j["type"] == _REGISTER)
@@ -147,17 +164,8 @@ void LiteChat_Server::handReadyRead()
     } catch (...)
     {
         qDebug() << "Invalid sequence received\n";
-        if (recvString[0] == '*'){
-            loginStatus = true;
-            token = recvString.mid(1);
-            userInfo.id = 10001;
-            userInfo.username = "test username";
-            emit loginSuccess("test username", 10001);
-        }
     }
-    ui->textEdit->append(recvString);
 }
-
 int LiteChat_Server::sendtoServer(json j)
 {
     if (!serverStatus) return -1;

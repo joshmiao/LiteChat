@@ -61,6 +61,7 @@ private slots:
 
 private:
     int sendtoServer(json j);
+    void settleJson(QString str);
     Ui::LiteChat_Server *ui;
     QTcpSocket *client;
     bool serverStatus, loginStatus;

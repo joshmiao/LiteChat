@@ -118,13 +118,41 @@ void Server::Receive()
             }
             else
             {
-                if(json::accept(buf)&&buf[0]=='{'&&buf[strlen(buf)-1]=='}')
+                std::string str(buf);
+                int begin=0;
+                while(1)
                 {
-                    std::cout<<"accepted a json from "<<confd<<'\n';
-                    json request=json::parse(buf);
-                    Analyze(confd,request);
+                    if(str[begin]!='{')
+                    {
+                        Error("request format error",confd,REQUEST);
+                        break;
+                    }
+
+                    int k=begin+1,seq=1;
+                    for(;seq&&k<str.length();k++)
+                    if(str[k]=='{')seq++;
+                    else if(str[k]=='}')seq--;
+                    if(seq)
+                    {
+                        Error("request format error",confd,REQUEST);
+                        break;
+                    }
+
+                    std::string req=str.substr(begin,k-begin);
+                    if(json::accept(req.c_str())&&req[0]=='{'&&req[req.length()-1]=='}')
+                    {
+                        std::cout<<"accepted a json from "<<confd<<'\n';
+                        json request=json::parse(req.c_str());
+                        Analyze(confd,request);
+                    }
+                    else{
+                        Error("request format error",confd,REQUEST);
+                        break;
+                    }
+                    
+                    if(k==str.length())break;
+                    else begin=k;
                 }
-                else Error("request format error",confd,REQUEST);
             }
         }
     }
