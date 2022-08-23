@@ -623,9 +623,9 @@ void Server::searchUser(int confd,json &request)
         user["user_name"]=row.get(1);
         user["email"]=row.get(2);
         user["birthday"]=row.get(3);
+        user["avatar_filename"]=row.get(4);
         user["signature"]=row.get(5);
         
-        user["avatar_filename"]="default.jpg";
         //unfinished
         //user avatar_filename and resoure?
         
@@ -891,7 +891,6 @@ void Server::searchGroup(int confd,json &request)
         json group;
         group["group_id"]=(ID)row.get(0);
         group["group_name"]=row.get(1);
-        //unfinished
         group["group_desciption"]=row.get(2);
         res.push_back(group);
     }
@@ -923,7 +922,6 @@ void Server::addGroup(int confd,json &request)
     }
     else if(res==-2)
     {
-        //unfinished
         Error("you are already in this group",confd,ADD_GROUP);
     }    
     else{
@@ -938,13 +936,15 @@ void Server::addGroup(int confd,json &request)
 
 void Server::getMemberRequest(int confd,json &request)
 {
-    auto requests=db->getGroupRequest(0,request["group_id"]);
+    ID group_id=request["group_id"];
+    auto requests=db->getGroupRequest(0,group_id);
     std::vector<json>res;
     while(requests.count()>0)
     {
         auto row=requests.fetchOne();
         json request;
-        request["user_id"]=(ID)row.get(0);
+        request["from_id"]=(ID)row.get(0);
+        request["group_id"]=group_id;
         request["message"]=row.get(2);
         res.push_back(request);
     }
@@ -963,7 +963,35 @@ void Server::getMemberRequest(int confd,json &request)
 
 void Server::acceptMember(int confd,json &request)
 {
+    ID from_id=request["from_id"];
+    ID group_id=request["group_id"];
+    bool accept=(bool)request["accept"];
 
+    if(!accept)
+    {
+        json result;
+        result["type"]=ACCEPT_FRIEND;
+        json data;
+        data["result"]="refuse successfully";
+        result["data"]=data;
+        sendjson(confd,result);
+        return;
+    }
+
+    db->createFriendRelation(from_id,to_id);
+    json result;
+    result["type"]=ACCEPT_FRIEND;
+    json data;
+    data["result"]="accept successfully";
+    result["data"]=data;
+    int success=sendjson(confd,result);
+    if(success==-1)
+    {
+        Error("accept failed",confd,ACCEPT_FRIEND);
+    }
+    else{
+        std::cout<<confd<<" accept friend successfully\n\n";
+    }
 }
 
 void Server::deleteMember(int confd,json &request)
