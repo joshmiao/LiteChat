@@ -1,6 +1,6 @@
-SELECT * FROM basic_user_data;
+-- SELECT * FROM basic_user_data;
 SELECT * FROM basic_group_data;
--- SELECT * FROM user_status;
+SELECT * FROM user_status;
 -- SELECT * FROM message_to_user;
 SELECT * FROM message_to_group;
 -- SELECT * FROM unsend_message_from_user;
@@ -8,5 +8,5 @@ SELECT * FROM unsend_message_from_group;
 -- SELECT * FROM friend_relation;
 -- SELECT * FROM friend_request;
 SELECT * FROM group_member;
-SELECT * FROM group_request;
+-- SELECT * FROM group_request;
 -- select MAX(group_id) from basic_group_data;
