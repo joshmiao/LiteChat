@@ -177,13 +177,12 @@ void Server::Analyze(int confd,json &request)
     
     std::cout<<std::setw(4)<<request<<'\n';
 
-    //unfinished
-    // std::string token=db->getToken(request["user_id"]);
-    // if(token!=(std::string)request["token"])
-    // {
-    //     Error("token error",confd,TOKEN);
-    //     return;
-    // }
+    std::string token=(std::string)db->getUserStatus((ID)request["data"]["user_id"]).get(2);
+    if(token!=(std::string)request["token"])
+    {
+        Error("token error",confd,TOKEN);
+        return;
+    }
 
     int type=(int)request["type"];
     request=request["data"];

@@ -24,10 +24,10 @@ public:
         Private,
         Group,
     };
-    QString chatName;
+    QString dialogName;
     Dialog_Type dialogType;
     int32_t userId, toId;
-    explicit LiteChat_Dialog(LiteChat_Server *liteChatServer, QString chatName, Dialog_Type dialogType, int toId, QWidget *parent = nullptr);
+    explicit LiteChat_Dialog(LiteChat_Server *liteChatServer, QString dialogName, Dialog_Type dialogType, int toId, QWidget *parent = nullptr);
     ~LiteChat_Dialog();
     void dealMessage(LiteChat_Message *messageW, QListWidgetItem *item, QString text, QString time, LiteChat_Message::User_Type type);
     void dealMessageTime(QString curMsgTime);
