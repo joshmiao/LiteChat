@@ -64,10 +64,26 @@ void LiteChat_Server::handReadyRead()
     QByteArray recvArray = client->readAll();
     QString recvString = QString::fromUtf8(recvArray);
     json j;
-    try {
+    try
+    {
+        /*
+         {"data":{"friends":[{"user_id":66666,"user_name":"nonono1"},{"user_id":88888,"user_name":"nonono2"}],"result":"success_get_friends"},"type":1004}
+        */
         j = json::parse(recvString.toStdString());
+        qDebug() << "this is valid to parse:" << QString::fromStdString(to_string(j))<< '\n';
+        if (j["type"] == _GET_FRIENDS){
+            j = j["data"];
+            if (std::string(j["result"]) != "success_get_friends") return;
+            for (const auto &f : j["friends"])
+            {
+                int32_t id = f["user_id"];
+                QString name = QString::fromStdString(std::string(f["user_name"]));
+                emit newFriendRecieve(LiteChat_Dialog::Private, id, name);
+            }
+        }
 
-    } catch (...) {
+    } catch (...)
+    {
         qDebug() << "Invalid sequence received\n";
         if (recvString[0] == '#'){
             qDebug() << recvString.mid(1);
@@ -136,6 +152,7 @@ LiteChat_Dialog* LiteChat_Server::createDialog(QString chatName, LiteChat_Dialog
 LiteChat_Interface* LiteChat_Server::createInterface(QString loginName, int32_t loginId){
     LiteChat_Interface *interface = new LiteChat_Interface(this, loginName, loginId);
     connect(this, &LiteChat_Server::messageReceive, interface, &LiteChat_Interface::messageReceive);
+    connect(this, &LiteChat_Server::newFriendRecieve, interface, &LiteChat_Interface::addSingleDialogListItem);
     return interface;
 }
 

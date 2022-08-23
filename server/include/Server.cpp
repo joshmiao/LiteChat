@@ -24,6 +24,7 @@ using json = nlohmann::json;
 
 int Server::sendjson(int confd,json &result){
     std::string str = to_string(result);
+    std::cout << std::setw(4) << result << std::endl;
     int ret=send(confd,str.c_str(),str.size(),0);
     if(ret<0){
         printf("send to %d failed\n",confd);
