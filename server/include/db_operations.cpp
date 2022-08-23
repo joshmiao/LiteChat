@@ -195,7 +195,7 @@ void LiteChatDatabaseAccess::addUserHistory(const std::string& send_time, ID src
 }
 
 void LiteChatDatabaseAccess::addGroupHistory(const std::string& send_time, ID src_user_id, ID dst_group_id, const std::string& content){
-    addHistory(message_to_user, "group", send_time, src_user_id, dst_group_id, content);
+    addHistory(message_to_group, "group", send_time, src_user_id, dst_group_id, content);
 }
 
 void LiteChatDatabaseAccess::addUserUnsendMessage(const std::string& send_time, ID unsend_user_id, ID src_user_id, const std::string& content){
@@ -206,7 +206,7 @@ void LiteChatDatabaseAccess::addUserUnsendMessage(const std::string& send_time, 
 }
 
 void LiteChatDatabaseAccess::addGroupUnsendMessage(const std::string& send_time, ID unsend_user_id, ID src_user_id, ID dst_group_id, const std::string& content){
-    mysqlx::TableInsert add_group_unsend_messgae= user_unsend_messgae.insert("send_time", "unsend_user_id", "src_user_id", "dst_group_id", "content");
+    mysqlx::TableInsert add_group_unsend_messgae= group_unsend_messgae.insert("send_time", "unsend_user_id", "src_user_id", "dst_group_id", "content");
 
     add_group_unsend_messgae.values(send_time, unsend_user_id, src_user_id, dst_group_id, content);
     add_group_unsend_messgae.execute();
@@ -302,7 +302,7 @@ void LiteChatDatabaseAccess::deleteGroup(ID group_id){
 }
 
 void LiteChatDatabaseAccess::deleteGroupHistory(ID group_id){
-    delete_group_history.where("group_id = " + std::to_string(group_id));
+    delete_group_history.where("dst_group_id = " + std::to_string(group_id));
     delete_group_history.execute();
 }
 
@@ -316,7 +316,7 @@ void LiteChatDatabaseAccess::deleteGroupUnsendMessage(ID unsend_user_id, ID grou
     if(unsend_user_id != 0)
         command += "AND unsend_user_id = " + std::to_string(unsend_user_id);
     if(group_id != 0)
-        command += "AND group_id = " + std::to_string(group_id);
+        command += "AND dst_group_id = " + std::to_string(group_id);
 
     delete_group_unsend_messgae.where(command);
     delete_group_unsend_messgae.execute();
@@ -384,7 +384,7 @@ mysqlx::RowResult LiteChatDatabaseAccess::searchUG(mysqlx::TableSelect& table_se
 }
 
 mysqlx::RowResult LiteChatDatabaseAccess::searchUnsendMessage(mysqlx::TableSelect& table_select, const std::string& type, ID unsend_user_id){
-    table_select.where("unsend_" + type + "_id = " + std::to_string(unsend_user_id));
+    table_select.where("unsend_user_id = " + std::to_string(unsend_user_id));
     return table_select.execute();
 }
 

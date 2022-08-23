@@ -84,8 +84,8 @@ Server::Server(int port)
         Error("listen error");
 
     //link database
-    db=new LiteChatDatabaseAccess("mysqlx://LiteChat:Z0136z0136@127.0.0.1");
-    //db=new LiteChatDatabaseAccess("mysqlx://root:Sail2Boat3A@127.0.0.1");
+    //db=new LiteChatDatabaseAccess("mysqlx://LiteChat:Z0136z0136@127.0.0.1");
+    db=new LiteChatDatabaseAccess("mysqlx://root:Sail2Boat3A@127.0.0.1");
 }
 
 //accept client
@@ -438,14 +438,15 @@ void Server::sendGroupMessage(int confd,json &request)
     auto group_member=db->getGroupMember(group_id);
     while(group_member.count()>0)
     {
-        ID to_id=(ID)(group_member.fetchOne().get(0));
+        ID to_id=(ID)(group_member.fetchOne().get(1));
         auto statu=db->getUserStatus(to_id);
         if(to_id==user_id)
             continue;
-        bool to_online=bool(statu.get(1));
-        int to_fd=(int)statu.get(2),success=-1;
+        bool to_online=bool(statu.get(0));
+        int success=-1;
         if(to_online==true)
         {
+            int to_fd=(int)statu.get(1);
             message["data"]["to_id"]=(ID)to_id;
             success=sendjson(to_fd,message);
         }
@@ -504,10 +505,10 @@ void Server::sendGroupUnreadMessage(int confd,ID user_id)
         time=time.substr(3);
         reverse(time.begin(),time.end());
         data["time"]=time;
-        data["to_id"]=(ID)row.get(1);
-        data["from_id"]=(ID)row.get(2);
-        data["group_id"]=(ID)row.get(3);
-        data["content"]=row.get(4);
+        data["to_id"]=user_id;
+        data["from_id"]=(ID)row.get(1);
+        data["group_id"]=(ID)row.get(2);
+        data["content"]=(std::string)row.get(3);
         message["data"]=data;
         message_bundle.push_back(message);
     }
@@ -813,7 +814,15 @@ void Server::inviteMember(int confd,json &request){
     ID user_id = request["user_id"];
     ID to_id = request["to_id"];
     ID group_id = request["group_id"];
-
+    
+    if (db->getGroupsOfAUser(to_id, group_id).count() != 0){
+        Error("failed: the invitee is already in this group",confd,ADD_GROUP);
+        return;
+    }
+    if (db->getGroupsOfAUser(user_id, group_id).count() == 0){
+        Error("failed: you are not in this group",confd,ADD_GROUP);
+        return;
+    }
     db->addUserToGroup(group_id,to_id);
     
     json result, data;
@@ -885,8 +894,8 @@ void Server::getGroupMembers(int confd,json &request){
 
 void Server::createGroup(int confd,json &request)
 {
-    if(request["group_desription"]==request["null"])
-        request["group_desription"]="";
+    if(request["group_description"]==request["null"])
+        request["group_description"]="";
     ID res=db->createGroup(request["group_name"],request["user_id"],request["group_description"]);
     json result;
     result["type"]=CREATE_GROUP;
@@ -896,6 +905,7 @@ void Server::createGroup(int confd,json &request)
         Error("group name exists",confd,CREATE_GROUP);
     }
     else{
+        db->addUserToGroup(res, request["user_id"]);
         json data;
         data["group_id"]=res;
         result["data"]=data;
@@ -1033,6 +1043,17 @@ void Server::deleteMember(int confd,json &request)
 {
     ID member_id=request["member_id"];
     ID group_id=request["group_id"];
+    ID owner_id = (ID)db->getBasicGroupData(group_id).get(2), member_confd = (int)db->getUserStatus(member_id).get(1); 
+    auto owner_status = db->getUserStatus(owner_id);
+    if(member_id == owner_id){
+        Error("failed: you are the owner, you can not quit!",confd,DELETE_MEMBER);
+        return;
+    }
+    if(confd != member_confd && ((bool)owner_status.get(0) == false || confd != (int)owner_status.get(1))){
+        Error("failed: you do not have the authority!",confd,DELETE_MEMBER);
+        return;
+    }
+
     db->removeUserFromGroup(group_id,member_id);
     json result;
     result["type"]=DELETE_MEMBER;
@@ -1067,9 +1088,9 @@ void Server::getGroups(int confd,json &request)
         ID group_id;
         group["group_id"]=group_id=(ID)groups.fetchOne().get(0);
         auto row=db->getBasicGroupData(group_id);
-        group["group_name"]=row.get(1);
-        group["owner_id"]=row.get(2);
-        group["description"]=row.get(3);
+        group["group_name"]=(std::string)row.get(1);
+        group["owner_id"]=(ID)row.get(2);
+        group["description"]=(std::string)row.get(3);
 
         data.push_back(group);
     }
