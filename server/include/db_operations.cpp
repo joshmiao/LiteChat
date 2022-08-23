@@ -35,7 +35,7 @@ LiteChatDatabaseAccess::LiteChatDatabaseAccess(const std::string& url):
         registered_user_count(basic_user_data, "COUNT(*)"),
         existed_group_id_max(basic_group_data, "MAX(group_id)"),
         get_basic_user_data(basic_user_data, "user_id", "user_name", "email", "DATE_FORMAT(birthday, '%Y-%m-%d')", "avatar_filename", "signature"), 
-        get_basic_group_data(basic_group_data, "group_name", "owner_id", "group_description"),
+        get_basic_group_data(basic_group_data, "group_id", "group_name", "owner_id", "group_description"),
         search_user_history(message_to_user, "DATE_FORMAT(send_time, '%Y-%m-%d %T:%f')", "src_user_id", "dst_user_id", "content"),
         search_group_history(message_to_group, "DATE_FORMAT(send_time, '%Y-%m-%d %T:%f')", "src_user_id", "dst_group_id", "content"),
         search_user_unsend_messgae(user_unsend_messgae, "DATE_FORMAT(send_time, '%Y-%m-%d %T:%f')", "src_user_id", "content"), 
