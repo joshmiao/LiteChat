@@ -292,10 +292,21 @@ void Server::getFriends(int confd,json &request)
         Error("empty user_id",confd,GET_FRIENDS);
         return;
     }
-    ID user_id=request["user_id"];
     
-    //unfinished
-    auto friends=db->getFriendRelation(0,user_id);
+    ID user_id=request["user_id"];
+    auto friends=db->getFriendRelation(user_id,0);
+    std::vector<json>data;
+    while(friends.count()>0)
+    {
+        auto row=friends.fetchOne();
+        json _friend;
+        _friend["friend_id"]=(ID)row.get(1);
+        data.push_back(_friend);
+    }
+    json result;
+    result["type"]=GET_FRIENDS;
+    result["data"]=data;
+    sendjson(confd,result);
 
     sendPrivateUnreadMessage(confd,request["user_id"]);
 }
