@@ -209,6 +209,7 @@ void Server::Analyze(int confd,json &request)
 
 void Server::userLogout(int confd,json &request)
 {
+    std::cout<<confd<<" logout successfully\n\n";
     setLogout(confd);
 }
 
