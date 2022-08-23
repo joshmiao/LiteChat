@@ -302,7 +302,7 @@ void LiteChatDatabaseAccess::deleteGroup(ID group_id){
 }
 
 void LiteChatDatabaseAccess::deleteGroupHistory(ID group_id){
-    delete_group_history.where("group_id = " + std::to_string(group_id));
+    delete_group_history.where("dst_group_id = " + std::to_string(group_id));
     delete_group_history.execute();
 }
 
@@ -316,7 +316,7 @@ void LiteChatDatabaseAccess::deleteGroupUnsendMessage(ID unsend_user_id, ID grou
     if(unsend_user_id != 0)
         command += "AND unsend_user_id = " + std::to_string(unsend_user_id);
     if(group_id != 0)
-        command += "AND group_id = " + std::to_string(group_id);
+        command += "AND dst_group_id = " + std::to_string(group_id);
 
     delete_group_unsend_messgae.where(command);
     delete_group_unsend_messgae.execute();

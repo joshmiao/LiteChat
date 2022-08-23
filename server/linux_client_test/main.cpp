@@ -28,7 +28,7 @@ int main(){
     connect(sock1, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
     connect(sock2, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
 
-    json request;
+    json request, data;
     std::string final_message;
 
     final_message = R"()";
@@ -101,7 +101,7 @@ int main(){
     }
 })";
     // register 10002
-    send(sock0, final_message.c_str(), final_message.size(), 0);
+    send(sock2, final_message.c_str(), final_message.size(), 0);
     usleep(100000);
 
     final_message = R"({
@@ -112,71 +112,89 @@ int main(){
     }
 })";
     // login 10002
-    send(sock0, final_message.c_str(), final_message.size(), 0);
+    send(sock2, final_message.c_str(), final_message.size(), 0);
     usleep(100000);
+    request.clear();
+    data.clear();
     
-    request["group_name"] = "GG1";
-    request["user_id"] = 10000;
-    request["data"] = request;
+    data["group_name"] = "GG1";
+    data["user_id"] = 10000;
+    request["data"] = data;
     request["type"] = CREATE_GROUP;
     final_message = to_string(request);
     send(sock0, final_message.c_str(), final_message.size(), 0);
     usleep(100000);
+    request.clear();
+    data.clear();
     // 10000 create group 10000
 
-    request["user_id"] = 10001;
-    request["group_id"] = 10000;
-    request["data"] = request;
+    data["user_id"] = 10001;
+    data["group_id"] = 10000;
+    request["data"] = data;
     request["type"] = DELETE_GROUP;
     final_message = to_string(request);
     send(sock1, final_message.c_str(), final_message.size(), 0);
     usleep(100000);
+    request.clear();
+    data.clear();
     // 10001 delete group 10000 failed
 
-    request["user_id"] = 10000;
-    request["group_id"] = 10000;
-    request["data"] = request;
+    data["user_id"] = 10000;
+    data["group_id"] = 10000;
+    request["data"] = data;
     request["type"] = DELETE_GROUP;
     final_message = to_string(request);
     send(sock0, final_message.c_str(), final_message.size(), 0);
     usleep(100000);
-    // 10001 delete group 10000
+    request.clear();
+    data.clear();
+    // 10000 delete group 10000
 
-    request["group_name"] = "GG0";
-    request["user_id"] = 10000;
-    request["data"] = request;
+    data["group_name"] = "GG0";
+    data["user_id"] = 10000;
+    request["data"] = data;
     request["type"] = CREATE_GROUP;
     final_message = to_string(request);
     send(sock0, final_message.c_str(), final_message.size(), 0);
     usleep(100000);
+    request.clear();
+    data.clear();
     // 10000 create group 10000
 
-    request["group_name"] = "GG0";
-    request["user_id"] = 10001;
-    request["data"] = request;
+    data["group_name"] = "GG0";
+    data["user_id"] = 10001;
+    request["data"] = data;
     request["type"] = CREATE_GROUP;
     final_message = to_string(request);
     send(sock1, final_message.c_str(), final_message.size(), 0);
     usleep(100000);
+    request.clear();
+    data.clear();
     // 10000 create group 10001 naming GG0 failed
 
-    request["group_name"] = "GG1";
-    request["user_id"] = 10001;
-    request["data"] = request;
+    data["group_name"] = "GG1";
+    data["user_id"] = 10001;
+    request["data"] = data;
     request["type"] = CREATE_GROUP;
     final_message = to_string(request);
     send(sock1, final_message.c_str(), final_message.size(), 0);
     usleep(100000);
+    request.clear();
+    data.clear();
     // 10001 create group 10001 naming GG1
 
-    request["group_name"] = "GG2";
-    request["user_id"] = 10002;
-    request["data"] = request;
+    data["group_name"] = "GG2";
+    data["user_id"] = 10002;
+    request["data"] = data;
     request["type"] = CREATE_GROUP;
     final_message = to_string(request);
     send(sock2, final_message.c_str(), final_message.size(), 0);
     usleep(100000);
+    request.clear();
+    data.clear();
     // 10002 create group 10002
+
+    
 
     getchar();
 

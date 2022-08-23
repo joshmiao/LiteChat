@@ -84,8 +84,8 @@ Server::Server(int port)
         Error("listen error");
 
     //link database
-    db=new LiteChatDatabaseAccess("mysqlx://LiteChat:Z0136z0136@127.0.0.1");
-    //db=new LiteChatDatabaseAccess("mysqlx://root:Sail2Boat3A@127.0.0.1");
+    //db=new LiteChatDatabaseAccess("mysqlx://LiteChat:Z0136z0136@127.0.0.1");
+    db=new LiteChatDatabaseAccess("mysqlx://root:Sail2Boat3A@127.0.0.1");
 }
 
 //accept client
@@ -833,8 +833,8 @@ void Server::getGroupMembers(int confd,json &request){
 
 void Server::createGroup(int confd,json &request)
 {
-    if(request["group_desription"]==request["null"])
-        request["group_desription"]="";
+    if(request["group_description"]==request["null"])
+        request["group_description"]="";
     ID res=db->createGroup(request["group_name"],request["user_id"],request["group_description"]);
     json result;
     result["type"]=CREATE_GROUP;

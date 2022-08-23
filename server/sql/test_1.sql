@@ -7,5 +7,5 @@ DELETE FROM friend_relation;
 DELETE FROM friend_request;
 DELETE FROM group_member;
 DELETE FROM group_request;
-DELETE FROM basic_user_data;
 DELETE FROM basic_group_data;
+DELETE FROM basic_user_data;
