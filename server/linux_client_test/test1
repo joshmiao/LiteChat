@@ -1,0 +1,141 @@
+{
+    "type":1001,
+    "data":{
+        "username":"dqwdqd",
+        "pwd":"00000000000000000000000000000000",
+        "email":"ne#1231.com",
+        "birthday":"2001-08-02"
+    }
+}
+//register 10000
+
+{
+    "type":1000,
+    "data":{
+        "pwd":"00000000000000000000000000000000",
+        "email":"ne#1231.com"
+    }
+}
+//login 10000
+
+{
+    "type":1001,
+    "data":{
+        "username":"abab",
+        "pwd":"00000000000000000000000000000000",
+        "email":"2333.com",
+        "birthday":"2000-08-02"
+    }
+}
+//register 10001
+
+{
+    "type":1000,
+    "data":{
+        "pwd":"00000000000000000000000000000000",
+        "user_id":10001
+    }
+}
+//login 10001
+
+{
+    "type":1008,
+    "data":{
+        "keyword":"10001"
+    }
+}
+//10000 search 10001 as id or name
+
+{
+    "type":1009,
+    "data":{
+        "user_id":10000,
+        "to_id":10001
+    }
+}
+//10000 add 10001
+
+{
+    "type":1010,
+    "data":{
+        "user_id":10001,
+    }
+}
+//10001 get all friend requests
+
+{
+    "type":1011,
+    "data":{
+        "from_id":10000,
+        "user_id":10001,
+        "accept":false
+    }
+}
+//10001 refuse 10000
+
+{
+    "type":1009,
+    "data":{
+        "user_id":10000,
+        "to_id":10001
+    }
+}
+//10000 add 10001
+
+{
+    "type":1011,
+    "data":{
+        "from_id":10000,
+        "user_id":10001,
+        "accept":true
+    }
+}
+//10001 accept 10000
+
+{
+    "type":1012,
+    "data":{
+        "user_id":10001,
+        "friend_id":10000
+    }
+}
+//10001 delete 10000
+
+{
+    "type":1009,
+    "data":{
+        "user_id":10000,
+        "to_id":10001,
+        "message":"whe delele me?"
+    }
+}
+//10000 add 10001
+
+{
+    "type":1011,
+    "data":{
+        "from_id":10000,
+        "user_id":10001,
+        "accept":true
+    }
+}
+//10001 accept 10000
+
+{
+    "type":1004,
+    "data":{
+        "user_id":10000
+    }
+}
+//get 10000's all friends
+
+{
+    "type":1002,
+    "data":{
+        "user_id":10000,
+        "to_id":10001,
+        "time":"2022-01-01 01:31:00",
+        "content":"hello"
+    }
+}
+// 10000 send private message to 10001

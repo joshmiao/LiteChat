@@ -1,8 +1,10 @@
 Error:
 {
     "type":request["type"],
-    "result":"failed",
-    "error":error_message
+    "data":{
+        "result":"failed",
+        "error":error_message
+    }
 }//server to client to send error message
 
 
@@ -15,57 +17,171 @@ Alive:
 Login:
 {
     "type":LOGIN,
-    "user_id":
-    "email":
-    "pwd":
+    "data":{
+        "user_id":
+        "email":
+        "pwd":
+    }
 }//client to server to login
-//pwd and one of email and user_id are required 
-
+//**pwd and one of email and user_id are required**
 {
     "type":LOGIN,
-    "result":"success_login",
-    "user_id":
-    "email":
-    "user_name":
-    "birthday":
-    "avatar_filename":
-    "signature"
+    "date":{
+        "result":"login successfully",
+        "user_id":
+        "email":
+        "user_name":
+        "birthday":
+        "avatar_filename":
+        "signature":
+        "token":
+    }
 }//server to client
 
 
 Register:
 {
     "type":REGISTER,
-    "email":
-    "pwd":
-    "username":
-    "birthday":
+    "data":{
+        "email":
+        "pwd":
+        "username":
+        "birthday":
+    }
 }//client to server to register
-
 {
     "type":REGISTER,
-    "result":"success_register"
-    "user_id":
+    "data":{
+        "result":"register"
+        "user_id":
+    }
 }//server to client
+
+
+Logout
+{
+    "type":LOGOUT,
+    "token":
+}//client to server to logout
+
+
+SearchUser
+{
+    "type":SEARCH_USER,
+    "token":
+    "data":{
+        "user_id"
+        "keyword":
+    }
+}// client to server to search user by keyword
+{
+    "type":SEARCH_USER,
+    "data":[
+        {
+            "user_id":
+            "user_name":
+            "email":
+            "birthday":
+            "avarta_filename":
+        },
+        ...
+    ]
+}
+
+addFriend
+{
+    "type":ADD_FRIEND,
+    "token":
+    "data":{
+        "user_id":
+        "to_id":
+        "message":
+    }
+}//invite others to be your friend
+{
+    "type":ADD_FRIEND,
+    "data":{
+        "result":"send successfully"
+    }
+}
+
+
+getFriendRequest
+{
+    "type":GET_FRIEND_REQUEST,
+    "token":
+    "data":{
+        "user_id":
+    }
+}
+{
+    "type":GET_FRIEND_REQUEST,
+    "data":[
+        {
+            "from_id":
+            "message":
+        },
+        ...
+    ]
+}
+
+
+acceptFriend
+{
+    "type":ACCEPT_FRIEND,
+    "token":
+    "data":{
+        "user_id":
+        "from_id":
+        "accept"://true or false
+    }
+}//accept or not
+{
+    "type":ACCEPT_FRIEND,
+    "data":{
+        "result":"refuse successfully"/"accept successfully"
+    }
+}
+
+
+deleteFriend
+{
+    "type":DELETE_FRIEND,
+    "token":
+    "data":{
+        "user_id":
+        "friend_id":
+    }
+}
+{
+    "type":DELETE_FRIEND,
+    "token":
+    "data":{
+        "user_id":
+        "friend_id":
+    }
+}
+
 
 getFriends
 {
     "type":GET_FRIENDS,
-    "user_id":
+    "token":
+    "data":{
+        "user_id":
+    }
 }//client to server to get friends
-
 {
     "type":GET_FRIENDS,
-    "result":"success_get_friends",
-    "friends":[
+    "data":[
         {
-            "user_id":
-            "user_name":
+            "friend_id":
+            "friend_name":
             "avatar_filename":
             "signature":
             "birthday":
-            "is_online":
-        }
+            "is_online"://true or false
+        },
         ....
     ]
 }//server to client
@@ -74,100 +190,71 @@ getFriends
 sendPrivateMessage
 {
     "type":PRIVATE_MESSAGE,
-    "user_id":
-    "to_id":
-    "time":
-    "content":
+    "token":
+    "data":{
+        "user_id":
+        "to_id":
+        "time":
+        "content":
+    }
 }//client to server to send private message
-
 {
     "type":PRIVATE_MESSAGE,
-    "from_id":
-    "to_id":
-    "time":
-    "content":
+    "data":{
+        "from_id":
+        "to_id":
+        "time":
+        "content":
+    }
 }
 //server to client to forward private message
-
 {
     "type":PRIVATE_MESSAGE,
-    "result":"success send"/"wait send"
-}//server to client sender
-
-
-sendGroupMessage
-{
-    "type":GROUP_MESSAGE,
-    "user_id"
-    "group_id":
-    "time":
-    "content":
-}//client to server to send group message
-
-{
-    "type":GROUP_MESSAGE,
-    "group_id":
-    "from_id":
-    "to_id":
-    "time":
-    "content":
-}//server to client to forward group message
-
-{
-    "type":GROUP_MESSAGE,
-    "result":"success send"/"wait send"
+    "data":{
+        "result":"success send"/"wait send"
+    }
 }//server to client sender
 
 
 sendUnreadMessage
 {
-    "type":UNREAD_PRIVATE_MESSAGE/UNREAD_GROUP_MESSAGE,
-    "contents":[
+    "type":UNREAD_PRIVATE_MESSAGE
+    "data":[
         {
-            //same as sendPrivateMessage
+            "type":PRIVATE_MESSAGE,
+            "data":{
+                "from_id":
+                "to_id":
+                "time":
+                "content":
+            }
         },
         ...
     ]
 }//server to client
-//while be sent after login right now
+// ** will auto be sent after getFriends **
 
 
-getPrivateMessage
+getHistoryMessage
 {
     "type":GET_HISTORY_PRIVATE,
-    "user_id":
-    "to_id":
-    "begin_time":
-    "end_time":
+    "token":
+    "data":{
+        "user_id":
+        "to_id":
+        "begin_time":
+        "end_time":
+    }
 }//client to server to get private message
 // time is optimal, we will use "2000-01-01 00:00:00" as the beginning time and now() as the ending time
-
 {
     "type":GET_HISTORY_PRIVATE,
-    "contents":[
+    "data":[
         {
-            //same as sendPrivateMessage
-        },
-        ...
-    ]
-}//server to client
-
-
-getGroupMessage
-{
-    "type":GET_HISTORY_GROUP,
-    "user_id":
-    "group_id":
-    "begin_time":
-    "end_time":
-}//client to server to get group message
-// time is optional
-
-{
-    "type":GET_HISTORY_GROUP,
-    "contents":[
-        {
-            //same as sendGroupMessage
+            "from_id":
+            "to_id":
+            "time":
+            "content":
         },
         ...
     ]
