@@ -1041,7 +1041,26 @@ void Server::acceptMember(int confd,json &request)
     else{
         std::cout<<confd<<" accept member successfully\n\n";
     }
-    //unfinished
+    
+    auto status=db->getUserStatus(from_id);
+    bool is_online=(bool)status.get(USER_STATUS_IS_ONLINE);
+    if(is_online)
+    {
+        std::vector<json>data;
+        auto row=db->getBasicGroupData(group_id);
+        json group;
+        group["group_id"]=group_id;
+        group["group_name"]=row.get(BASIC_GROUP_DATA_GROUP_NAME);
+        group["group_description"]=row.get(BASIC_GROUP_DATA_GROUP_DESCRIPTION);
+        group["owner_id"]=row.get(BASIC_GROUP_DATA_OWNER);
+        data.push_back(group);
+        json result;
+        result["type"]=GET_GROUPS;
+        result["data"]=data;
+        int fd=(int)status.get(USER_STATUS_HANDLE);
+        sendjson(fd,result);
+    }
+
 }
 
 void Server::deleteMember(int confd,json &request)
