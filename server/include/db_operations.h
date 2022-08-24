@@ -19,8 +19,8 @@ public:
     mysqlx::Row getBasicGroupData(ID group_id);
     mysqlx::RowResult searchUser(ID user_id, const std::string& user_name);
     mysqlx::RowResult searchGroup(ID group_id, const std::string& group_name); // description
-    mysqlx::RowResult searchUserHistory(ID src_user_id, ID dst_user_id, const std::string& time_begin, const std::string& time_end); 
-    mysqlx::RowResult searchGroupHistory(ID src_user_id, ID dst_group_id, const std::string& time_begin, const std::string& time_end); // 0为群中所有人的发言
+    mysqlx::RowResult searchUserHistory(ID src_user_id, ID dst_user_id, const std::string& time_begin, const std::string& time_end, bool is_file = false); 
+    mysqlx::RowResult searchGroupHistory(ID src_user_id, ID dst_group_id, const std::string& time_begin, const std::string& time_end, bool is_file = false); // 0为群中所有人的发言
     mysqlx::RowResult searchUserUnsendMessage(ID unsend_user_id);
     mysqlx::RowResult searchGroupUnsendMessage(ID unsend_user_id);
     mysqlx::Row getUserStatus(ID user_id);
@@ -31,10 +31,10 @@ public:
     mysqlx::RowResult getGroupsOfAUser(ID user_id, ID group_id = 0);
     
     ID userRegister(const std::string& user_name, const std::string& pwd, const std::string& email, const std::string& birthday);
-    void addUserHistory(const std::string& send_time, ID src_user_id, ID dst_user_id, const std::string& content);
-    void addGroupHistory(const std::string& send_time, ID src_user_id, ID dst_group_id, const std::string& content);
-    void addUserUnsendMessage(const std::string& send_time, ID unsend_user_id, ID src_user_id, const std::string& content);
-    void addGroupUnsendMessage(const std::string& send_time, ID unsend_group_id, ID src_user_id, ID dst_group_id, const std::string& content);
+    void addUserHistory(const std::string& send_time, ID src_user_id, ID dst_user_id, const std::string& content, bool is_file = false);
+    void addGroupHistory(const std::string& send_time, ID src_user_id, ID dst_group_id, const std::string& content, bool is_file = false);
+    void addUserUnsendMessage(const std::string& send_time, ID unsend_user_id, ID src_user_id, const std::string& content, bool is_file = false);
+    void addGroupUnsendMessage(const std::string& send_time, ID unsend_group_id, ID src_user_id, ID dst_group_id, const std::string& content, bool is_file = false);
     ID createGroup(const std::string& group_name, ID owner_id, const std::string& group_description);
     void addUserToGroup(ID group_id, ID user_id);
     int createGroupRequest(ID user_id, ID group_id, const std::string& request_message);
@@ -66,7 +66,7 @@ private:
     mysqlx::RowResult searchUG(mysqlx::TableSelect& table_select, const std::string& type, ID id, const std::string& name);
     mysqlx::RowResult searchUnsendMessage(mysqlx::TableSelect& table_select, const std::string& type, ID unsend_user_id);
     void addHistory(mysqlx::Table& table, const std::string& type, 
-        const std::string& send_time, ID src_id, ID dst_id, const std::string& content);
+        const std::string& send_time, ID src_id, ID dst_id, const std::string& content, bool is_file);
     bool friendRequestUnique(ID user_from, ID user_to);
     bool groupRequestUnique(ID user_id, ID group_id);
 

@@ -37,10 +37,10 @@ LiteChatDatabaseAccess::LiteChatDatabaseAccess(const std::string& url):
         existed_group_id_max(basic_group_data, "MAX(group_id)"),
         get_basic_user_data(basic_user_data, "user_id", "user_name", "email", "DATE_FORMAT(birthday, '%Y-%m-%d')", "avatar_filename", "signature"), 
         get_basic_group_data(basic_group_data, "group_id", "group_name", "owner_id", "group_description"),
-        search_user_history(message_to_user, "DATE_FORMAT(send_time, '%Y-%m-%d %T.%f')", "src_user_id", "dst_user_id", "content"),
-        search_group_history(message_to_group, "DATE_FORMAT(send_time, '%Y-%m-%d %T.%f')", "src_user_id", "dst_group_id", "content"),
-        search_user_unsend_messgae(user_unsend_messgae, "DATE_FORMAT(send_time, '%Y-%m-%d %T.%f')", "src_user_id", "content"), 
-        search_group_unsend_messgae(group_unsend_messgae, "DATE_FORMAT(send_time, '%Y-%m-%d %T.%f')", "src_user_id", "dst_group_id", "content"), 
+        search_user_history(message_to_user, "DATE_FORMAT(send_time, '%Y-%m-%d %T.%f')", "src_user_id", "dst_user_id", "content", "is_file"),
+        search_group_history(message_to_group, "DATE_FORMAT(send_time, '%Y-%m-%d %T.%f')", "src_user_id", "dst_group_id", "content", "is_file"),
+        search_user_unsend_messgae(user_unsend_messgae, "DATE_FORMAT(send_time, '%Y-%m-%d %T.%f')", "src_user_id", "content", "is_file"), 
+        search_group_unsend_messgae(group_unsend_messgae, "DATE_FORMAT(send_time, '%Y-%m-%d %T.%f')", "src_user_id", "dst_group_id", "content", "is_file"), 
         get_user_status(user_status, "is_online", "handle", "token"),
         get_friend_relation(friend_relation, "user1_id", "user2_id"), 
         get_friend_request(friend_request, "user_from", "user_to", "request_message"),
@@ -100,7 +100,7 @@ mysqlx::RowResult LiteChatDatabaseAccess::searchGroup(ID group_id, const std::st
     return searchUG(get_basic_group_data, "group", group_id, group_name);
 }
 
-mysqlx::RowResult LiteChatDatabaseAccess::searchUserHistory(ID user1_id, ID user2_id, const std::string& time_begin, const std::string& time_end){
+mysqlx::RowResult LiteChatDatabaseAccess::searchUserHistory(ID user1_id, ID user2_id, const std::string& time_begin, const std::string& time_end, bool is_file){
     std::string command = "(send_time BETWEEN " + time_begin + " AND " + time_end + 
         ") AND ((dst_user_id = " + std::to_string(user1_id) + " AND src_user_id = " + std::to_string(user2_id) + ") OR (dst_user_id = "
          + std::to_string(user2_id) + " AND src_user_id = " + std::to_string(user1_id) + "))";
@@ -109,7 +109,7 @@ mysqlx::RowResult LiteChatDatabaseAccess::searchUserHistory(ID user1_id, ID user
     return search_user_history.execute();
 }
 
-mysqlx::RowResult LiteChatDatabaseAccess::searchGroupHistory(ID src_user_id, ID dst_group_id, const std::string& time_begin, const std::string& time_end){ // id=0为群中所有人的发言
+mysqlx::RowResult LiteChatDatabaseAccess::searchGroupHistory(ID src_user_id, ID dst_group_id, const std::string& time_begin, const std::string& time_end, bool is_file){ // id=0为群中所有人的发言
     std::string command = "dst_group_id = " + std::to_string(dst_group_id) + 
         " AND send_time BETWEEN " + time_begin + " AND " + time_end;
     if(src_user_id != 0)
@@ -192,25 +192,25 @@ ID LiteChatDatabaseAccess::userRegister(const std::string& user_name, const std:
     return new_id;
 }
 
-void LiteChatDatabaseAccess::addUserHistory(const std::string& send_time, ID src_user_id, ID dst_user_id, const std::string& content){
-    addHistory(message_to_user, "user", send_time, src_user_id, dst_user_id, content);
+void LiteChatDatabaseAccess::addUserHistory(const std::string& send_time, ID src_user_id, ID dst_user_id, const std::string& content, bool is_file){
+    addHistory(message_to_user, "user", send_time, src_user_id, dst_user_id, content, is_file);
 }
 
-void LiteChatDatabaseAccess::addGroupHistory(const std::string& send_time, ID src_user_id, ID dst_group_id, const std::string& content){
-    addHistory(message_to_group, "group", send_time, src_user_id, dst_group_id, content);
+void LiteChatDatabaseAccess::addGroupHistory(const std::string& send_time, ID src_user_id, ID dst_group_id, const std::string& content, bool is_file){
+    addHistory(message_to_group, "group", send_time, src_user_id, dst_group_id, content, is_file);
 }
 
-void LiteChatDatabaseAccess::addUserUnsendMessage(const std::string& send_time, ID unsend_user_id, ID src_user_id, const std::string& content){
-    mysqlx::TableInsert add_user_unsend_messgae = user_unsend_messgae.insert("send_time", "unsend_user_id", "src_user_id", "content");
+void LiteChatDatabaseAccess::addUserUnsendMessage(const std::string& send_time, ID unsend_user_id, ID src_user_id, const std::string& content, bool is_file){
+    mysqlx::TableInsert add_user_unsend_messgae = user_unsend_messgae.insert("send_time", "unsend_user_id", "src_user_id", "content", "is_file");
 
-    add_user_unsend_messgae.values(send_time, unsend_user_id, src_user_id, content);
+    add_user_unsend_messgae.values(send_time, unsend_user_id, src_user_id, content, is_file);
     add_user_unsend_messgae.execute();
 }
 
-void LiteChatDatabaseAccess::addGroupUnsendMessage(const std::string& send_time, ID unsend_user_id, ID src_user_id, ID dst_group_id, const std::string& content){
-    mysqlx::TableInsert add_group_unsend_messgae= group_unsend_messgae.insert("send_time", "unsend_user_id", "src_user_id", "dst_group_id", "content");
+void LiteChatDatabaseAccess::addGroupUnsendMessage(const std::string& send_time, ID unsend_user_id, ID src_user_id, ID dst_group_id, const std::string& content, bool is_file){
+    mysqlx::TableInsert add_group_unsend_messgae= group_unsend_messgae.insert("send_time", "unsend_user_id", "src_user_id", "dst_group_id", "content", "is_file");
 
-    add_group_unsend_messgae.values(send_time, unsend_user_id, src_user_id, dst_group_id, content);
+    add_group_unsend_messgae.values(send_time, unsend_user_id, src_user_id, dst_group_id, content, is_file);
     add_group_unsend_messgae.execute();
 }
 
@@ -398,10 +398,10 @@ mysqlx::RowResult LiteChatDatabaseAccess::searchUnsendMessage(mysqlx::TableSelec
 }
 
 void LiteChatDatabaseAccess::addHistory(mysqlx::Table& table, const std::string& type,
-        const std::string& send_time, ID src_id, ID dst_id, const std::string& content){
-    mysqlx::TableInsert add_history = table.insert("send_time", "src_user_id", "dst_" + type + "_id", "content");
+        const std::string& send_time, ID src_id, ID dst_id, const std::string& content, bool is_file){
+    mysqlx::TableInsert add_history = table.insert("send_time", "src_user_id", "dst_" + type + "_id", "content", "is_file");
 
-    add_history.values(send_time, src_id, dst_id, content);
+    add_history.values(send_time, src_id, dst_id, content, is_file);
     add_history.execute();
 }
 

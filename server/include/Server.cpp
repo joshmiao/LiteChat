@@ -109,8 +109,8 @@ void Server::Receive()
     {
         if(FD_ISSET(confd,&rset))
         {
-            char buf[2048]={0};
-            int ret=recv(confd,buf,sizeof(char)*2048,0);
+            char buf[20480]={0};
+            int ret=recv(confd,buf,sizeof(char)*20480,0);
             if(ret<=0)
             {
                 printf("client %d close\n",confd);
@@ -248,6 +248,7 @@ void Server::Analyze(int confd,json &request)
         case INVITE_MEMBER:inviteMember(confd,request);break;
         case DELETE_GROUP:deleteGroup(confd,request);break;
         case GET_GROUP_MEMBERS:getGroupMembers(confd,request);break;
+        case SEND_FILE:sendFile(confd,request);break;
         default :Error("request type error",confd);break;  
     }
 }
@@ -368,6 +369,8 @@ void Server::getFriends(int confd,json &request)
 
 void Server::sendPrivateMessage(int confd,json &request)
 {
+    if(request["is_file"]==request["null"])
+        request["is_file"]=false;
     ID user_id=request["user_id"];
     ID to_id=request["to_id"];
     std::string content=request["content"];
@@ -387,6 +390,7 @@ void Server::sendPrivateMessage(int confd,json &request)
         data["to_id"]=(ID)to_id;
         data["content"]=content;
         data["time"]=time;
+        data["is_file"]=request["is_file"];
         result["data"]=data;
         success=sendjson(to_fd,result);
     }
@@ -413,6 +417,8 @@ void Server::sendPrivateMessage(int confd,json &request)
 
 void Server::sendGroupMessage(int confd,json &request)
 {
+    if(request["is_file"]==request["null"])
+        request["is_file"]=false;
     ID user_id=request["user_id"];
     ID group_id=request["group_id"];
     std::string content=request["content"];
@@ -425,6 +431,7 @@ void Server::sendGroupMessage(int confd,json &request)
     data["group_id"]=(ID)group_id;
     data["content"]=content;
     data["time"]=time;
+    data["is_file"]=request["is_file"];
     message["data"]=data;
     
     db->addGroupHistory(time,user_id,group_id,content);
@@ -439,7 +446,7 @@ void Server::sendGroupMessage(int confd,json &request)
     auto group_member=db->getGroupMember(group_id);
     while(group_member.count()>0)
     {
-        ID to_id=(ID)(group_member.fetchOne().get(FRIEND_RELATION_USER2));
+        ID to_id=(ID)(group_member.fetchOne().get(GROUP_MEMBER_USER_ID));
         auto statu=db->getUserStatus(to_id);
         if(to_id==user_id)
             continue;
@@ -448,7 +455,6 @@ void Server::sendGroupMessage(int confd,json &request)
         if(to_online==true)
         {
             int to_fd=(int)statu.get(USER_STATUS_HANDLE);
-            message["data"]["to_id"]=(ID)to_id;
             success=sendjson(to_fd,message);
         }
         if(to_online==false||success==-1)
@@ -480,6 +486,7 @@ void Server::sendPrivateUnreadMessage(int confd,ID user_id)
         data["to_id"]=user_id;
         data["from_id"]=(ID)row.get(USER_UNSEND_MESSAGE_SRC_USER_ID);
         data["content"]=row.get(USER_UNSEND_MESSAGE_CONTENT);
+        data["is_file"]=(bool)row.get(USER_UNSEND_MESSAGE_ISFILE);
         message["data"]=data;
         message_bundle.push_back(message);
     }
@@ -506,10 +513,10 @@ void Server::sendGroupUnreadMessage(int confd,ID user_id)
         time=time.substr(3);
         reverse(time.begin(),time.end());
         data["time"]=time;
-        data["to_id"]=user_id;
         data["from_id"]=(ID)row.get(GROUP_UNSEND_MESSAGE_SRC_USER_ID);
         data["group_id"]=(ID)row.get(GROUP_UNSEND_MESSAGE_DST_GROUP_ID);
         data["content"]=(std::string)row.get(GROUP_UNSEND_MESSAGE_CONTENT);
+        data["is_file"]=(bool)row.get(GROUP_UNSEND_MESSAGE_ISFILE);
         message["data"]=data;
         message_bundle.push_back(message);
     }
@@ -570,6 +577,7 @@ void Server::getPrivateHistory(int confd,json &request)
         data["to_id"]=(ID)row.get(USER_HISTORY_DST_USER_ID);
         data["from_id"]=(ID)row.get(USER_HISTORY_SRC_USER_ID);
         data["content"]=row.get(USER_HISTORY_CONTENT);
+        data["is_file"]=row.get(USER_HISTORY_ISFILE);
         message["data"]=data;
         res.push_back(message);
     }
@@ -602,8 +610,7 @@ void Server::getGroupHistory(int confd,json &request)
     else request["end_time"]="'"+(std::string)request["end_time"]+"'";
     std::vector<json>res;
     ID group_id=request["group_id"];
-    ID to_id=request["user_id"];
-    auto all_message=db->searchGroupHistory(to_id,group_id,request["begin_time"],request["end_time"]);
+    auto all_message=db->searchGroupHistory(0,group_id,request["begin_time"],request["end_time"]);
     while(all_message.count()>0)
     {
         auto row=all_message.fetchOne();
@@ -615,10 +622,10 @@ void Server::getGroupHistory(int confd,json &request)
         time=time.substr(3);
         reverse(time.begin(),time.end());
         data["time"]=time;
-        //data["to_id"]=(ID)row.get(GROUP_HISTORY_DST_GROUP_ID);
         data["from_id"]=(ID)row.get(GROUP_HISTORY_SRC_USER_ID);
         data["group_id"]=(ID)row.get(GROUP_HISTORY_DST_GROUP_ID);
         data["content"]=row.get(GROUP_HISTORY_CONTENT);
+        data["is_file"]=row.get(GROUP_HISTORY_ISFILE);
         message["data"]=data;
         res.push_back(message);
     }
@@ -850,6 +857,25 @@ void Server::inviteMember(int confd,json &request){
     }
     else{
         std::cout<<confd<<" Invitation message sent successfully\n\n";
+    }
+
+    auto status=db->getUserStatus(to_id);
+    bool is_online=(bool)status.get(USER_STATUS_IS_ONLINE);
+    if(is_online==true)
+    {
+        int fd=status.get(USER_STATUS_HANDLE);
+        json result;
+        result["type"]=GET_GROUPS;
+        std::vector<json>groups;
+        json group;
+        group["group_id"]=group_id;
+        auto row=db->getBasicGroupData(group_id);
+        group["group_name"]=row.get(BASIC_GROUP_DATA_GROUP_NAME);
+        group["group_description"]=row.get(BASIC_GROUP_DATA_GROUP_DESCRIPTION);
+        group["group_owner"]=row.get(BASIC_GROUP_DATA_OWNER);
+        groups.push_back(group);
+        result["data"]=groups;
+        sendjson(fd,result);
     }
 }
 
@@ -1083,7 +1109,7 @@ void Server::deleteMember(int confd,json &request)
     ID owner_id = (ID)db->getBasicGroupData(group_id).get(BASIC_GROUP_DATA_OWNER), member_confd = (int)db->getUserStatus(member_id).get(USER_STATUS_HANDLE); 
     auto owner_status = db->getUserStatus(owner_id);
     if(member_id == owner_id){
-        Error("failed: you are the owner, you can not quit!",confd,DELETE_MEMBER);
+        Error("failed: owner can not quit the group!",confd,DELETE_MEMBER);
         return;
     }
     if(confd != member_confd && ((bool)owner_status.get(USER_STATUS_IS_ONLINE) == false || confd != (int)owner_status.get(USER_STATUS_HANDLE))){
@@ -1137,4 +1163,9 @@ void Server::getGroups(int confd,json &request)
     sendjson(confd,result);
 
     sendGroupUnreadMessage(confd,user_id);
+}
+
+void Server::sendFile(int confd,json &request)
+{
+
 }
