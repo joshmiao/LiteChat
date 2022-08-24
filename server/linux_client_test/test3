@@ -170,7 +170,7 @@ int main(){
     usleep(100000);
     request.clear();
     data.clear();
-    // 10000 create group 10001 naming GG0, failed
+    // 10001 create group 10001 naming GG0, failed
 
     data["group_name"] = "GG1";
     data["user_id"] = 10001;
