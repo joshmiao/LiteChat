@@ -222,6 +222,28 @@ void LiteChat_Server::settleJson(QString str)
                 }
             }
         }
+        else if (j["type"] == _DELETE_FRIEND)
+        {
+            j = j["data"];
+            int32_t id = j["friend_id"];
+            QString msg = QString::fromStdString(std::string(j["message"]));
+            QMessageBox msgBox;
+            msgBox.setIcon(QMessageBox::Information);
+            msgBox.setText(msg);
+            msgBox.exec();
+            emit friendDeleted(LiteChat_Dialog::Private, id);
+        }
+        else if (j["type"] == _DELETE_GROUP)
+        {
+            j = j["data"];
+            int32_t id = j["group_id"];
+            QString msg = QString::fromStdString(std::string(j["message"]));
+            QMessageBox msgBox;
+            msgBox.setIcon(QMessageBox::Information);
+            msgBox.setText(msg);
+            msgBox.exec();
+            emit friendDeleted(LiteChat_Dialog::Group, id);
+        }
 
     } catch (std::exception &e)
     {
