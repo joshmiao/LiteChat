@@ -2,6 +2,7 @@
 #define LITECHAT_DIALOG_H
 
 #include <QWidget>
+#include <QPainter>
 #include <QListWidgetItem>
 #include "litechat_message.h"
 
@@ -34,6 +35,8 @@ public:
     ~LiteChat_Dialog();
     void dealMessage(LiteChat_Message *messageW, QListWidgetItem *item, QString text, QString time, LiteChat_Message::User_Type type);
     void dealMessageTime(QString curMsgTime);
+    void paintEvent(QPaintEvent *event);
+
 public slots:
     void receiveSingalMessage(QString msg, bool myMessage);
 protected:

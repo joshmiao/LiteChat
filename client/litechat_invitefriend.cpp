@@ -1,4 +1,5 @@
 #include <QMessageBox>
+#include <QMouseEvent>
 #include "litechat_interface.h"
 #include "litechat_invitefriend.h"
 #include "litechat_server.h"
@@ -45,6 +46,9 @@ LiteChat_InviteFriend::LiteChat_InviteFriend(LiteChat_Server *liteChatServer, in
     }
 
     connect(ui->listWidget, &QListWidget::currentRowChanged, this, &LiteChat_InviteFriend::inviteUser);
+    this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
+    this->setAttribute(Qt::WA_TranslucentBackground, true);
+    this->setFixedSize(this->width(),this->height());
 }
 
 LiteChat_InviteFriend::~LiteChat_InviteFriend()
@@ -63,5 +67,64 @@ void LiteChat_InviteFriend::inviteUser(int currentRow)
     {
             liteChatServer->inviteFriend(id, groupId);
     }
+}
+
+void LiteChat_InviteFriend::mousePressEvent(QMouseEvent *event)
+{
+    if(event->button() == Qt::LeftButton)
+        {
+            mousePress = true;
+        }
+        movePoint = event->globalPos() - pos();
+}
+
+void LiteChat_InviteFriend::mouseMoveEvent(QMouseEvent *event)
+{
+    if(mousePress)
+    {
+        QPoint movePos = event->globalPos();
+        move(movePos - movePoint);
+    }
+}
+
+void LiteChat_InviteFriend::mouseReleaseEvent(QMouseEvent *event)
+{
+    Q_UNUSED(event)
+    mousePress = false;
+}
+
+void LiteChat_InviteFriend::on_pushButton_clicked()
+{
+    this->showMinimized();
+}
+
+
+void LiteChat_InviteFriend::on_pushButton_2_clicked()
+{
+    this->close();
+}
+
+
+void LiteChat_InviteFriend::on_pushButton_pressed()
+{
+    ui->pushButton->setStyleSheet("border-radius:10px;background-color: rgb(240, 240, 240);border-image: url(:/img/minus.png);");
+}
+
+
+void LiteChat_InviteFriend::on_pushButton_released()
+{
+    ui->pushButton->setStyleSheet("border-radius:10px;background-color: rgb(255, 255, 255);border-image: url(:/img/minus.png);");
+}
+
+
+void LiteChat_InviteFriend::on_pushButton_2_pressed()
+{
+    ui->pushButton_2->setStyleSheet("border-radius:10px;background-color: rgb(240, 240, 240);border-image: url(:/img/close.png);");
+}
+
+
+void LiteChat_InviteFriend::on_pushButton_2_released()
+{
+    ui->pushButton_2->setStyleSheet("border-radius:10px;background-color: rgb(255, 255, 255);border-image: url(:/img/close.png);");
 }
 

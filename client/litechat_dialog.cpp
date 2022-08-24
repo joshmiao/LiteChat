@@ -112,3 +112,10 @@ void LiteChat_Dialog::on_pushButton_4_clicked()
     invitePage->show();
 }
 
+void LiteChat_Dialog::paintEvent(QPaintEvent *event)
+{
+    QStyleOption opt;
+    opt.init(this);
+    QPainter p(this);
+    style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+}
