@@ -169,10 +169,9 @@ deleteFriend
 }
 {
     "type":DELETE_FRIEND,
-    "token":
     "data":{
-        "user_id":
         "friend_id":
+        "message":${"frined_id"}+" has deleted you"
     }
 }
 
