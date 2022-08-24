@@ -2,6 +2,7 @@
 #include <string>
 #include <mysqlx/xdevapi.h>
 #include "db_operations.h"
+#include "db_table_column.h"
 
 // template<typename ... Args>
 // std::string string_format( const std::string& format, Args ... args )
@@ -70,9 +71,9 @@ ID LiteChatDatabaseAccess::userLogin(ID user_id, const std::string& email, const
 
     if (result.count() == 0) 
         return -2; // 用户不存在
-    else if (result.fetchOne().get(0) != static_cast<mysqlx::abi2::r0::string>(pwd))
+    else if (result.fetchOne().get(USER_LOGIN_PWD) != static_cast<mysqlx::abi2::r0::string>(pwd))
         return -1; // 密码错误
-    else return user_id != 0 ? user_id : static_cast<ID>(getBasicUserDataByEmail(email).get(0));
+    else return user_id != 0 ? user_id : static_cast<ID>(getBasicUserDataByEmail(email).get(BASIC_USER_DATA_USER_ID));
 }
 
 mysqlx::Row LiteChatDatabaseAccess::getBasicUserDataByID(ID user_id){
@@ -357,7 +358,7 @@ std::string LiteChatDatabaseAccess::sqlString(const std::string& s){
 }
 
 int LiteChatDatabaseAccess::regsiteredUserCount(){
-    return registered_user_count.execute().fetchOne().get(0);
+    return registered_user_count.execute().fetchOne().get(REGISTERED_USER_COUNT);
 }
 
 bool LiteChatDatabaseAccess::emailUnique(const std::string& email){
@@ -366,7 +367,7 @@ bool LiteChatDatabaseAccess::emailUnique(const std::string& email){
 }
 
 int LiteChatDatabaseAccess::existGroupIDMax(){
-    auto result = existed_group_id_max.execute().fetchOne().get(0);
+    auto result = existed_group_id_max.execute().fetchOne().get(EXISTED_GROUP_ID_MAX);
     return result.isNull() ? GROUP_ID_BEGIN - 1: (int)result;
 }
 
