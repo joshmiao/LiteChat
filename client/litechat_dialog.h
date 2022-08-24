@@ -39,6 +39,7 @@ private slots:
     void on_pushButton_clicked();
 
 
+    void on_pushButton_5_clicked();
 };
 
 #endif // LITECHAT_DIALOG_H

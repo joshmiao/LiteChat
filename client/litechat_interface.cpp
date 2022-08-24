@@ -89,6 +89,20 @@ void LiteChat_Interface::addSingleDialogListItem(LiteChat_Dialog::Dialog_Type di
     liteChatServer->requestMessages(toId);
 }
 
+void LiteChat_Interface::deleteSingleDialogListItem(LiteChat_Dialog::Dialog_Type dialogType, int32_t toId)
+{
+    if (!dialogListIndex.count({dialogType, toId})) return;
+    for (auto iter = dialogInfoList.begin(); iter != dialogInfoList.end(); ++iter)
+    if ((iter->dialogType == dialogType) && (iter->toId == toId))
+    {
+         dialogInfoList.erase(iter);
+         break;
+    }
+    flushDialogList();
+    currentDialog = nullptr;
+    openedDialog.erase({dialogType, toId});
+}
+
 void LiteChat_Interface::messageReceive(LiteChat_Dialog::Dialog_Type dialogType, int32_t fromId, int32_t toId, QString msg){
     if (fromId == userinfo.id){
         if (!dialogListIndex.count({dialogType, toId})){

@@ -288,6 +288,17 @@ int LiteChat_Server::acceptFriend(int32_t id, bool accept)
     return sendtoServer(j);
 }
 
+int LiteChat_Server::deleteFriend(int32_t id)
+{
+    if (!loginStatus) return -1;
+    json j;
+    j["type"] = _DELETE_FRIEND;
+    j["token"] = token.toUtf8();
+    j["data"]["friend_id"] = id;
+    j["data"]["user_id"] = userInfo.id;
+    emit friendDeleted(LiteChat_Dialog::Private, id);
+    return sendtoServer(j);
+}
 LiteChat_Login* LiteChat_Server::createLoginPage()
 {
     LiteChat_Login *loginPage = new LiteChat_Login(this);
@@ -305,6 +316,7 @@ LiteChat_Interface* LiteChat_Server::createInterface(QString loginName, int32_t 
     LiteChat_Interface *interface = new LiteChat_Interface(this, loginName, loginId);
     connect(this, &LiteChat_Server::messageReceive, interface, &LiteChat_Interface::messageReceive);
     connect(this, &LiteChat_Server::newFriendRecieve, interface, &LiteChat_Interface::addSingleDialogListItem);
+    connect(this, &LiteChat_Server::friendDeleted, interface, &LiteChat_Interface::deleteSingleDialogListItem);
     return interface;
 }
 

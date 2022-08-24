@@ -65,7 +65,7 @@ Logout
 }//client to server to logout
 
 
-SearchUser
+searchUser
 {
     "type":SEARCH_USER,
     "token":
@@ -143,6 +143,19 @@ acceptFriend
         "result":"refuse successfully"/"accept successfully"
     }
 }
+{
+    "type":GET_FRIENDS,
+    "data":[
+        {
+            "friend_id":
+            "friend_name":
+            "avatar_filename":
+            "signature":
+            "birthday":
+            "is_online"://true or false
+        }
+    ]
+}//exactly one friend to the applicant if he is accepted 
 
 
 deleteFriend
@@ -236,7 +249,7 @@ sendUnreadMessage
 // ** will auto be sent after getFriends **
 
 
-getHistoryMessage
+getHistoryPrivate
 {
     "type":GET_HISTORY_PRIVATE,
     "token":
@@ -260,3 +273,211 @@ getHistoryMessage
         ...
     ]
 }//server to client
+
+
+createGroup
+{
+    "type":CREATE_GROUP,
+    "token":
+    "data":{
+        "user_id":
+        "group_name":
+        "group_description":
+    }
+}
+{
+    "type":CREATE_GROUP
+    "data":{
+        "group_id":
+        "group_name":
+        "group_description":
+        "owner_id":
+    }
+}
+
+
+searchGroup
+{
+    "type":SEARCH_GROUP,
+    "token":
+    "data":{
+        "user_id":
+        "keyword":
+    }
+}
+{
+    "type":SEARCH_GROUP,
+    "data":[
+        {
+            "group_id":
+            "group_name":
+            "group_desciption":
+        },
+        ...
+    ]
+}
+
+
+addGroup
+{
+    "type":ADD_GROUP,
+    "token":
+    "data":{
+        "user_id":
+        "group_id":
+        "message":
+    }
+}
+{
+    "type":ADD_GROUP,
+    "data":{
+        "result":"send successfully"
+    }
+}
+
+
+getMemberRequest
+{
+    "type":GET_MEMBER_REQUEST,
+    "token":
+    "data":{
+        "user_id":
+        "group_id":
+    }
+}// get requests to a certain group, only group owner require this
+{
+    "type":GET_MEMBER_REQUEST
+    "data":[
+        {
+            "from_id":
+            "group_id":
+            "message":
+        },
+        ...
+    ]
+}// tell the onwer who wants to apply for this group
+
+
+acceptOwner
+{
+    "type":ACCEPT_OWNER,
+    "token":
+    "data":{
+        "user_id":
+        "from_id":
+        "accept"://true or false
+    }
+}
+{
+    "type":ACCEPT_OWNER,
+    "data":{
+        "result":"refuse member successfully"/"accept member successfully"
+    }
+}
+{
+    "type":GET_GROUPS,
+    "data":[
+        {
+            "group_id":
+            "group_name":
+            "group_description":
+            "owner_id":
+        }
+    ]
+}//exactly one group to the applicant if he is accepted
+
+
+deleteMember
+{
+    "type":DELETE_MEMBER,
+    "token":
+    "data":{
+        "user_id":
+        "member_id":
+        "group_id":
+    }
+}//only owner can delete members except himself
+{
+    "type":DELETE_MEMBER
+    "data":{
+        "result":"delete member successfully"
+    }
+}
+
+
+getGroups
+{
+    "type":GET_GROUPS,
+    "token":
+    "data":{
+        "user_id":
+    }
+}
+{
+    "type":GET_GROUPS,
+    "data":[
+        {
+            "group_id":
+            "group_name":
+            "group_description":
+            "owner_id":
+        },
+        ...
+    ]
+}
+
+
+inviteMember
+{
+    "type":INVITE_MEMBER,
+    "token":
+    "data":{
+        "user_id":
+        "to_id":
+        "group_id":
+    }
+}//only owner can do this
+{
+    "type":INVITE_MEMBER,
+    "data":{
+        "result":"invite successfully"
+    }
+}
+
+
+deleteGroup
+{
+    "type":DELETE_GROUP,
+    "token":
+    "data":{
+        "user_id":
+        "group_id":
+    }
+}//only owner can do this
+{
+    "type":DELETE_GROUP,
+    "data":{
+        "result":"delete successfully"
+    }
+}
+
+
+getGroupMembers
+{
+    "type":GET_GROUP_MEMBERS,
+    "token":
+    "data":{
+        "user_id":
+        "group_id":
+    }
+}
+{
+    "type":GET_GROUP_MEMBERS,
+    "data":[
+        {
+            "member_id":
+            "member_name":
+        },
+        ...
+    ]
+}
