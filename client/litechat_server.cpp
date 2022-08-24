@@ -1,5 +1,6 @@
 #include <QDebug>
 #include <QDateTime>
+#include <QMessageBox>
 #include "litechat_server.h"
 #include "litechat_interface.h"
 #include "litechat_dialog.h"
@@ -98,6 +99,14 @@ void LiteChat_Server::settleJson(QString str)
         j = json::parse(str.toStdString());
         qDebug() << "this is valid to parse:" << QString::fromStdString(to_string(j))<< '\n';
         if (!j["type"].is_number_integer()) throw std::runtime_error("the format is invalid!");
+        /*if (j["data"]["result"] != j["null"] && j["data"]["result"] == "failed"){
+            QString msg = "未知错误";
+            if (j["data"]["error"] != j["null"]) msg = QString::fromStdString(std::string(j["data"]["error"]));
+            QMessageBox msgBox;
+            msgBox.setIcon(QMessageBox::Warning);
+            msgBox.setText(msg);
+            msgBox.exec();
+        }*/
         if (j["type"] == _REGISTER)
         {
             j = j["data"];
@@ -167,13 +176,32 @@ void LiteChat_Server::settleJson(QString str)
                 emit loginSuccess(userInfo.username, userInfo.id);
             }
         }
+        else if (j["type"] == _GET_GROUPS)
+        {
+            j = j["data"];
+            for (const auto &g : j)
+            {
+                int32_t id = g["group_id"];
+                QString name = QString::fromStdString(std::string(g["group_name"]));
+                emit newFriendRecieve(LiteChat_Dialog::Group, id, name);
+            }
+        }
+        else if (j["type"] == _CREATE_GROUP)
+        {
+            j = j["data"];
+            int32_t id = j["group_id"];
+            QString name = QString::fromStdString(std::string(j["group_name"]));
+            emit newFriendRecieve(LiteChat_Dialog::Group, id, name);
+        }
 
-    } catch (...)
+    } catch (std::exception &e)
     {
+        qDebug() << e.what() << '\n';
         qDebug() << "Invalid sequence received\n";
         qDebug() << "Which is : " << str << '\n';
     }
 }
+
 int LiteChat_Server::sendtoServer(json j)
 {
     if (!serverStatus) return -1;
@@ -299,6 +327,54 @@ int LiteChat_Server::deleteFriend(int32_t id)
     emit friendDeleted(LiteChat_Dialog::Private, id);
     return sendtoServer(j);
 }
+
+int LiteChat_Server::createGroup(QString groupName)
+{
+    if (!loginStatus) return -1;
+    json j;
+    j["type"] = _CREATE_GROUP;
+    j["token"] = token.toUtf8();
+    j["data"]["group_name"] = groupName.toUtf8();
+    j["data"]["user_id"] = userInfo.id;
+    j["data"]["group_description"] = "This is a group created by " + userInfo.username.toUtf8();
+    return sendtoServer(j);
+}
+
+int LiteChat_Server::requestGroups()
+{
+    if (!loginStatus) return -1;
+    json j;
+    j["type"] = _GET_GROUPS;
+    j["token"] = token.toUtf8();
+    j["data"]["user_id"] = userInfo.id;
+    return sendtoServer(j);
+}
+
+int LiteChat_Server::leaveGroup(int32_t id)
+{
+    if (!loginStatus) return -1;
+    json j;
+    j["type"] = _DELETE_MEMBER;
+    j["token"] = token.toUtf8();
+    j["data"]["member_id"] = userInfo.id;
+    j["data"]["user_id"] = userInfo.id;
+    j["data"]["group_id"] = id;
+    emit friendDeleted(LiteChat_Dialog::Group, id);
+    return sendtoServer(j);
+}
+
+int LiteChat_Server::inviteFriend(int32_t friendId, int32_t groupId)
+{
+    if (!loginStatus) return -1;
+    json j;
+    j["type"] = _INVITE_MEMBER;
+    j["token"] = token.toUtf8();
+    j["data"]["to_id"] = friendId;
+    j["data"]["user_id"] = userInfo.id;
+    j["data"]["group_id"] = groupId;
+    return sendtoServer(j);
+}
+
 LiteChat_Login* LiteChat_Server::createLoginPage()
 {
     LiteChat_Login *loginPage = new LiteChat_Login(this);

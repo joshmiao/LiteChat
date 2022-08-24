@@ -1,3 +1,4 @@
+#include <QInputDialog>
 #include "litechat_finduser.h"
 #include "litechat_interface.h"
 #include "ui_litechat_interface.h"
@@ -21,6 +22,8 @@ LiteChat_Interface::LiteChat_Interface(LiteChat_Server *liteChatServer, QString 
     ui->setupUi(this);
     connect(ui->listWidget, &QListWidget::currentRowChanged, this, &LiteChat_Interface::changeCurrentDialog);
     currentDialog = nullptr;
+    liteChatServer->requestFriends();
+    liteChatServer->requestGroups();
 }
 
 LiteChat_Interface::~LiteChat_Interface()
@@ -36,8 +39,8 @@ LiteChat_DialogListItem::LiteChat_DialogListItem(LiteChat_Dialog::Dialog_Type di
     lastMessage(lastMessage)
 {
     QString str1 = dialogName.replace('\n', ""), str2 = lastMessage.replace('\n', "");
-    if (str1.length() > 20) str1 = str1.left(17) + "...";
-    if (str2.length() > 30) str2 = str1.left(27) + "...";
+    if (str1.length() > 15) str1 = str1.left(12) + "...";
+    if (str2.length() > 18) str2 = str2.left(15) + "...";
     dialogNameLabel = new QLabel(str1, this);
     dialogContentLabel = new QLabel(str2, this);
     QFont font;
@@ -184,5 +187,13 @@ void LiteChat_Interface::on_lineEdit_textChanged(const QString &arg1)
 {
     Q_UNUSED(arg1);
     flushDialogList();
+}
+
+
+void LiteChat_Interface::on_pushButton_3_clicked()
+{
+    bool ok;
+    QString groupName = QInputDialog::getText(this, tr("创建群聊"), tr("请输入群聊名："), QLineEdit::Normal,tr("群聊名称"), &ok);
+    if(ok) liteChatServer->createGroup(groupName);
 }
 
