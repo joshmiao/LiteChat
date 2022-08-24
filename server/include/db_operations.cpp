@@ -48,6 +48,7 @@ LiteChatDatabaseAccess::LiteChatDatabaseAccess(const std::string& url):
         get_group_request(group_request, "user_id", "group_id", "request_message"),
         
         delete_group(basic_group_data.remove()), 
+        delete_user_history(message_to_user.remove()),
         delete_group_history(message_to_group.remove()),
         delete_user_unsend_messgae(user_unsend_messgae.remove()),
         delete_group_unsend_messgae(group_unsend_messgae.remove()),
@@ -300,6 +301,13 @@ void LiteChatDatabaseAccess::updateUserStatusWhenLogout(int handle){
 void LiteChatDatabaseAccess::deleteGroup(ID group_id){
     delete_group.where("group_id = " + std::to_string(group_id));
     delete_group.execute();
+}
+
+void LiteChatDatabaseAccess::deleteUserHistory(ID user1_id, ID user2_id){
+    std::string command = "(src_user_id = " + std::to_string(user1_id) + " AND dst_user_id = " + std::to_string(user2_id)
+        + ") OR (src_user_id = " + std::to_string(user2_id) + " AND dst_user_id = " + std::to_string(user1_id) + ")";
+    delete_user_history.where(command);
+    delete_user_history.execute();
 }
 
 void LiteChatDatabaseAccess::deleteGroupHistory(ID group_id){
