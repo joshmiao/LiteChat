@@ -442,6 +442,14 @@ inviteMember
         "result":"invite successfully"
     }
 }
+{
+    "type":GET_GROUPS,
+    "data":[
+        {
+            "group_id":
+        }
+    ]
+}//exactly on group after a user was invited
 
 
 deleteGroup
@@ -479,17 +487,4 @@ getGroupMembers
         },
         ...
     ]
-}
-
-
-sendFile
-{
-    "type":SEND_FILE,
-    "token":
-    "data":{
-        "user_id":
-        "filename":
-        "finished"://true or false
-        "data":string
-    }
 }
