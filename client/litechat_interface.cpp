@@ -1,5 +1,6 @@
 #include <QInputDialog>
 #include <QMouseEvent>
+#include <QPixmap>
 #include "litechat_finduser.h"
 #include "litechat_interface.h"
 #include "ui_litechat_interface.h"
@@ -50,6 +51,9 @@ LiteChat_DialogListItem::LiteChat_DialogListItem(LiteChat_Dialog::Dialog_Type di
     QFont font;
     font.setPointSize(9);
     resize(QSize(parent->size().width(), 60));
+    QPixmap pixmap(":/img/CustomerService.png");
+    QPainter painter(this);
+    painter.drawPixmap(0, 0, pixmap);
     dialogNameLabel->setFont(font);
     dialogNameLabel->setAttribute(Qt::WA_TranslucentBackground);
     dialogNameLabel->setGeometry(60, 5, parent->size().width() - 40, 20);
