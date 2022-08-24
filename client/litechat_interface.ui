@@ -51,9 +51,7 @@
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">QFrame#frame{
-	background-image: url(:/img/interfacebg.jpeg);
-}</string>
+     <string notr="true">background-color: rgb(0, 118, 246);</string>
     </property>
     <property name="frameShape">
      <enum>QFrame::StyledPanel</enum>
