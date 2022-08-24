@@ -75,7 +75,7 @@ void LiteChat_Interface::changeCurrentDialog(int currentRow)
         currentDialog->show();
     }
     else{
-        currentDialog = liteChatServer->createDialog(dialogName, dialogType, toId);
+        currentDialog = liteChatServer->createDialog(dialogName, dialogType, toId, dialogInfoList);
         openedDialog[{dialogType, toId}] = currentDialog;
         ui->horizontalLayout->addWidget(currentDialog);
         currentDialog->show();
@@ -121,7 +121,7 @@ void LiteChat_Interface::messageReceive(LiteChat_Dialog::Dialog_Type dialogType,
         }
         else{
             QString dialogName = dialogInfoList[dialogListIndex[{dialogType, toId}]].dialogName;
-            LiteChat_Dialog *newDialog = liteChatServer->createDialog(dialogName, dialogType, toId);
+            LiteChat_Dialog *newDialog = liteChatServer->createDialog(dialogName, dialogType, toId, dialogInfoList);
             openedDialog[{dialogType, toId}] = newDialog;
             newDialog->receiveSingalMessage(msg, true);
         }
@@ -142,7 +142,7 @@ void LiteChat_Interface::messageReceive(LiteChat_Dialog::Dialog_Type dialogType,
     }
     else{
         QString dialogName = dialogInfoList[dialogListIndex[{dialogType, fromId}]].dialogName;
-        LiteChat_Dialog *newDialog = liteChatServer->createDialog(dialogName, dialogType, fromId);
+        LiteChat_Dialog *newDialog = liteChatServer->createDialog(dialogName, dialogType, fromId, dialogInfoList);
         openedDialog[{dialogType, fromId}] = newDialog;
         newDialog->receiveSingalMessage(msg, false);
     }
