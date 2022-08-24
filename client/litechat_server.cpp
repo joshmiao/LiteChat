@@ -134,7 +134,7 @@ void LiteChat_Server::settleJson(QString str)
              j = j["data"];
              int32_t fromId = j["from_id"], toId = j["to_id"];
              QString msg = QString::fromStdString(std::string(j["content"]));
-             emit messageReceive(LiteChat_Dialog::Private, fromId, toId, msg);
+             emit messageReceive(LiteChat_Dialog::Private, fromId, toId, msg, fromId);
         }
 
         else if (j["type"] == _GET_HISTORY_PRIVATE)
@@ -144,7 +144,7 @@ void LiteChat_Server::settleJson(QString str)
             {
                 int32_t fromId = f["data"]["from_id"], toId = f["data"]["to_id"];
                 QString msg = QString::fromStdString(std::string(f["data"]["content"]));
-                emit messageReceive(LiteChat_Dialog::Private, fromId, toId, msg);
+                emit messageReceive(LiteChat_Dialog::Private, fromId, toId, msg, fromId);
             }
         }
 
@@ -203,8 +203,9 @@ void LiteChat_Server::settleJson(QString str)
         {
             j = j["data"];
             int32_t id = j["group_id"];
+            int32_t fromId = j["from_id"];
             QString msg = QString::fromStdString(std::string(j["content"]));
-            emit messageReceive(LiteChat_Dialog::Group, id, userInfo.id, msg);
+            emit messageReceive(LiteChat_Dialog::Group, id, userInfo.id, msg, fromId);
         }
         else if (j["type"] == _GET_HISTORY_GROUP)
         {
@@ -214,10 +215,10 @@ void LiteChat_Server::settleJson(QString str)
                 int32_t groupId = f["data"]["group_id"], fromId = f["data"]["from_id"];
                 QString msg = QString::fromStdString(std::string(f["data"]["content"]));
                 if (fromId == userInfo.id) {
-                    emit messageReceive(LiteChat_Dialog::Group, fromId, groupId, msg);
+                    emit messageReceive(LiteChat_Dialog::Group, fromId, groupId, msg, userInfo.id);
                 }
                 else {
-                    emit messageReceive(LiteChat_Dialog::Private, groupId, userInfo.id, msg);
+                    emit messageReceive(LiteChat_Dialog::Private, groupId, userInfo.id, msg, fromId);
                 }
             }
         }
@@ -267,7 +268,7 @@ int LiteChat_Server::sendMessage(LiteChat_Dialog::Dialog_Type dialogType, int32_
     else j["data"]["group_id"] = toId;
     j["data"]["content"] = msg.toUtf8();
     j["data"]["time"] = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz").toUtf8();
-    emit messageReceive(dialogType, userInfo.id, toId, msg);
+    emit messageReceive(dialogType, userInfo.id, toId, msg, userInfo.id);
     return sendtoServer(j);
 }
 

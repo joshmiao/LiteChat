@@ -22,7 +22,7 @@ public:
     ~LiteChat_SearchListItem() = default;
     int32_t id;
     QString name;
-
+    void paintEvent(QPaintEvent *);
 
 private:
     QLabel *resultNameLabel, *resultIdLabel;

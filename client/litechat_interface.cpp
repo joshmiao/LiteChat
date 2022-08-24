@@ -27,6 +27,8 @@ LiteChat_Interface::LiteChat_Interface(LiteChat_Server *liteChatServer, QString 
     this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
     this->setAttribute(Qt::WA_TranslucentBackground, true);
     this->setFixedSize(this->width(),this->height());
+    QString url = QString::fromStdString(std::string(":/img/head") + std::to_string(userinfo.id % 31) + std::string(".png"));
+    ui->label->setStyleSheet("border-image:url(" + url + ");");
     liteChatServer->requestFriends();
     liteChatServer->requestGroups();
 }
@@ -65,7 +67,7 @@ void LiteChat_DialogListItem::paintEvent(QPaintEvent *)
     QPixmap pixmap;
     QString url;
     if (dialogType == LiteChat_Dialog::Private) url = QString::fromStdString(std::string(":/img/head") + std::to_string(toId % 31) + std::string(".png"));
-    else url = QString::fromStdString(std::string(":/img/head") + std::to_string(toId % 31) + std::string(".png"));
+    else url = QString::fromStdString(std::string(":/img/ghead") + std::to_string(toId % 4) + std::string(".png"));
     pixmap.load(url);
 
     QPainter painter(this);
@@ -124,7 +126,7 @@ void LiteChat_Interface::deleteSingleDialogListItem(LiteChat_Dialog::Dialog_Type
     openedDialog.erase({dialogType, toId});
 }
 
-void LiteChat_Interface::messageReceive(LiteChat_Dialog::Dialog_Type dialogType, int32_t fromId, int32_t toId, QString msg){
+void LiteChat_Interface::messageReceive(LiteChat_Dialog::Dialog_Type dialogType, int32_t fromId, int32_t toId, QString msg, int32_t idx){
     if (fromId == userinfo.id){
         if (!dialogListIndex.count({dialogType, toId})){
             qDebug() << "Message recieved from stranger.\n";
@@ -135,13 +137,13 @@ void LiteChat_Interface::messageReceive(LiteChat_Dialog::Dialog_Type dialogType,
         flushDialogList();
         auto iter = openedDialog.find({dialogType, toId});
         if (iter != openedDialog.end()) {
-            iter->second->receiveSingalMessage(msg, true);
+            iter->second->receiveSingalMessage(msg, true, idx);
         }
         else{
             QString dialogName = dialogInfoList[dialogListIndex[{dialogType, toId}]].dialogName;
             LiteChat_Dialog *newDialog = liteChatServer->createDialog(dialogName, dialogType, toId);
             openedDialog[{dialogType, toId}] = newDialog;
-            newDialog->receiveSingalMessage(msg, true);
+            newDialog->receiveSingalMessage(msg, true, idx);
         }
         return;
     }
@@ -156,13 +158,13 @@ void LiteChat_Interface::messageReceive(LiteChat_Dialog::Dialog_Type dialogType,
     flushDialogList();
     auto iter = openedDialog.find({dialogType, fromId});
     if (iter != openedDialog.end()) {
-        iter->second->receiveSingalMessage(msg, false);
+        iter->second->receiveSingalMessage(msg, false, idx);
     }
     else{
         QString dialogName = dialogInfoList[dialogListIndex[{dialogType, fromId}]].dialogName;
         LiteChat_Dialog *newDialog = liteChatServer->createDialog(dialogName, dialogType, fromId);
         openedDialog[{dialogType, fromId}] = newDialog;
-        newDialog->receiveSingalMessage(msg, false);
+        newDialog->receiveSingalMessage(msg, false, idx);
     }
 }
 

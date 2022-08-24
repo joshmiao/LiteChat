@@ -60,5 +60,9 @@
         <file>img/head28.png</file>
         <file>img/head29.png</file>
         <file>img/head30.png</file>
+        <file>img/ghead0.png</file>
+        <file>img/ghead1.png</file>
+        <file>img/ghead2.png</file>
+        <file>img/ghead3.png</file>
     </qresource>
 </RCC>

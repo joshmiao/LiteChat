@@ -25,6 +25,17 @@ LiteChat_SearchListItem:: LiteChat_SearchListItem(int32_t id, QString name, QWid
     resultIdLabel->setGeometry(60, 25, parent->size().width() - 40, 20);
 }
 
+void LiteChat_SearchListItem::paintEvent(QPaintEvent *)
+{
+    QPixmap pixmap;
+    QString url;
+    url = QString::fromStdString(std::string(":/img/head") + std::to_string(id % 31) + std::string(".png"));
+    pixmap.load(url);
+
+    QPainter painter(this);
+    painter.drawPixmap(10, 10, 40, 40, pixmap);
+}
+
 LiteChat_FindUser::LiteChat_FindUser(LiteChat_Server *liteChatServer, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::LiteChat_FindUser),
