@@ -49,7 +49,9 @@ public:
     int sendMessage(LiteChat_Dialog::Dialog_Type dialogType, int32_t toId, QString msg);
     int getFriendRequest();
     int acceptFriend(int32_t id, bool accept);
-
+    int createGroup(QString groupName);
+    int inviteFriend(int32_t friendId, int32_t groupId);
+    int deleteFriend(int32_t id);
     int searchUser(QString str);
     int makeFriendRequest(int32_t id);
 
@@ -75,5 +77,6 @@ signals:
     void loginSuccess(QString loginName, int32_t loginId);
     void searchResultReceive(QString name, int32_t id);
     void friendRequestReceive(QString name, int32_t id);
+    void friendDeleted(LiteChat_Dialog::Dialog_Type recieveType, int32_t id);
 };
 #endif // LITECHAT_SERVER_H

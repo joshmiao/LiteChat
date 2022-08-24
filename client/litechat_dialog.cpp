@@ -4,6 +4,7 @@
 
 #include <QDateTime>
 #include <QDebug>
+#include <QMessageBox>
 
 LiteChat_Dialog::LiteChat_Dialog(LiteChat_Server *liteChatServer, QString dialogName, Dialog_Type dialogType, int32_t toId, QWidget *parent) :
     QWidget(parent),
@@ -15,6 +16,7 @@ LiteChat_Dialog::LiteChat_Dialog(LiteChat_Server *liteChatServer, QString dialog
 {
     ui->setupUi(this);
     ui->label->setText(dialogName);
+    if (dialogType == Private) delete(ui->pushButton_4);
 }
 
 LiteChat_Dialog::~LiteChat_Dialog()
@@ -109,3 +111,16 @@ void LiteChat_Dialog::resizeEvent(QResizeEvent *event)
     }
 }
 */
+
+void LiteChat_Dialog::on_pushButton_5_clicked()
+{
+    QString typemsg = dialogType == Private ? "删除好友" : "退出群聊";
+    QMessageBox message(QMessageBox::Question, typemsg, "你想要 " + typemsg + dialogName + "(ID:" + QString::fromStdString(std::to_string(toId)) + ") 吗？", QMessageBox::Yes | QMessageBox::No, NULL);
+    auto result = message.exec();
+    if(result == QMessageBox::Yes)
+    {
+            liteChatServer->deleteFriend(toId);
+            delete this;
+    }
+}
+
