@@ -812,7 +812,7 @@ void Server::deleteFriend(int confd,json &request)
     }
 
     auto status=db->getUserStatus(friend_id);
-    bool is_online=status.get(USER_STATUS_IS_ONLINE);
+    bool is_online=(bool)status.get(USER_STATUS_IS_ONLINE);
     if(is_online==true)
     {
         int fd=(int)status.get(USER_STATUS_HANDLE);

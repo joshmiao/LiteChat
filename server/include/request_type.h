@@ -27,6 +27,8 @@
 #define UNREAD_PRIVATE_MESSAGE 2001
 #define UNREAD_GROUP_MESSAGE 2002
 
+#define SEND_PRIVATE_FILE
+
 #define ERROR -1
 #define REQUEST -2
 #define RECEIVE -3

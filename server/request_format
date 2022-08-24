@@ -480,3 +480,16 @@ getGroupMembers
         ...
     ]
 }
+
+
+sendFile
+{
+    "type":SEND_FILE,
+    "token":
+    "data":{
+        "user_id":
+        "filename":
+        "finished"://true or false
+        "data":string
+    }
+}
