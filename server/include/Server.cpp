@@ -581,7 +581,7 @@ void Server::getPrivateHistory(int confd,json &request)
         data["to_id"]=(ID)row.get(USER_HISTORY_DST_USER_ID);
         data["from_id"]=(ID)row.get(USER_HISTORY_SRC_USER_ID);
         data["content"]=row.get(USER_HISTORY_CONTENT);
-        data["is_file"]=row.get(USER_HISTORY_ISFILE);
+        data["is_file"]=(bool)row.get(USER_HISTORY_ISFILE);
         message["data"]=data;
         res.push_back(message);
     }
@@ -629,7 +629,7 @@ void Server::getGroupHistory(int confd,json &request)
         data["from_id"]=(ID)row.get(GROUP_HISTORY_SRC_USER_ID);
         data["group_id"]=(ID)row.get(GROUP_HISTORY_DST_GROUP_ID);
         data["content"]=row.get(GROUP_HISTORY_CONTENT);
-        data["is_file"]=row.get(GROUP_HISTORY_ISFILE);
+        data["is_file"]=(bool)row.get(GROUP_HISTORY_ISFILE);
         message["data"]=data;
         res.push_back(message);
     }
@@ -667,6 +667,8 @@ void Server::searchUser(int confd,json &request)
         auto row=users.fetchOne();
         json user;
         user["user_id"]=(ID)row.get(BASIC_USER_DATA_USER_ID);
+        if(user["user_id"]==request["user_id"])
+            continue;
         user["user_name"]=row.get(BASIC_USER_DATA_USER_NAME);
         user["email"]=row.get(BASIC_USER_DATA_EMAIL);
         user["birthday"]=row.get(BASIC_USER_DATA_BIRTHDAY);
@@ -876,7 +878,7 @@ void Server::inviteMember(int confd,json &request){
         auto row=db->getBasicGroupData(group_id);
         group["group_name"]=row.get(BASIC_GROUP_DATA_GROUP_NAME);
         group["group_description"]=row.get(BASIC_GROUP_DATA_GROUP_DESCRIPTION);
-        group["group_owner"]=row.get(BASIC_GROUP_DATA_OWNER);
+        group["group_owner"]=(ID)row.get(BASIC_GROUP_DATA_OWNER);
         groups.push_back(group);
         result["data"]=groups;
         sendjson(fd,result);
@@ -954,7 +956,7 @@ void Server::createGroup(int confd,json &request)
         data["group_id"]=res;
         data["group_description"]=request["description"];
         data["group_name"]=request["group_name"];
-        data["owner_id"]=request["user_id"];
+        data["owner_id"]=(ID)request["user_id"];
         result["data"]=data;
         sendjson(confd,result);
         std::cout<<"create group successfully\n";
@@ -1095,7 +1097,7 @@ void Server::acceptMember(int confd,json &request)
         group["group_id"]=group_id;
         group["group_name"]=row.get(BASIC_GROUP_DATA_GROUP_NAME);
         group["group_description"]=row.get(BASIC_GROUP_DATA_GROUP_DESCRIPTION);
-        group["owner_id"]=row.get(BASIC_GROUP_DATA_OWNER);
+        group["owner_id"]=(ID)row.get(BASIC_GROUP_DATA_OWNER);
         data.push_back(group);
         json result;
         result["type"]=GET_GROUPS;

@@ -496,11 +496,21 @@ getGroupMembers
 
 sendGroupMessage
 {
-    "type":GROUPMESSAGE,
+    "type":GROUP_MESSAGE,
     "token":
     "data":{
         "group_id":
         "user_id":
+        "content":
+        "time":
+        "is_file":
+    }
+}
+{
+    "type":GROUP_MESSAGE,
+    "data":{
+        "group_id":
+        "from_id":
         "content":
         "time":
         "is_file":
