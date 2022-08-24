@@ -67,7 +67,7 @@ void LiteChat_FindUser::addFriendConfirm(int currentRow)
     {
             liteChatServer->makeFriendRequest(id);
     }
-    else return;
+    on_pushButton_clicked();
 }
 
 void LiteChat_FindUser::addfriendRequest(QString name, int32_t id)

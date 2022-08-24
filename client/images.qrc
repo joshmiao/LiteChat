@@ -22,5 +22,8 @@
         <file>img/picture.png</file>
         <file>img/mail.png</file>
         <file>img/file.png</file>
+        <file>img/creategroup.png</file>
+        <file>img/minus.png</file>
+        <file>img/plus.png</file>
     </qresource>
 </RCC>

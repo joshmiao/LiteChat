@@ -58,7 +58,6 @@ void LiteChat_Login::mousePressEvent(QMouseEvent *event)
         {
             mousePress = true;
         }
-        //窗口移动距离
         movePoint = event->globalPos() - pos();
 }
 
@@ -80,5 +79,35 @@ void LiteChat_Login::mouseReleaseEvent(QMouseEvent *event)
 void LiteChat_Login::on_pushButton_4_clicked()
 {
     this->close();
+}
+
+
+void LiteChat_Login::on_pushButton_5_clicked()
+{
+    this->showMinimized();
+}
+
+
+void LiteChat_Login::on_pushButton_5_pressed()
+{
+    ui->pushButton_5->setStyleSheet("border-radius:10px;background-color: rgb(240, 240, 240);");
+}
+
+
+void LiteChat_Login::on_pushButton_5_released()
+{
+    ui->pushButton_5->setStyleSheet("border-radius:10px;background-color: rgb(255, 255, 255);");
+}
+
+
+void LiteChat_Login::on_pushButton_4_pressed()
+{
+    ui->pushButton_4->setStyleSheet("border-radius:10px;background-color: rgb(240, 240, 240);");
+}
+
+
+void LiteChat_Login::on_pushButton_4_released()
+{
+    ui->pushButton_4->setStyleSheet("border-radius:10px;background-color: rgb(255, 255, 255);");
 }
 

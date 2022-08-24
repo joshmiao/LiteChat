@@ -31,6 +31,18 @@ private slots:
 
     void on_pushButton_4_clicked();
 
+    void on_pushButton_3_clicked();
+
+    void on_pushButton_2_clicked();
+
+    void on_pushButton_2_pressed();
+
+    void on_pushButton_2_released();
+
+    void on_pushButton_4_pressed();
+
+    void on_pushButton_4_released();
+
 private:
     Ui::LiteChat_Register *ui;
     LiteChat_Server *liteChatServer;
