@@ -16,10 +16,12 @@ LiteChat_SearchListItem:: LiteChat_SearchListItem(int32_t id, QString name, QWid
 {
     QFont font;
     font.setPointSize(9);
+    font.setBold(true);
     resize(QSize(parent->size().width(), 60));
     resultNameLabel->setFont(font);
     resultNameLabel->setAttribute(Qt::WA_TranslucentBackground);
     resultNameLabel->setGeometry(60, 5, parent->size().width() - 40, 20);
+    font.setBold(false);
     resultIdLabel->setFont(font);
     resultIdLabel->setAttribute(Qt::WA_TranslucentBackground);
     resultIdLabel->setGeometry(60, 25, parent->size().width() - 40, 20);
