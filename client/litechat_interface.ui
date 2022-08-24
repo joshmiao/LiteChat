@@ -20,9 +20,15 @@
    <string>MainWindow</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color: rgb(255, 255, 255);</string>
+   <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="styleSheet">
+    <string notr="true">QWidget#centralwidget{
+border-radius:20px;
+	background-color: rgb(255, 255, 255);
+}</string>
+   </property>
    <widget class="QWidget" name="horizontalLayoutWidget">
     <property name="geometry">
      <rect>
@@ -51,7 +57,8 @@
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color: rgb(0, 118, 246);</string>
+     <string notr="true">background-color: rgb(0, 118, 246);
+border-radius:20px;</string>
     </property>
     <property name="frameShape">
      <enum>QFrame::StyledPanel</enum>
@@ -191,8 +198,6 @@ border-top:2px groove gray;
     </property>
     <property name="styleSheet">
      <string notr="true">QFrame{
-
-background-color: rgba(255, 255, 255, 0);
 border-radius:0;
 border-left:2px solid gray;
 };</string>
@@ -206,7 +211,7 @@ border-left:2px solid gray;
     <widget class="QPushButton" name="pushButton_4">
      <property name="geometry">
       <rect>
-       <x>390</x>
+       <x>360</x>
        <y>0</y>
        <width>31</width>
        <height>29</height>
@@ -227,7 +232,7 @@ border-image: url(:/img/minus.png);
     <widget class="QPushButton" name="pushButton_5">
      <property name="geometry">
       <rect>
-       <x>432</x>
+       <x>400</x>
        <y>0</y>
        <width>31</width>
        <height>29</height>
