@@ -1,5 +1,6 @@
 #include <QMessageBox>
 #include <QListWidget>
+#include <QMouseEvent>
 #include <QThread>
 
 #include "litechat_server.h"
@@ -32,6 +33,9 @@ LiteChat_FindUser::LiteChat_FindUser(LiteChat_Server *liteChatServer, QWidget *p
     ui->setupUi(this);
     connect(ui->listWidget, &QListWidget::currentRowChanged, this, &LiteChat_FindUser::addFriendConfirm);
     connect(ui->listWidget_2, &QListWidget::currentRowChanged, this, &LiteChat_FindUser::acceptFriend);
+    this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
+    this->setAttribute(Qt::WA_TranslucentBackground, true);
+    this->setFixedSize(this->width(),this->height());
 }
 
 LiteChat_FindUser::~LiteChat_FindUser()
@@ -114,3 +118,72 @@ void LiteChat_FindUser::acceptFriend(int currentRow){
     }
     connect(ui->listWidget_2, &QListWidget::currentRowChanged, this, &LiteChat_FindUser::acceptFriend);
 }
+
+void LiteChat_FindUser::paintEvent(QPaintEvent *event)
+{
+    QStyleOption opt;
+    opt.init(this);
+    QPainter p(this);
+    style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+}
+
+void LiteChat_FindUser::mousePressEvent(QMouseEvent *event)
+{
+    if(event->button() == Qt::LeftButton)
+        {
+            mousePress = true;
+        }
+        movePoint = event->globalPos() - pos();
+}
+
+void LiteChat_FindUser::mouseMoveEvent(QMouseEvent *event)
+{
+    if(mousePress)
+    {
+        QPoint movePos = event->globalPos();
+        move(movePos - movePoint);
+    }
+}
+
+void LiteChat_FindUser::mouseReleaseEvent(QMouseEvent *event)
+{
+    Q_UNUSED(event)
+    mousePress = false;
+}
+
+
+void LiteChat_FindUser::on_pushButton_3_clicked()
+{
+    this->showMinimized();
+}
+
+
+void LiteChat_FindUser::on_pushButton_2_clicked()
+{
+    this->close();
+}
+
+
+void LiteChat_FindUser::on_pushButton_3_pressed()
+{
+    ui->pushButton_3->setStyleSheet("background-color: rgba(150, 150, 150, 150);border-radius:10px;border-image: url(:/img/minus.png);");
+}
+
+
+void LiteChat_FindUser::on_pushButton_3_released()
+{
+    ui->pushButton_3->setStyleSheet("background-color: rgba(255, 255, 255, 0);border-radius:10px;border-image: url(:/img/minus.png);");
+}
+
+
+void LiteChat_FindUser::on_pushButton_2_pressed()
+{
+    ui->pushButton_2->setStyleSheet("background-color: rgba(150, 150, 150, 150);border-radius:10px;border-image: url(:/img/close.png);");
+}
+
+
+void LiteChat_FindUser::on_pushButton_2_released()
+{
+    ui->pushButton_2->setStyleSheet("background-color: rgba(255, 255, 255, 0);border-radius:10px;border-image: url(:/img/close.png);");
+}
+

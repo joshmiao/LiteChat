@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>380</width>
-    <height>500</height>
+    <width>470</width>
+    <height>570</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -26,15 +26,17 @@
    <string>Dialog</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color: rgb(255, 255, 255);</string>
+   <string notr="true">QWidget#LiteChat_Dialog{
+	background-color: rgba(255, 255, 255, 0);
+}</string>
   </property>
   <widget class="QListWidget" name="listWidget">
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>50</y>
-     <width>380</width>
-     <height>291</height>
+     <y>40</y>
+     <width>471</width>
+     <height>361</height>
     </rect>
    </property>
    <property name="minimumSize">
@@ -44,7 +46,8 @@
     </size>
    </property>
    <property name="styleSheet">
-    <string notr="true">border-radius:0;
+    <string notr="true">boder-radius:0px;
+background-color: rgba(255, 255, 255, 0);
 border-bottom:2px groove gray;
 border-top:2px groove gray;</string>
    </property>
@@ -56,9 +59,9 @@ border-top:2px groove gray;</string>
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>380</y>
-     <width>380</width>
-     <height>111</height>
+     <y>440</y>
+     <width>471</width>
+     <height>131</height>
     </rect>
    </property>
    <property name="sizePolicy">
@@ -75,14 +78,15 @@ border-top:2px groove gray;</string>
    </property>
    <property name="styleSheet">
     <string notr="true">border-radius:0;
+background-color: rgba(255, 255, 255, 100);
 border-top:2px groove gray;</string>
    </property>
   </widget>
   <widget class="QPushButton" name="pushButton">
    <property name="geometry">
     <rect>
-     <x>290</x>
-     <y>460</y>
+     <x>400</x>
+     <y>530</y>
      <width>61</width>
      <height>31</height>
     </rect>
@@ -93,7 +97,7 @@ border-top:2px groove gray;</string>
     </font>
    </property>
    <property name="styleSheet">
-    <string notr="true">background-color: rgb(240, 240, 240);
+    <string notr="true">background-color: rgb(220, 220, 220);
 color: rgb(67, 148, 255);
 border-radius:10px;</string>
    </property>
@@ -106,7 +110,7 @@ border-radius:10px;</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>380</width>
+     <width>471</width>
      <height>41</height>
     </rect>
    </property>
@@ -118,7 +122,7 @@ border-radius:10px;</string>
    </property>
    <property name="styleSheet">
     <string notr="true">color: rgb(255, 255, 255);
-background-color: rgb(255, 255, 255);</string>
+</string>
    </property>
    <property name="frameShape">
     <enum>QFrame::StyledPanel</enum>
@@ -143,7 +147,7 @@ background-color: rgb(255, 255, 255);</string>
      </font>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color: rgb(255, 255, 255);
+     <string notr="true">
 color: rgb(0, 0, 0);</string>
     </property>
     <property name="text">
@@ -153,7 +157,7 @@ color: rgb(0, 0, 0);</string>
    <widget class="QPushButton" name="pushButton_4">
     <property name="geometry">
      <rect>
-      <x>300</x>
+      <x>390</x>
       <y>10</y>
       <width>31</width>
       <height>31</height>
@@ -166,7 +170,6 @@ color: rgb(0, 0, 0);</string>
     </property>
     <property name="styleSheet">
      <string notr="true">QPushButton#pushButton_4{
-background-color: rgb(255, 255, 255);
 border-image: url(:/img/plus.png);
 color: rgb(0, 0, 0);
 border-radius:10px;};
@@ -183,7 +186,7 @@ QPushButton#pushButton_4:hover{
    <widget class="QPushButton" name="pushButton_5">
     <property name="geometry">
      <rect>
-      <x>340</x>
+      <x>430</x>
       <y>10</y>
       <width>31</width>
       <height>31</height>
@@ -196,7 +199,6 @@ QPushButton#pushButton_4:hover{
     </property>
     <property name="styleSheet">
      <string notr="true">QPushButton#pushButton_5{
-background-color: rgb(255, 255, 255);
 border-image: url(:/img/minus.png);
 color: rgb(0, 0, 0);
 border-radius:10px;};
@@ -215,22 +217,17 @@ QPushButton#pushButton_5:hover{
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>340</y>
+     <y>400</y>
      <width>41</width>
      <height>41</height>
     </rect>
    </property>
    <property name="styleSheet">
     <string notr="true">QPushButton#pushButton_2{
-background-color: rgb(255, 255, 255);
 border-image: url(:/img/file.png);
 color: rgb(0, 0, 0);
 border-radius:10px;};
-QPushButton#pushButton_2:hover{
-	background-color: rgb(240, 240, 240);
-	border-image: url(:/img/file.png);
-	color: rgb(0, 0, 0);
-	border-radius:10px;}</string>
+</string>
    </property>
    <property name="text">
     <string/>
@@ -240,32 +237,27 @@ QPushButton#pushButton_2:hover{
    <property name="geometry">
     <rect>
      <x>50</x>
-     <y>340</y>
+     <y>400</y>
      <width>41</width>
      <height>41</height>
     </rect>
    </property>
    <property name="styleSheet">
     <string notr="true">QPushButton#pushButton_3{
-background-color: rgb(255, 255, 255);
 border-image: url(:/img/picture.png);
 color: rgb(0, 0, 0);
 border-radius:10px;};
-QPushButton#pushButton_3:hover{
-	background-color: rgb(240, 240, 240);
-	border-image: url(:/img/picture.png);
-	color: rgb(0, 0, 0);
-	border-radius:10px;}</string>
+</string>
    </property>
    <property name="text">
     <string/>
    </property>
   </widget>
+  <zorder>textEdit</zorder>
   <zorder>pushButton_3</zorder>
   <zorder>frame</zorder>
   <zorder>pushButton_2</zorder>
   <zorder>listWidget</zorder>
-  <zorder>textEdit</zorder>
   <zorder>pushButton</zorder>
  </widget>
  <resources/>

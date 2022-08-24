@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QLabel>
 #include <QDateTime>
+#include <QPoint>
 #include "litechat_server.h"
 #include "litechat_dialog.h"
 
@@ -46,6 +47,9 @@ class LiteChat_Interface : public QMainWindow
 public:
     explicit LiteChat_Interface(LiteChat_Server *liteChatServer, QString loginName, int32_t loginId, QWidget *parent = nullptr);
     ~LiteChat_Interface();
+    void mousePressEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
 
 
 private:
@@ -60,6 +64,9 @@ private:
     std::map<std::pair<LiteChat_Dialog::Dialog_Type, int32_t>, uint32_t> dialogListIndex;
     std::vector<DialogInfo> dialogInfoList;
     std::vector<int> mappingIndex;
+    QPoint m_mousePoint;
+    QPoint movePoint;
+    bool mousePress;
 
     void flushDialogList();
 
@@ -74,6 +81,16 @@ private slots:
     void on_pushButton_2_clicked();
     void on_lineEdit_textChanged(const QString &arg1);
     void on_pushButton_3_clicked();
+    void on_pushButton_4_clicked();
+    void on_pushButton_5_clicked();
+    void on_pushButton_4_pressed();
+    void on_pushButton_4_released();
+    void on_pushButton_5_pressed();
+    void on_pushButton_5_released();
+    void on_pushButton_2_pressed();
+    void on_pushButton_2_released();
+    void on_pushButton_3_pressed();
+    void on_pushButton_3_released();
 };
 
 

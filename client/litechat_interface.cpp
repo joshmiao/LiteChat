@@ -1,4 +1,5 @@
 #include <QInputDialog>
+#include <QMouseEvent>
 #include "litechat_finduser.h"
 #include "litechat_interface.h"
 #include "ui_litechat_interface.h"
@@ -24,6 +25,9 @@ LiteChat_Interface::LiteChat_Interface(LiteChat_Server *liteChatServer, QString 
     currentDialog = nullptr;
     liteChatServer->requestFriends();
     liteChatServer->requestGroups();
+    this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
+    this->setAttribute(Qt::WA_TranslucentBackground, true);
+    this->setFixedSize(this->width(),this->height());
 }
 
 LiteChat_Interface::~LiteChat_Interface()
@@ -75,7 +79,7 @@ void LiteChat_Interface::changeCurrentDialog(int currentRow)
         currentDialog->show();
     }
     else{
-        currentDialog = liteChatServer->createDialog(dialogName, dialogType, toId, dialogInfoList);
+        currentDialog = liteChatServer->createDialog(dialogName, dialogType, toId);
         openedDialog[{dialogType, toId}] = currentDialog;
         ui->horizontalLayout->addWidget(currentDialog);
         currentDialog->show();
@@ -121,7 +125,7 @@ void LiteChat_Interface::messageReceive(LiteChat_Dialog::Dialog_Type dialogType,
         }
         else{
             QString dialogName = dialogInfoList[dialogListIndex[{dialogType, toId}]].dialogName;
-            LiteChat_Dialog *newDialog = liteChatServer->createDialog(dialogName, dialogType, toId, dialogInfoList);
+            LiteChat_Dialog *newDialog = liteChatServer->createDialog(dialogName, dialogType, toId);
             openedDialog[{dialogType, toId}] = newDialog;
             newDialog->receiveSingalMessage(msg, true);
         }
@@ -142,7 +146,7 @@ void LiteChat_Interface::messageReceive(LiteChat_Dialog::Dialog_Type dialogType,
     }
     else{
         QString dialogName = dialogInfoList[dialogListIndex[{dialogType, fromId}]].dialogName;
-        LiteChat_Dialog *newDialog = liteChatServer->createDialog(dialogName, dialogType, fromId, dialogInfoList);
+        LiteChat_Dialog *newDialog = liteChatServer->createDialog(dialogName, dialogType, fromId);
         openedDialog[{dialogType, fromId}] = newDialog;
         newDialog->receiveSingalMessage(msg, false);
     }
@@ -195,5 +199,89 @@ void LiteChat_Interface::on_pushButton_3_clicked()
     bool ok;
     QString groupName = QInputDialog::getText(this, tr("创建群聊"), tr("请输入群聊名："), QLineEdit::Normal,tr("群聊名称"), &ok);
     if(ok) liteChatServer->createGroup(groupName);
+}
+
+void LiteChat_Interface::mousePressEvent(QMouseEvent *event)
+{
+    if(event->button() == Qt::LeftButton)
+        {
+            mousePress = true;
+        }
+        movePoint = event->globalPos() - pos();
+}
+
+void LiteChat_Interface::mouseMoveEvent(QMouseEvent *event)
+{
+    if(mousePress)
+    {
+        QPoint movePos = event->globalPos();
+        move(movePos - movePoint);
+    }
+}
+
+void LiteChat_Interface::mouseReleaseEvent(QMouseEvent *event)
+{
+    Q_UNUSED(event)
+    mousePress = false;
+}
+
+
+void LiteChat_Interface::on_pushButton_4_clicked()
+{
+    this->showMinimized();
+}
+
+
+void LiteChat_Interface::on_pushButton_5_clicked()
+{
+    this->close();
+}
+
+
+void LiteChat_Interface::on_pushButton_4_pressed()
+{
+    ui->pushButton_4->setStyleSheet("background-color: rgba(150, 150, 150,150);border-radius:10px;border-image: url(:/img/minus.png);");
+}
+
+
+void LiteChat_Interface::on_pushButton_4_released()
+{
+    ui->pushButton_4->setStyleSheet("background-color: rgba(255, 255, 255,0);border-radius:10px;border-image: url(:/img/minus.png);");
+}
+
+
+void LiteChat_Interface::on_pushButton_5_pressed()
+{
+    ui->pushButton_5->setStyleSheet("background-color: rgba(150, 150, 150,150);border-radius:10px;border-image: url(:/img/close.png);");
+}
+
+
+void LiteChat_Interface::on_pushButton_5_released()
+{
+    ui->pushButton_5->setStyleSheet("background-color: rgba(255, 255, 255,0);border-radius:10px;border-image: url(:/img/close.png);");
+}
+
+
+void LiteChat_Interface::on_pushButton_2_pressed()
+{
+    ui->pushButton_2->setStyleSheet("background-color: rgba(107, 198, 255, 100);border-image: url(:/img/addfriend1.png);");
+}
+
+
+void LiteChat_Interface::on_pushButton_2_released()
+{
+    ui->pushButton_2->setStyleSheet("background-color: rgba(255, 255, 255, 0);border-image: url(:/img/addfriend1.png);");
+}
+
+
+void LiteChat_Interface::on_pushButton_3_pressed()
+{
+    ui->pushButton_3->setStyleSheet("background-color: rgba(107, 198, 255, 100);border-image: url(:/img/creategroup.png);");
+}
+
+
+void LiteChat_Interface::on_pushButton_3_released()
+{
+    ui->pushButton_3->setStyleSheet("background-color: rgba(255, 255, 255, 0);border-image: url(:/img/creategroup.png);");
 }
 

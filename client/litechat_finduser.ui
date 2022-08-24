@@ -7,20 +7,22 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>400</height>
+    <height>512</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color:white</string>
+   <string notr="true">QWidget#LiteChat_FindUser{
+	border-image: url(:/img/searchfriendbg.jpeg);
+}</string>
   </property>
   <widget class="QLineEdit" name="lineEdit">
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>0</y>
+     <y>40</y>
      <width>141</width>
      <height>31</height>
     </rect>
@@ -49,7 +51,7 @@ color: rgb(188, 216, 252);</string>
    <property name="geometry">
     <rect>
      <x>140</x>
-     <y>0</y>
+     <y>40</y>
      <width>51</width>
      <height>31</height>
     </rect>
@@ -72,27 +74,33 @@ border-radius:10px;</string>
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>31</y>
+     <y>71</y>
      <width>200</width>
-     <height>371</height>
+     <height>441</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgba(255, 255, 255, 0);</string>
    </property>
   </widget>
   <widget class="QListWidget" name="listWidget_2">
    <property name="geometry">
     <rect>
      <x>200</x>
-     <y>31</y>
+     <y>71</y>
      <width>201</width>
-     <height>371</height>
+     <height>441</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgba(255, 255, 255, 0);</string>
    </property>
   </widget>
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
      <x>200</x>
-     <y>0</y>
+     <y>40</y>
      <width>201</width>
      <height>31</height>
     </rect>
@@ -111,6 +119,47 @@ border-radius:10px;</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_2">
+   <property name="geometry">
+    <rect>
+     <x>360</x>
+     <y>0</y>
+     <width>31</width>
+     <height>29</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton#pushButton_2{
+background-color: rgb(255, 255, 255,0);
+border-radius:10px;
+border-image: url(:/img/close.png);
+};</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_3">
+   <property name="geometry">
+    <rect>
+     <x>320</x>
+     <y>0</y>
+     <width>31</width>
+     <height>29</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton#pushButton_3{
+background-color: rgb(255, 255, 255,0);
+border-radius:10px;
+border-image: url(:/img/minus.png);
+};
+</string>
+   </property>
+   <property name="text">
+    <string/>
    </property>
   </widget>
  </widget>

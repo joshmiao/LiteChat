@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>680</width>
-    <height>500</height>
+    <width>766</width>
+    <height>600</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -27,9 +27,9 @@
     <property name="geometry">
      <rect>
       <x>300</x>
-      <y>0</y>
-      <width>371</width>
-      <height>501</height>
+      <y>30</y>
+      <width>471</width>
+      <height>571</height>
      </rect>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout">
@@ -47,11 +47,13 @@
       <x>0</x>
       <y>0</y>
       <width>70</width>
-      <height>500</height>
+      <height>601</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color: rgb(0, 118, 246);</string>
+     <string notr="true">QFrame#frame{
+	background-image: url(:/img/interfacebg.jpeg);
+}</string>
     </property>
     <property name="frameShape">
      <enum>QFrame::StyledPanel</enum>
@@ -69,8 +71,8 @@
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">background-color: rgb(0, 118, 246);
-border-image: url(:/img/chatlist1.png);</string>
+      <string notr="true">border-image: url(:/img/chatlist1.png);
+background-color: rgba(255, 255, 255, 0);</string>
      </property>
      <property name="text">
       <string/>
@@ -86,8 +88,9 @@ border-image: url(:/img/chatlist1.png);</string>
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">background-color: rgb(0, 118, 246);
+      <string notr="true">background-color: rgba(255, 255, 255, 0);
 border-image: url(:/img/addfriend1.png);
+border-radius:10px;
 </string>
      </property>
      <property name="text">
@@ -104,7 +107,8 @@ border-image: url(:/img/addfriend1.png);
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">border-image: url(:/img/Customer Copy.png);</string>
+      <string notr="true">border-image: url(:/img/Customer Copy.png);
+background-color: rgba(255, 255, 255, 0);</string>
      </property>
      <property name="text">
       <string/>
@@ -120,13 +124,9 @@ border-image: url(:/img/addfriend1.png);
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">QPushButton#pushButton_3{
-background-color: rgb(0, 118, 246);
-border-image: url(:/img/creategroup.png);};
-QPushButton#pushButton_3:hover{
+      <string notr="true">border-radius:10px;
 border-image: url(:/img/creategroup.png);
-	background-color: rgb(61, 151, 248);
-}
+background-color: rgba(255, 255, 255, 0);
 </string>
      </property>
      <property name="text">
@@ -138,7 +138,7 @@ border-image: url(:/img/creategroup.png);
     <property name="geometry">
      <rect>
       <x>80</x>
-      <y>0</y>
+      <y>30</y>
       <width>211</width>
       <height>31</height>
      </rect>
@@ -166,15 +166,92 @@ background-color: rgb(240, 240, 240);</string>
     <property name="geometry">
      <rect>
       <x>70</x>
-      <y>40</y>
+      <y>70</y>
       <width>230</width>
-      <height>461</height>
+      <height>541</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(240, 240, 240);
+border-radius:0;
+
+border-top:2px groove gray;
+</string>
     </property>
     <property name="horizontalScrollBarPolicy">
      <enum>Qt::ScrollBarAlwaysOff</enum>
     </property>
    </widget>
+   <widget class="QFrame" name="frame_2">
+    <property name="geometry">
+     <rect>
+      <x>300</x>
+      <y>0</y>
+      <width>471</width>
+      <height>601</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QFrame{
+	background-image: url(:/img/dialogbg.jpeg);
+background-color: rgba(255, 255, 255, 0);
+border-radius:0;
+border-left:2px solid gray;
+};</string>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QPushButton" name="pushButton_4">
+     <property name="geometry">
+      <rect>
+       <x>390</x>
+       <y>0</y>
+       <width>31</width>
+       <height>29</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton#pushButton_4{
+background-color: rgb(255, 255, 255,0);
+border-radius:10px;
+border-image: url(:/img/minus.png);
+};
+</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_5">
+     <property name="geometry">
+      <rect>
+       <x>432</x>
+       <y>0</y>
+       <width>31</width>
+       <height>29</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton#pushButton_5{
+background-color: rgb(255, 255, 255,0);
+border-radius:10px;
+border-image: url(:/img/close.png);
+};</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </widget>
+   <zorder>frame_2</zorder>
+   <zorder>horizontalLayoutWidget</zorder>
+   <zorder>frame</zorder>
+   <zorder>lineEdit</zorder>
+   <zorder>listWidget</zorder>
   </widget>
  </widget>
  <resources/>

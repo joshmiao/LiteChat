@@ -7,6 +7,7 @@
 #include "litechat_login.h"
 #include "litechat_register.h"
 #include "litechat_finduser.h"
+#include "litechat_invitefriend.h"
 #include "ui_litechat_server.h"
 #include "request_type.h"
 
@@ -95,7 +96,11 @@ void LiteChat_Server::settleJson(QString str)
     try
     {
         json j;
-//      {"data":[{"friend_id":66666,"friend_name":"nonono1"},{"friend_id":88888,"friend_name":"nonono2"}],"result":"success_get_friends"},"type":1004}
+        /*
+         * {"data":[{"friend_id":66666,"friend_name":"nonono1"},{"friend_id":88888,"friend_name":"nonono2"}],"result":"success_get_friends","type":1004}{"data":{"group_description":"This is a group created by test_user","group_name":"缇よ亰鍚嶇О","group_id":9999},"token":"test_token","type":1014}
+         *
+         *
+         */
         j = json::parse(str.toStdString());
         qDebug() << "this is valid to parse:" << QString::fromStdString(to_string(j))<< '\n';
         if (!j["type"].is_number_integer()) throw std::runtime_error("the format is invalid!");
@@ -383,9 +388,9 @@ LiteChat_Login* LiteChat_Server::createLoginPage()
     return loginPage;
 }
 
-LiteChat_Dialog* LiteChat_Server::createDialog(QString dialogName, LiteChat_Dialog::Dialog_Type dialogType, int32_t toId, std::vector<DialogInfo> &dialogInfo)
+LiteChat_Dialog* LiteChat_Server::createDialog(QString dialogName, LiteChat_Dialog::Dialog_Type dialogType, int32_t toId)
 {
-    LiteChat_Dialog *dialogPage = new LiteChat_Dialog(this, dialogName, dialogType, toId, dialogInfo);
+    LiteChat_Dialog *dialogPage = new LiteChat_Dialog(this, dialogName, dialogType, toId);
     return dialogPage;
 }
 
@@ -409,4 +414,11 @@ LiteChat_FindUser* LiteChat_Server::createFindUser(){
     connect(this, &LiteChat_Server::friendRequestReceive, findPage, &LiteChat_FindUser::addfriendRequest);
     getFriendRequest();
     return findPage;
+}
+
+LiteChat_InviteFriend* LiteChat_Server::createInvitePage(int32_t groupId)
+{
+    LiteChat_InviteFriend *invitePage = new LiteChat_InviteFriend(this, groupId);
+    connect(this, &LiteChat_Server::newFriendRecieve, invitePage, &LiteChat_InviteFriend::addSingleFriend);
+    return invitePage;
 }
