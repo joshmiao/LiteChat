@@ -41,12 +41,14 @@ constexpr int USER_STATUS_TOKEN = 2;
 
 constexpr int FRIEND_RELATION_USER1 = 0;
 constexpr int FRIEND_RELATION_USER2 = 1;
+
 constexpr int FRIEND_REQUEST_USER_FROM = 0;
 constexpr int FRIEND_REQUEST_USER_TO = 1;
 constexpr int FRIEND_REQUEST_REQUEST_MESSAGE = 2;
 
 constexpr int GROUP_MEMBER_GROUP_ID = 0;
 constexpr int GROUP_MEMBER_USER_ID = 1;
+
 constexpr int GROUP_REQUEST_USER_ID = 0;
 constexpr int GROUP_REQUEST_GROUP_ID = 1;
 constexpr int GROUP_REQUEST_REQUEST_MESSAGE = 2;
