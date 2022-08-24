@@ -16,6 +16,7 @@
   <property name="styleSheet">
    <string notr="true">QWidget#LiteChat_FindUser{
 	border-image: url(:/img/searchfriendbg.jpeg);
+	border-radius:20px;
 }</string>
   </property>
   <widget class="QLineEdit" name="lineEdit">
@@ -124,7 +125,7 @@ border-radius:10px;</string>
   <widget class="QPushButton" name="pushButton_2">
    <property name="geometry">
     <rect>
-     <x>360</x>
+     <x>340</x>
      <y>0</y>
      <width>31</width>
      <height>29</height>
@@ -144,7 +145,7 @@ border-image: url(:/img/close.png);
   <widget class="QPushButton" name="pushButton_3">
    <property name="geometry">
     <rect>
-     <x>320</x>
+     <x>310</x>
      <y>0</y>
      <width>31</width>
      <height>29</height>
