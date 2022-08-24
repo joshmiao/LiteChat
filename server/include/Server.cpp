@@ -261,10 +261,25 @@ void Server::userLogout(int confd,json &request)
 //Login with user_id or email and password
 void Server::userLogin(int confd,json &request)
 {
-    if(request["user_id"]==request["null"])
+    std::string keyword=(std::string)request["user_id"];
+    ID id=0;
+    if(keyword.length()<=6)
+    for(auto c:keyword)
+    if(isdigit(c))
+        id=id*10+c-'0';
+    else {
+        id=0;
+        break;
+    }
+
+    if(id==0)
+    request["email"]=request["user_id"],
+    request["user_id"]=0;
+    else request["email"]="";
+    
+    if(!request["user_id"].is_number_integer())
+        request["email"]=request["user_id"],
         request["user_id"]=0;
-    if(request["email"]==request["null"])
-        request["email"]="";
 
     int res=db->userLogin(request["user_id"],request["email"],request["pwd"]);
     if(res==-3)
@@ -1110,7 +1125,10 @@ void Server::deleteMember(int confd,json &request)
     ID owner_id = (ID)db->getBasicGroupData(group_id).get(BASIC_GROUP_DATA_OWNER), member_confd = (int)db->getUserStatus(member_id).get(USER_STATUS_HANDLE); 
     auto owner_status = db->getUserStatus(owner_id);
     if(member_id == owner_id){
-        Error("failed: owner can not quit the group!",confd,DELETE_MEMBER);
+        json res;
+        res["user_id"]=member_id;
+        res["group_id"]=group_id;
+        deleteGroup(confd,res);
         return;
     }
     if(confd != member_confd && ((bool)owner_status.get(USER_STATUS_IS_ONLINE) == false || confd != (int)owner_status.get(USER_STATUS_HANDLE))){
