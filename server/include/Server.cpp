@@ -110,7 +110,7 @@ void Server::Receive()
         if(FD_ISSET(confd,&rset))
         {
             char buf[20480]={0};
-            int ret=recv(confd,buf,sizeof(char)*2048,0);
+            int ret=recv(confd,buf,sizeof(char)*20480,0);
             if(ret<=0)
             {
                 printf("client %d close\n",confd);
@@ -248,6 +248,7 @@ void Server::Analyze(int confd,json &request)
         case INVITE_MEMBER:inviteMember(confd,request);break;
         case DELETE_GROUP:deleteGroup(confd,request);break;
         case GET_GROUP_MEMBERS:getGroupMembers(confd,request);break;
+        case SEND_FILE:sendFile(confd,request);break;
         default :Error("request type error",confd);break;  
     }
 }
@@ -368,6 +369,8 @@ void Server::getFriends(int confd,json &request)
 
 void Server::sendPrivateMessage(int confd,json &request)
 {
+    if(request["is_file"]==request["null"])
+        request["is_file"]=false;
     ID user_id=request["user_id"];
     ID to_id=request["to_id"];
     std::string content=request["content"];
@@ -387,6 +390,7 @@ void Server::sendPrivateMessage(int confd,json &request)
         data["to_id"]=(ID)to_id;
         data["content"]=content;
         data["time"]=time;
+        data["is_file"]=request["is_file"];
         result["data"]=data;
         success=sendjson(to_fd,result);
     }
@@ -413,6 +417,8 @@ void Server::sendPrivateMessage(int confd,json &request)
 
 void Server::sendGroupMessage(int confd,json &request)
 {
+    if(request["is_file"]==request["null"])
+        request["is_file"]=false;
     ID user_id=request["user_id"];
     ID group_id=request["group_id"];
     std::string content=request["content"];
@@ -425,6 +431,7 @@ void Server::sendGroupMessage(int confd,json &request)
     data["group_id"]=(ID)group_id;
     data["content"]=content;
     data["time"]=time;
+    data["is_file"]=request["is_file"];
     message["data"]=data;
     
     db->addGroupHistory(time,user_id,group_id,content);
@@ -1156,4 +1163,9 @@ void Server::getGroups(int confd,json &request)
     sendjson(confd,result);
 
     sendGroupUnreadMessage(confd,user_id);
+}
+
+void Server::sendFile(int confd,json &request)
+{
+
 }
