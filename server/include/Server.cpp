@@ -109,7 +109,7 @@ void Server::Receive()
     {
         if(FD_ISSET(confd,&rset))
         {
-            char buf[2048]={0};
+            char buf[20480]={0};
             int ret=recv(confd,buf,sizeof(char)*2048,0);
             if(ret<=0)
             {
@@ -851,6 +851,25 @@ void Server::inviteMember(int confd,json &request){
     else{
         std::cout<<confd<<" Invitation message sent successfully\n\n";
     }
+
+    auto status=db->getUserStatus(to_id);
+    bool is_online=(bool)status.get(USER_STATUS_IS_ONLINE);
+    if(is_online==true)
+    {
+        int fd=status.get(USER_STATUS_HANDLE);
+        json result;
+        result["type"]=GET_GROUPS;
+        std::vector<json>groups;
+        json group;
+        group["group_id"]=group_id;
+        auto row=db->getBasicGroupData(group_id);
+        group["group_name"]=row.get(BASIC_GROUP_DATA_GROUP_NAME);
+        group["group_description"]=row.get(BASIC_GROUP_DATA_GROUP_DESCRIPTION);
+        group["group_owner"]=row.get(BASIC_GROUP_DATA_OWNER);
+        groups.push_back(group);
+        result["data"]=groups;
+        sendjson(fd,result);
+    }
 }
 
 void Server::deleteGroup(int confd,json &request){
@@ -1083,7 +1102,7 @@ void Server::deleteMember(int confd,json &request)
     ID owner_id = (ID)db->getBasicGroupData(group_id).get(BASIC_GROUP_DATA_OWNER), member_confd = (int)db->getUserStatus(member_id).get(USER_STATUS_HANDLE); 
     auto owner_status = db->getUserStatus(owner_id);
     if(member_id == owner_id){
-        Error("failed: you are the owner, you can not quit!",confd,DELETE_MEMBER);
+        Error("failed: owner can not quit the group!",confd,DELETE_MEMBER);
         return;
     }
     if(confd != member_confd && ((bool)owner_status.get(USER_STATUS_IS_ONLINE) == false || confd != (int)owner_status.get(USER_STATUS_HANDLE))){

@@ -58,6 +58,8 @@ private:
     void sendPrivateMessage(int confd,json &request);
     void sendGroupMessage(int confd,json &request);
     
+    //file
+    void sendFile(int confd,json &request);
 public:
     Server(int port);
     void Start();

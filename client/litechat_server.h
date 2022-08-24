@@ -54,6 +54,8 @@ public:
     int deleteFriend(int32_t id);
     int searchUser(QString str);
     int makeFriendRequest(int32_t id);
+    int requestGroups();
+    int leaveGroup(int32_t id);
 
 private slots:
     void on_pushButton_clicked();

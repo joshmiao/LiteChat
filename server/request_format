@@ -442,6 +442,14 @@ inviteMember
         "result":"invite successfully"
     }
 }
+{
+    "type":GET_GROUPS,
+    "data":[
+        {
+            "group_id":
+        }
+    ]
+}//exactly on group after a user was invited
 
 
 deleteGroup
