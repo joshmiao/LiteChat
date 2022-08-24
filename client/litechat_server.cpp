@@ -198,6 +198,10 @@ void LiteChat_Server::settleJson(QString str)
             QString name = QString::fromStdString(std::string(j["group_name"]));
             emit newFriendRecieve(LiteChat_Dialog::Group, id, name);
         }
+        else if (j["type"] == _GROUP_MESSAGE)
+        {
+
+        }
 
     } catch (std::exception &e)
     {
