@@ -24,6 +24,8 @@ using json = nlohmann::json;
 #define WAIT_TIME 500//0.005
 #define TOKEN_LENGTH 32
 
+const int MAXSIZE=8192;
+
 int Server::sendjson(int confd,json &result){
     std::string str = to_string(result);
     std::cout << std::setw(4) << result << std::endl;
@@ -248,7 +250,9 @@ void Server::Analyze(int confd,json &request)
         case INVITE_MEMBER:inviteMember(confd,request);break;
         case DELETE_GROUP:deleteGroup(confd,request);break;
         case GET_GROUP_MEMBERS:getGroupMembers(confd,request);break;
-        case SEND_FILE:sendFile(confd,request);break;
+        case SEND_PRIVATE_FILE:sendPrivateFile(confd,request);break;
+        case SEND_GROUP_FILE:sendGroupFile(confd,request);break;
+        case GET_FILE:getFile(confd,request);break;
         default :Error("request type error",confd);break;  
     }
 }
@@ -1165,7 +1169,71 @@ void Server::getGroups(int confd,json &request)
     sendGroupUnreadMessage(confd,user_id);
 }
 
-void Server::sendFile(int confd,json &request)
+void Server::sendPrivateFile(int confd,json &request)
 {
+    ID user_id=request["user_id"];
+    ID to_id=request["to_id"];
 
+    std::string filepath="user/"+(std::string)request["filename"]+(std::string)request["time"];
+    auto fp=fopen(filepath.c_str(),"w");
+    std::string data=request["data"];
+    fprintf(fp,"%s",data.c_str());
+    fclose(fp);
+
+    json result;
+    result["type"]=SEND_PRIVATE_FILE;
+    result["data"]["result"]="send private file successfully";
+    sendjson(confd,result);
+    std::cout<<"send private file successfully\n";
+
+    json message;
+    message["user_id"]=user_id,
+    message["to_id"]=to_id,
+    message["time"]=request["time"],
+    message["content"]=request["filename"];
+    message["is_file"]=true;
+    sendPrivateMessage(confd,message);
+}
+
+void Server::sendGroupFile(int confd,json &request)
+{
+    ID user_id=request["user_id"];
+    ID group_id=request["group_id"];
+
+    std::string filepath="user/"+(std::string)request["filename"]+(std::string)request["time"];
+    auto fp=fopen(filepath.c_str(),"w");
+    std::string data=request["data"];
+    fprintf(fp,"%s",data.c_str());
+    fclose(fp);
+
+    json result;
+    result["type"]=SEND_GROUP_FILE;
+    result["data"]["result"]="send private file successfully";
+    sendjson(confd,result);
+    std::cout<<"send private file successfully\n";
+
+    json message;
+    message["user_id"]=user_id,
+    message["group_id"]=group_id,
+    message["time"]=request["time"],
+    message["content"]=request["filename"];
+    message["is_file"]=true;
+    sendGroupMessage(confd,message);
+}
+
+void Server::getFile(int confd,json &request)
+{
+    std::string filename=(std::string)request["filename"]+(std::string)request["time"];
+    std::string filepath="user/"+filename;
+    auto fp=fopen(filepath.c_str(),"r");
+    char buffer[MAXSIZE+1]={0};
+    fscanf(fp,"%s",buffer);
+    fclose(fp);
+    json result;
+    result["type"]=GET_FILE;
+    json data;
+    data["filename"]=request["filename"];
+    data["data"]=std::string(buffer);    
+    result["data"]=data;
+    sendjson(confd,result);
 }

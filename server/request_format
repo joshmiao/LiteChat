@@ -503,7 +503,7 @@ sendGroupMessage
         "user_id":
         "content":
         "time":
-        "is_file"
+        "is_file":
     }
 }
 
@@ -518,8 +518,67 @@ getHistoryGroup
             "from_id":
             "content":
             "time":
-            "is_file"
+            "is_file":
         },
         ...
     ]
+}
+
+
+getFile
+{
+    "type":GET_FILE,
+    "token":
+    "data":{
+        "user_id":
+        "time"://file message time
+        "filename":
+    }
+}
+{
+    "type":GET_FILE,
+    "data":{
+        "filename":
+        "data":
+    }
+}
+
+
+sendPrivateFile
+{
+    "type":SEND_PRIVATE_FILE,
+    "token":
+    "data":{
+        "user_id":
+        "time":
+        "to_id":
+        "filename":
+        "data":
+    }
+}
+{
+    "type":SNED_PRIVATE_FILE,
+    "data":{
+        "result":"send file successfully"
+    }
+}
+
+
+sendGroupFile
+{
+    "type":SEND_GROUP_FILE,
+    "token":
+    "data":{
+        "user_id":
+        "time":
+        "group_id":
+        "filename":
+        "data":
+    }
+}
+{
+    "type":SNED_GROUP_FILE,
+    "data":{
+        "result":"send file successfully"
+    }
 }
