@@ -2,6 +2,8 @@
 #define LITECHAT_REGISTER_H
 
 #include <QMainWindow>
+#include <QPoint>
+
 
 namespace Ui {
 class LiteChat_Register;
@@ -19,13 +21,22 @@ public slots:
 public:
     explicit LiteChat_Register(LiteChat_Server *liteChatServer ,QWidget *parent = nullptr);
     ~LiteChat_Register();
+    void mousePressEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
+
 
 private slots:
     void on_pushButton_clicked();
 
+    void on_pushButton_4_clicked();
+
 private:
     Ui::LiteChat_Register *ui;
     LiteChat_Server *liteChatServer;
+    QPoint m_mousePoint;
+    QPoint movePoint;
+    bool mousePress;
 };
 
 #endif // LITECHAT_REGISTER_H

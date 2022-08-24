@@ -1,4 +1,5 @@
 #include <QMessageBox>
+#include <QMouseEvent>
 #include "litechat_login.h"
 #include "litechat_register.h"
 #include "litechat_interface.h"
@@ -13,6 +14,8 @@ LiteChat_Login::LiteChat_Login(LiteChat_Server *liteChatServer, QWidget *parent)
     liteChatServer(liteChatServer)
 {
     ui->setupUi(this);
+    this->setWindowFlags(Qt::Window |Qt::FramelessWindowHint);
+    this->setAttribute(Qt::WA_TranslucentBackground, true);
 }
 
 LiteChat_Login::~LiteChat_Login()
@@ -47,5 +50,35 @@ void LiteChat_Login::loginSuccess(QString loginName, int32_t loginId){
     msgBox.exec();
     liteChatServer->requestFriends();
     delete this;
+}
+
+void LiteChat_Login::mousePressEvent(QMouseEvent *event)
+{
+    if(event->button() == Qt::LeftButton)
+        {
+            mousePress = true;
+        }
+        //窗口移动距离
+        movePoint = event->globalPos() - pos();
+}
+
+void LiteChat_Login::mouseMoveEvent(QMouseEvent *event)
+{
+    if(mousePress)
+    {
+        QPoint movePos = event->globalPos();
+        move(movePos - movePoint);
+    }
+}
+
+void LiteChat_Login::mouseReleaseEvent(QMouseEvent *event)
+{
+    Q_UNUSED(event)
+    mousePress = false;
+}
+
+void LiteChat_Login::on_pushButton_4_clicked()
+{
+    this->close();
 }
 
