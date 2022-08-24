@@ -816,7 +816,7 @@ void Server::inviteMember(int confd,json &request){
     ID group_id = request["group_id"];
     
     if (db->getGroupsOfAUser(to_id, group_id).count() != 0){
-        Error("failed: the invitee is already in this group",confd,ADD_GROUP);
+        Error("failed: the user is already in this group",confd,ADD_GROUP);
         return;
     }
     if (db->getGroupsOfAUser(user_id, group_id).count() == 0){
@@ -827,7 +827,7 @@ void Server::inviteMember(int confd,json &request){
     
     json result, data;
     result["type"] = INVITE_MEMBER;
-    data["result"] = "invited successfully";
+    data["result"] = "invite successfully";
     result["data"] = data;
     int success=sendjson(confd,result);
     if(success==-1)
@@ -875,7 +875,8 @@ void Server::getGroupMembers(int confd,json &request){
     while(members.count() > 0){
         json res;
         auto row=members.fetchOne();
-        res["user_id"] =(ID)row.get(0);
+        res["member_id"] =(ID)row.get(0);
+        res["member_name"]=db->getBasicUserDataByID("member_id").get(1);
         data.push_back(res);
     }
     json result;
@@ -908,6 +909,9 @@ void Server::createGroup(int confd,json &request)
         db->addUserToGroup(res, request["user_id"]);
         json data;
         data["group_id"]=res;
+        data["group_description"]=request["description"];
+        data["group_name"]=request["group_name"];
+        data["owner_id"]=request["user_id"];
         result["data"]=data;
         sendjson(confd,result);
         std::cout<<"create group successfully\n";
@@ -987,7 +991,7 @@ void Server::getMemberRequest(int confd,json &request)
     {
         auto row=requests.fetchOne();
         json request;
-        request["member_id"]=(ID)row.get(0);
+        request["from_id"]=(ID)row.get(0);
         request["group_id"]=group_id;
         request["message"]=row.get(2);
         res.push_back(request);
@@ -1007,23 +1011,23 @@ void Server::getMemberRequest(int confd,json &request)
 
 void Server::acceptMember(int confd,json &request)
 {
-    ID member_id=request["member_id"];
+    ID from_id=request["from_id"];
     ID group_id=request["group_id"];
     bool accept=(bool)request["accept"];
-    db->deleteGroupRequest(member_id,group_id);
+    db->deleteGroupRequest(from_id,group_id);
 
     if(!accept)
     {
         json result;
         result["type"]=ACCEPT_MEMBER;
         json data;
-        data["result"]="refuse successfully";
+        data["result"]="refuse member successfully";
         result["data"]=data;
         sendjson(confd,result);
         return;
     }
 
-    db->addUserToGroup(group_id,member_id);
+    db->addUserToGroup(group_id,from_id);
     json result;
     result["type"]=ACCEPT_MEMBER;
     json data;
@@ -1037,6 +1041,7 @@ void Server::acceptMember(int confd,json &request)
     else{
         std::cout<<confd<<" accept member successfully\n\n";
     }
+    //unfinished
 }
 
 void Server::deleteMember(int confd,json &request)
@@ -1058,7 +1063,7 @@ void Server::deleteMember(int confd,json &request)
     json result;
     result["type"]=DELETE_MEMBER;
     json data;
-    data["result"]="delete successfully";
+    data["result"]="delete member successfully";
     result["data"]=data;
     int success=sendjson(confd,result);
     if(success==-1)
