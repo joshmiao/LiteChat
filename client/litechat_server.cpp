@@ -340,6 +340,41 @@ int LiteChat_Server::createGroup(QString groupName)
     return sendtoServer(j);
 }
 
+int LiteChat_Server::requestGroups()
+{
+    if (!loginStatus) return -1;
+    json j;
+    j["type"] = _GET_GROUPS;
+    j["token"] = token.toUtf8();
+    j["data"]["user_id"] = userInfo.id;
+    return sendtoServer(j);
+}
+
+int LiteChat_Server::leaveGroup(int32_t id)
+{
+    if (!loginStatus) return -1;
+    json j;
+    j["type"] = _DELETE_MEMBER;
+    j["token"] = token.toUtf8();
+    j["data"]["member_id"] = userInfo.id;
+    j["data"]["user_id"] = userInfo.id;
+    j["data"]["group_id"] = id;
+    emit friendDeleted(LiteChat_Dialog::Group, id);
+    return sendtoServer(j);
+}
+
+int LiteChat_Server::inviteFriend(int32_t friendId, int32_t groupId)
+{
+    if (!loginStatus) return -1;
+    json j;
+    j["type"] = _INVITE_MEMBER;
+    j["token"] = token.toUtf8();
+    j["data"]["to_id"] = friendId;
+    j["data"]["user_id"] = userInfo.id;
+    j["data"]["group_id"] = groupId;
+    return sendtoServer(j);
+}
+
 LiteChat_Login* LiteChat_Server::createLoginPage()
 {
     LiteChat_Login *loginPage = new LiteChat_Login(this);
