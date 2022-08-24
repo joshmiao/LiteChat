@@ -176,6 +176,23 @@ void LiteChat_Server::settleJson(QString str)
                 emit loginSuccess(userInfo.username, userInfo.id);
             }
         }
+        else if (j["type"] == _GET_GROUPS)
+        {
+            j = j["data"];
+            for (const auto &g : j)
+            {
+                int32_t id = g["group_id"];
+                QString name = QString::fromStdString(std::string(g["group_name"]));
+                emit newFriendRecieve(LiteChat_Dialog::Group, id, name);
+            }
+        }
+        else if (j["type"] == _CREATE_GROUP)
+        {
+            j = j["data"];
+            int32_t id = j["group_id"];
+            QString name = QString::fromStdString(std::string(j["group_name"]));
+            emit newFriendRecieve(LiteChat_Dialog::Group, id, name);
+        }
 
     } catch (std::exception &e)
     {
@@ -184,6 +201,7 @@ void LiteChat_Server::settleJson(QString str)
         qDebug() << "Which is : " << str << '\n';
     }
 }
+
 int LiteChat_Server::sendtoServer(json j)
 {
     if (!serverStatus) return -1;
@@ -309,6 +327,19 @@ int LiteChat_Server::deleteFriend(int32_t id)
     emit friendDeleted(LiteChat_Dialog::Private, id);
     return sendtoServer(j);
 }
+
+int LiteChat_Server::createGroup(QString groupName)
+{
+    if (!loginStatus) return -1;
+    json j;
+    j["type"] = _CREATE_GROUP;
+    j["token"] = token.toUtf8();
+    j["data"]["group_name"] = groupName.toUtf8();
+    j["data"]["user_id"] = userInfo.id;
+    j["data"]["group_description"] = "This is a group created by " + userInfo.username.toUtf8();
+    return sendtoServer(j);
+}
+
 LiteChat_Login* LiteChat_Server::createLoginPage()
 {
     LiteChat_Login *loginPage = new LiteChat_Login(this);

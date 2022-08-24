@@ -1,3 +1,4 @@
+#include <QInputDialog>
 #include "litechat_finduser.h"
 #include "litechat_interface.h"
 #include "ui_litechat_interface.h"
@@ -189,6 +190,8 @@ void LiteChat_Interface::on_lineEdit_textChanged(const QString &arg1)
 
 void LiteChat_Interface::on_pushButton_3_clicked()
 {
-
+    bool ok;
+    QString groupName = QInputDialog::getText(this, tr("创建群聊"), tr("请输入群聊名："), QLineEdit::Normal,tr("群聊名称"), &ok);
+    if(ok) liteChatServer->createGroup(groupName);
 }
 
