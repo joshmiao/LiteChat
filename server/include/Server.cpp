@@ -208,13 +208,21 @@ void Server::Analyze(int confd,json &request)
     
     std::cout<<std::setw(4)<<request<<'\n';
     
-    if(request["token"]!=request["null"])
+    
+    if(request["type"]!=LOGIN&&request["type"]!=REGISTER)
     {
-        std::string token(db->getUserStatus((ID)request["data"]["user_id"]).get(USER_STATUS_TOKEN));
-        if(token!=(std::string)request["token"])
+        if(request["token"]==request["null"]||(db->getUserStatus((ID)request["data"]["user_id"]).get(USER_STATUS_TOKEN)).isNull())
         {
             Error("token error",confd,TOKEN);
             return;
+        }
+        else {
+            std::string token=(std::string)db->getUserStatus((ID)request["data"]["user_id"]).get(USER_STATUS_TOKEN);
+            if(token!=request["token"])
+            {
+                Error("token error",confd,TOKEN);
+                return;
+            }
         }
     }
 
@@ -276,12 +284,8 @@ void Server::userLogin(int confd,json &request)
     request["email"]=request["user_id"],
     request["user_id"]=0;
     else request["email"]="";
-    
-    if(!request["user_id"].is_number_integer())
-        request["email"]=request["user_id"],
-        request["user_id"]=0;
 
-    int res=db->userLogin(request["user_id"],request["email"],request["pwd"]);
+    int res=db->userLogin(id,request["email"],request["pwd"]);
     if(res==-3)
     {
         std::cout<<confd<<" login failed\n\n";
@@ -842,7 +846,7 @@ void Server::deleteFriend(int confd,json &request)
         json result;
         result["type"]=DELETE_FRIEND;
         result["data"]["friend_id"]=user_id;
-        result["data"]["message"]=std::to_string(friend_id)+" has deleted you";
+        result["data"]["message"]=(std::string)(db->getBasicUserDataByID(user_id).get(BASIC_USER_DATA_USER_NAME))+" has deleted you";
         sendjson(fd,result);
     }
 }
@@ -853,7 +857,7 @@ void Server::inviteMember(int confd,json &request){
     ID group_id = request["group_id"];
     
     if (db->getGroupsOfAUser(to_id, group_id).count() != 0){
-        Error("failed: the user is already in this group",confd,ADD_GROUP);
+        Error("the user is already in this group",confd,ADD_GROUP);
         return;
     }
     if (db->getGroupsOfAUser(user_id, group_id).count() == 0){
@@ -908,6 +912,7 @@ void Server::deleteGroup(int confd,json &request){
     json result;
     result["type"]=DELETE_GROUP;
     result["data"]["message"]=group_name+" has been dissolved";
+    result["data"]["group_id"]=group_id;
 
     auto members=db->getGroupMember(group_id);
     while(members.count()>0)

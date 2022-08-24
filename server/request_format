@@ -471,7 +471,8 @@ deleteGroup
 {
     "type":DELETE_GROUP,
     "data":{
-        "result":"delete successfully"
+        "message":${"group_name"}+ " has been dissolved",
+        "group_id":
     }
 }
 
@@ -525,6 +526,15 @@ getHistoryGroup
 {
     "type":GET_HISTORY_GROUP,
     "token":
+    "data":{
+        "user_id":
+        "group_id":
+        "begin_time":
+        "end_time":
+    }
+}
+{
+    "type":GET_HISTORY_GROUP,
     "data":[
         {
             "type":GROUP_MESSAGE,
