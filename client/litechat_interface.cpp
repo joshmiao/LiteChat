@@ -2,6 +2,16 @@
 #include "litechat_interface.h"
 #include "ui_litechat_interface.h"
 
+DialogInfo::DialogInfo(LiteChat_Dialog::Dialog_Type dialogType, int32_t toId, QString dialogName, QDateTime lastMessageTime, QString lastMessage):
+    dialogType(dialogType),
+    toId(toId),
+    dialogName(dialogName),
+    lastMessageTime(lastMessageTime),
+    lastMessage(lastMessage)
+{
+
+}
+
 LiteChat_Interface::LiteChat_Interface(LiteChat_Server *liteChatServer, QString loginName, int32_t loginId, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::LiteChat_Interface),
@@ -18,14 +28,18 @@ LiteChat_Interface::~LiteChat_Interface()
     delete ui;
 }
 
-LiteChat_DialogListItem::LiteChat_DialogListItem(LiteChat_Dialog::Dialog_Type dialogType, int32_t toId, QString dialogName, QWidget *parent) :
+LiteChat_DialogListItem::LiteChat_DialogListItem(LiteChat_Dialog::Dialog_Type dialogType, int32_t toId, QString dialogName, QString lastMessage, QWidget *parent) :
     QWidget(parent),
     dialogType(dialogType),
     toId(toId),
     dialogName(dialogName),
-    dialogNameLabel(new QLabel(dialogName, this)),
-    dialogContentLabel(new QLabel("ChatContent", this))
+    lastMessage(lastMessage)
 {
+    QString str1 = dialogName.replace('\n', ""), str2 = lastMessage.replace('\n', "");
+    if (str1.length() > 20) str1 = str1.left(17) + "...";
+    if (str2.length() > 30) str2 = str1.left(27) + "...";
+    dialogNameLabel = new QLabel(str1, this);
+    dialogContentLabel = new QLabel(str2, this);
     QFont font;
     font.setPointSize(9);
     resize(QSize(parent->size().width(), 60));
@@ -40,10 +54,11 @@ LiteChat_DialogListItem::LiteChat_DialogListItem(LiteChat_Dialog::Dialog_Type di
 void LiteChat_Interface::changeCurrentDialog(int currentRow)
 {
     qDebug() << "####" << currentRow << '\n';
-    LiteChat_DialogListItem *currentFriend = dialogList[currentRow];
-    LiteChat_Dialog::Dialog_Type dialogType = currentFriend->dialogType;
-    int32_t toId = currentFriend->toId;
-    QString dialogName = currentFriend->dialogName;
+    currentRow = mappingIndex[currentRow];
+    qDebug() << "####" << currentRow << '\n';
+    LiteChat_Dialog::Dialog_Type dialogType = dialogInfoList[currentRow].dialogType;
+    int32_t toId = dialogInfoList[currentRow].toId;
+    QString dialogName = dialogInfoList[currentRow].dialogName;
     if (currentDialog != nullptr && dialogType == currentDialog->dialogType && toId == currentDialog->toId) return;
 
     if (currentDialog != nullptr){
@@ -69,42 +84,47 @@ void LiteChat_Interface::changeCurrentDialog(int currentRow)
 void LiteChat_Interface::addSingleDialogListItem(LiteChat_Dialog::Dialog_Type dialogType, int32_t toId, QString dialogName)
 {
     if (dialogListIndex.count({dialogType, toId})) return;
+    dialogInfoList.push_back(DialogInfo(dialogType, toId, dialogName, QDateTime::currentDateTime(), ""));
+    flushDialogList();
     liteChatServer->requestMessages(toId);
-
-    LiteChat_DialogListItem *newFriend = new LiteChat_DialogListItem(dialogType, toId, dialogName, ui->listWidget);
-    dialogList[dialogList.size()] = newFriend;
-    dialogListIndex[{dialogType, toId}] = dialogList.size() - 1;
-
-    QListWidgetItem *newItem = new QListWidgetItem(ui->listWidget);
-    newItem->setSizeHint(QSize(ui->listWidget->size().width() - 10, 60));
-    ui->listWidget->setItemWidget(newItem, newFriend);
-
 }
 
 void LiteChat_Interface::messageReceive(LiteChat_Dialog::Dialog_Type dialogType, int32_t fromId, int32_t toId, QString msg){
     if (fromId == userinfo.id){
+        if (!dialogListIndex.count({dialogType, toId})){
+            qDebug() << "Message recieved from stranger.\n";
+            return;
+        }
+        dialogInfoList[dialogListIndex[{dialogType, toId}]].lastMessage = msg;
+        dialogInfoList[dialogListIndex[{dialogType, toId}]].lastMessageTime = QDateTime::currentDateTime();
+        flushDialogList();
         auto iter = openedDialog.find({dialogType, toId});
         if (iter != openedDialog.end()) {
             iter->second->receiveSingalMessage(msg, true);
         }
         else{
-            QString dialogName = dialogList[dialogListIndex[{dialogType, toId}]]->dialogName;
+            QString dialogName = dialogInfoList[dialogListIndex[{dialogType, toId}]].dialogName;
             LiteChat_Dialog *newDialog = liteChatServer->createDialog(dialogName, dialogType, toId);
             openedDialog[{dialogType, toId}] = newDialog;
             newDialog->receiveSingalMessage(msg, true);
         }
         return;
     }
+
+
     if (!dialogListIndex.count({dialogType, fromId})){
         qDebug() << "Message recieved from stranger.\n";
         return;
     }
+    dialogInfoList[dialogListIndex[{dialogType, fromId}]].lastMessage = msg;
+    dialogInfoList[dialogListIndex[{dialogType, fromId}]].lastMessageTime = QDateTime::currentDateTime();
+    flushDialogList();
     auto iter = openedDialog.find({dialogType, fromId});
     if (iter != openedDialog.end()) {
         iter->second->receiveSingalMessage(msg, false);
     }
     else{
-        QString dialogName = dialogList[dialogListIndex[{dialogType, fromId}]]->dialogName;
+        QString dialogName = dialogInfoList[dialogListIndex[{dialogType, fromId}]].dialogName;
         LiteChat_Dialog *newDialog = liteChatServer->createDialog(dialogName, dialogType, fromId);
         openedDialog[{dialogType, fromId}] = newDialog;
         newDialog->receiveSingalMessage(msg, false);
@@ -123,5 +143,32 @@ void LiteChat_Interface::on_pushButton_2_clicked()
     findUserPage->show();
 }
 
+void LiteChat_Interface::flushDialogList(){
+    std::sort(dialogInfoList.begin(), dialogInfoList.end());
+    disconnect(ui->listWidget, &QListWidget::currentRowChanged, this, &LiteChat_Interface::changeCurrentDialog);
+    ui->listWidget->clear();
+    dialogListIndex.clear();
+    mappingIndex.clear();
+    for (uint32_t i = 0; i < dialogInfoList.size(); ++i){
+        DialogInfo &info = dialogInfoList[i];
+        dialogListIndex[{info.dialogType, info.toId}] = i;
+        if (ui->lineEdit->text() == "" || ui->lineEdit->text() == QString::fromStdString(std::to_string(info.toId)) || ui->lineEdit->text() == info.dialogName)
+        {
+            LiteChat_DialogListItem *newFriend = new LiteChat_DialogListItem(info.dialogType, info.toId, info.dialogName, info.lastMessage, ui->listWidget);
+            mappingIndex.push_back(i);
+            QListWidgetItem *newItem = new QListWidgetItem(ui->listWidget);
+            newItem->setSizeHint(QSize(ui->listWidget->size().width() - 10, 60));
+            ui->listWidget->setItemWidget(newItem, newFriend);
+        }
+    }
+    connect(ui->listWidget, &QListWidget::currentRowChanged, this, &LiteChat_Interface::changeCurrentDialog);
+}
 
+
+
+void LiteChat_Interface::on_lineEdit_textChanged(const QString &arg1)
+{
+    Q_UNUSED(arg1);
+    flushDialogList();
+}
 

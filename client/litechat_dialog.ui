@@ -128,7 +128,7 @@ background-color: rgb(255, 255, 255);</string>
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>351</width>
+      <width>241</width>
       <height>21</height>
      </rect>
     </property>
@@ -145,6 +145,52 @@ color: rgb(0, 0, 0);</string>
     </property>
     <property name="text">
      <string>聊天</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_4">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>10</y>
+      <width>51</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(100, 196, 98);
+color: rgb(0, 0, 0);
+border-radius:10px;</string>
+    </property>
+    <property name="text">
+     <string>邀请</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_5">
+    <property name="geometry">
+     <rect>
+      <x>320</x>
+      <y>10</y>
+      <width>51</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: red;
+color: rgb(0, 0, 0);
+border-radius:10px;</string>
+    </property>
+    <property name="text">
+     <string>删除</string>
     </property>
    </widget>
   </widget>

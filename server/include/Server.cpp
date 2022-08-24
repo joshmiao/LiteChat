@@ -85,8 +85,8 @@ Server::Server(int port)
         Error("listen error");
 
     //link database
-    //db=new LiteChatDatabaseAccess("mysqlx://LiteChat:Z0136z0136@127.0.0.1");
-    db=new LiteChatDatabaseAccess("mysqlx://root:Sail2Boat3A@127.0.0.1");
+    db=new LiteChatDatabaseAccess("mysqlx://LiteChat:Z0136z0136@127.0.0.1");
+    //db=new LiteChatDatabaseAccess("mysqlx://root:Sail2Boat3A@127.0.0.1");
 }
 
 //accept client
@@ -771,7 +771,7 @@ void Server::acceptFriend(int confd,json &request)
     if(is_online==true)
     {
         json _friend;
-        ID friend_id=from_id;
+        ID friend_id=to_id;
         _friend["friend_id"]=friend_id;
         _friend["is_online"]=(int)status.get(USER_STATUS_IS_ONLINE);
         auto row=db->getBasicUserDataByID(friend_id);
