@@ -494,13 +494,32 @@ getGroupMembers
 }
 
 
-sendFile
+sendGroupMessage
 {
-    "type":SEND_FILE,
+    "type":GROUPMESSAGE,
     "token":
     "data":{
+        "group_id":
         "user_id":
-        "to_id":
-        
+        "content":
+        "time":
+        "is_file"
     }
+}
+
+
+getHistoryGroup
+{
+    "type":GET_HISTORY_GROUP,
+    "token":
+    "data":[
+        {
+            "group_id":
+            "from_id":
+            "content":
+            "time":
+            "is_file"
+        },
+        ...
+    ]
 }

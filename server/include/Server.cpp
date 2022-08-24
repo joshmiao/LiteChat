@@ -446,7 +446,7 @@ void Server::sendGroupMessage(int confd,json &request)
     auto group_member=db->getGroupMember(group_id);
     while(group_member.count()>0)
     {
-        ID to_id=(ID)(group_member.fetchOne().get(FRIEND_RELATION_USER2));
+        ID to_id=(ID)(group_member.fetchOne().get(GROUP_MEMBER_USER_ID));
         auto statu=db->getUserStatus(to_id);
         if(to_id==user_id)
             continue;
@@ -455,7 +455,6 @@ void Server::sendGroupMessage(int confd,json &request)
         if(to_online==true)
         {
             int to_fd=(int)statu.get(USER_STATUS_HANDLE);
-            message["data"]["to_id"]=(ID)to_id;
             success=sendjson(to_fd,message);
         }
         if(to_online==false||success==-1)
@@ -487,6 +486,7 @@ void Server::sendPrivateUnreadMessage(int confd,ID user_id)
         data["to_id"]=user_id;
         data["from_id"]=(ID)row.get(USER_UNSEND_MESSAGE_SRC_USER_ID);
         data["content"]=row.get(USER_UNSEND_MESSAGE_CONTENT);
+        data["is_file"]=(bool)row.get(USER_UNSEND_MESSAGE_ISFILE);
         message["data"]=data;
         message_bundle.push_back(message);
     }
@@ -513,10 +513,10 @@ void Server::sendGroupUnreadMessage(int confd,ID user_id)
         time=time.substr(3);
         reverse(time.begin(),time.end());
         data["time"]=time;
-        data["to_id"]=user_id;
         data["from_id"]=(ID)row.get(GROUP_UNSEND_MESSAGE_SRC_USER_ID);
         data["group_id"]=(ID)row.get(GROUP_UNSEND_MESSAGE_DST_GROUP_ID);
         data["content"]=(std::string)row.get(GROUP_UNSEND_MESSAGE_CONTENT);
+        data["is_file"]=(bool)row.get(GROUP_UNSEND_MESSAGE_ISFILE);
         message["data"]=data;
         message_bundle.push_back(message);
     }
@@ -577,6 +577,7 @@ void Server::getPrivateHistory(int confd,json &request)
         data["to_id"]=(ID)row.get(USER_HISTORY_DST_USER_ID);
         data["from_id"]=(ID)row.get(USER_HISTORY_SRC_USER_ID);
         data["content"]=row.get(USER_HISTORY_CONTENT);
+        data["is_file"]=row.get(USER_HISTORY_ISFILE);
         message["data"]=data;
         res.push_back(message);
     }
@@ -609,8 +610,7 @@ void Server::getGroupHistory(int confd,json &request)
     else request["end_time"]="'"+(std::string)request["end_time"]+"'";
     std::vector<json>res;
     ID group_id=request["group_id"];
-    ID to_id=request["user_id"];
-    auto all_message=db->searchGroupHistory(to_id,group_id,request["begin_time"],request["end_time"]);
+    auto all_message=db->searchGroupHistory(0,group_id,request["begin_time"],request["end_time"]);
     while(all_message.count()>0)
     {
         auto row=all_message.fetchOne();
@@ -622,10 +622,10 @@ void Server::getGroupHistory(int confd,json &request)
         time=time.substr(3);
         reverse(time.begin(),time.end());
         data["time"]=time;
-        //data["to_id"]=(ID)row.get(GROUP_HISTORY_DST_GROUP_ID);
         data["from_id"]=(ID)row.get(GROUP_HISTORY_SRC_USER_ID);
         data["group_id"]=(ID)row.get(GROUP_HISTORY_DST_GROUP_ID);
         data["content"]=row.get(GROUP_HISTORY_CONTENT);
+        data["is_file"]=row.get(GROUP_HISTORY_ISFILE);
         message["data"]=data;
         res.push_back(message);
     }
