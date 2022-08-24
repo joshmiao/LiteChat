@@ -427,6 +427,17 @@ int LiteChat_Server::inviteFriend(int32_t friendId, int32_t groupId)
     return sendtoServer(j);
 }
 
+int LiteChat_Server::requestGroupMessage(int32_t id)
+{
+    if (!loginStatus) return -1;
+    json j;
+    j["type"] = _GET_HISTORY_GROUP;
+    j["token"] = token.toUtf8();
+    j["data"]["user_id"] = userInfo.id;
+    j["data"]["group_id"] = id;
+    return sendtoServer(j);
+}
+
 LiteChat_Login* LiteChat_Server::createLoginPage()
 {
     LiteChat_Login *loginPage = new LiteChat_Login(this);

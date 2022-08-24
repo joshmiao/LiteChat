@@ -111,7 +111,8 @@ void LiteChat_Interface::addSingleDialogListItem(LiteChat_Dialog::Dialog_Type di
     if (dialogListIndex.count({dialogType, toId})) return;
     dialogInfoList.push_back(DialogInfo(dialogType, toId, dialogName, QDateTime::currentDateTime(), ""));
     flushDialogList();
-    liteChatServer->requestMessages(toId);
+    if (dialogType == LiteChat_Dialog::Private)liteChatServer->requestMessages(toId);
+    else liteChatServer->requestGroupMessage(toId);
 }
 
 void LiteChat_Interface::deleteSingleDialogListItem(LiteChat_Dialog::Dialog_Type dialogType, int32_t toId)
