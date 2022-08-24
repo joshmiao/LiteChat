@@ -238,7 +238,7 @@ int LiteChat_Server::sendMessage(LiteChat_Dialog::Dialog_Type dialogType, int32_
     j["data"]["to_id"] = toId;
     j["data"]["content"] = msg.toUtf8();
     j["data"]["time"] = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz").toUtf8();
-    emit messageReceive(LiteChat_Dialog::Private, userInfo.id, toId, msg);
+    emit messageReceive(dialogType, userInfo.id, toId, msg);
     return sendtoServer(j);
 }
 
@@ -382,9 +382,9 @@ LiteChat_Login* LiteChat_Server::createLoginPage()
     return loginPage;
 }
 
-LiteChat_Dialog* LiteChat_Server::createDialog(QString dialogName, LiteChat_Dialog::Dialog_Type dialogType, int32_t toId)
+LiteChat_Dialog* LiteChat_Server::createDialog(QString dialogName, LiteChat_Dialog::Dialog_Type dialogType, int32_t toId, std::vector<DialogInfo> &dialogInfo)
 {
-    LiteChat_Dialog *dialogPage = new LiteChat_Dialog(this, dialogName, dialogType, toId);
+    LiteChat_Dialog *dialogPage = new LiteChat_Dialog(this, dialogName, dialogType, toId, dialogInfo);
     return dialogPage;
 }
 

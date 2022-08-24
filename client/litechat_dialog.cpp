@@ -1,18 +1,21 @@
 #include "litechat_server.h"
 #include "litechat_dialog.h"
+#include "litechat_invitefriend.h"
+#include "litechat_interface.h"
 #include "ui_litechat_dialog.h"
 
 #include <QDateTime>
 #include <QDebug>
 #include <QMessageBox>
 
-LiteChat_Dialog::LiteChat_Dialog(LiteChat_Server *liteChatServer, QString dialogName, Dialog_Type dialogType, int32_t toId, QWidget *parent) :
+LiteChat_Dialog::LiteChat_Dialog(LiteChat_Server *liteChatServer, QString dialogName, LiteChat_Dialog::Dialog_Type dialogType, int32_t toId, std::vector<DialogInfo> &dialogInfo, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::LiteChat_Dialog),
     liteChatServer(liteChatServer),
     dialogName(dialogName),
     dialogType(dialogType),
-    toId(toId)
+    toId(toId),
+    dialogInfo(dialogInfo)
 {
     ui->setupUi(this);
     ui->label->setText(dialogName);
@@ -105,6 +108,7 @@ void LiteChat_Dialog::on_pushButton_5_clicked()
 
 void LiteChat_Dialog::on_pushButton_4_clicked()
 {
-
+    LiteChat_InviteFriend *invitePage = new LiteChat_InviteFriend(liteChatServer, toId, dialogInfo);
+    invitePage->show();
 }
 
