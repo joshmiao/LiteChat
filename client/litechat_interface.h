@@ -3,22 +3,36 @@
 
 #include <QMainWindow>
 #include <QLabel>
+#include <QDateTime>
 #include "litechat_server.h"
 #include "litechat_dialog.h"
+
 
 namespace Ui {
 class LiteChat_Interface;
 }
 
+class DialogInfo{
+public:
+    explicit DialogInfo(LiteChat_Dialog::Dialog_Type dialogType, int32_t toId, QString dialogName, QDateTime lastMessageTime, QString lastMessage = "");
+    ~DialogInfo() = default;
+    LiteChat_Dialog::Dialog_Type dialogType;
+    int32_t toId;
+    QString dialogName;
+    QDateTime lastMessageTime;
+    QString lastMessage;
+    bool operator < (const DialogInfo &rhs) const {return lastMessageTime < rhs.lastMessageTime;}
+};
+
 class LiteChat_DialogListItem : public QWidget
 {
     Q_OBJECT
 public:
-    explicit LiteChat_DialogListItem(LiteChat_Dialog::Dialog_Type dialogType, int32_t toId, QString dialogName, QWidget *parent = nullptr);
+    explicit LiteChat_DialogListItem(LiteChat_Dialog::Dialog_Type dialogType, int32_t toId, QString dialogName, QString lastMessage = "", QWidget *parent = nullptr);
     ~LiteChat_DialogListItem() = default;
     LiteChat_Dialog::Dialog_Type dialogType;
     int32_t toId;
-    QString dialogName;
+    QString dialogName, lastMessage;
 
 private:
     QLabel *dialogNameLabel, *dialogContentLabel;
@@ -45,6 +59,7 @@ private:
     std::map<std::pair<LiteChat_Dialog::Dialog_Type, int32_t>, LiteChat_Dialog*> openedDialog;
     std::map<uint32_t, LiteChat_DialogListItem*> dialogList;
     std::map<std::pair<LiteChat_Dialog::Dialog_Type, int32_t>, uint32_t> dialogListIndex;
+    std::vector<DialogInfo> dialogInfoList;
 
 public slots:
     void changeCurrentDialog(int currentRow);
