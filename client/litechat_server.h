@@ -37,7 +37,7 @@ public:
     ~LiteChat_Server();
 
     LiteChat_Login* createLoginPage();
-    LiteChat_Dialog* createDialog(QString dialogName, LiteChat_Dialog::Dialog_Type dialogType, int32_t toId);
+    LiteChat_Dialog* createDialog(QString dialogName, LiteChat_Dialog::Dialog_Type dialogType, int32_t toId, std::vector<DialogInfo> &dialogInfo);
     LiteChat_Interface* createInterface(QString loginName, int32_t loginId);
     LiteChat_Register* createRegister();
     LiteChat_FindUser* createFindUser();

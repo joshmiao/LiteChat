@@ -24,6 +24,8 @@ using json = nlohmann::json;
 #define WAIT_TIME 500//0.005
 #define TOKEN_LENGTH 32
 
+const int MAXSIZE=8192;
+
 int Server::sendjson(int confd,json &result){
     std::string str = to_string(result);
     std::cout << std::setw(4) << result << std::endl;
@@ -110,7 +112,7 @@ void Server::Receive()
         if(FD_ISSET(confd,&rset))
         {
             char buf[20480]={0};
-            int ret=recv(confd,buf,sizeof(char)*2048,0);
+            int ret=recv(confd,buf,sizeof(char)*20480,0);
             if(ret<=0)
             {
                 printf("client %d close\n",confd);
@@ -248,6 +250,9 @@ void Server::Analyze(int confd,json &request)
         case INVITE_MEMBER:inviteMember(confd,request);break;
         case DELETE_GROUP:deleteGroup(confd,request);break;
         case GET_GROUP_MEMBERS:getGroupMembers(confd,request);break;
+        case SEND_PRIVATE_FILE:sendPrivateFile(confd,request);break;
+        case SEND_GROUP_FILE:sendGroupFile(confd,request);break;
+        case GET_FILE:getFile(confd,request);break;
         default :Error("request type error",confd);break;  
     }
 }
@@ -368,6 +373,8 @@ void Server::getFriends(int confd,json &request)
 
 void Server::sendPrivateMessage(int confd,json &request)
 {
+    if(request["is_file"]==request["null"])
+        request["is_file"]=false;
     ID user_id=request["user_id"];
     ID to_id=request["to_id"];
     std::string content=request["content"];
@@ -387,6 +394,7 @@ void Server::sendPrivateMessage(int confd,json &request)
         data["to_id"]=(ID)to_id;
         data["content"]=content;
         data["time"]=time;
+        data["is_file"]=request["is_file"];
         result["data"]=data;
         success=sendjson(to_fd,result);
     }
@@ -413,6 +421,8 @@ void Server::sendPrivateMessage(int confd,json &request)
 
 void Server::sendGroupMessage(int confd,json &request)
 {
+    if(request["is_file"]==request["null"])
+        request["is_file"]=false;
     ID user_id=request["user_id"];
     ID group_id=request["group_id"];
     std::string content=request["content"];
@@ -425,6 +435,7 @@ void Server::sendGroupMessage(int confd,json &request)
     data["group_id"]=(ID)group_id;
     data["content"]=content;
     data["time"]=time;
+    data["is_file"]=request["is_file"];
     message["data"]=data;
     
     db->addGroupHistory(time,user_id,group_id,content);
@@ -439,7 +450,7 @@ void Server::sendGroupMessage(int confd,json &request)
     auto group_member=db->getGroupMember(group_id);
     while(group_member.count()>0)
     {
-        ID to_id=(ID)(group_member.fetchOne().get(FRIEND_RELATION_USER2));
+        ID to_id=(ID)(group_member.fetchOne().get(GROUP_MEMBER_USER_ID));
         auto statu=db->getUserStatus(to_id);
         if(to_id==user_id)
             continue;
@@ -448,7 +459,6 @@ void Server::sendGroupMessage(int confd,json &request)
         if(to_online==true)
         {
             int to_fd=(int)statu.get(USER_STATUS_HANDLE);
-            message["data"]["to_id"]=(ID)to_id;
             success=sendjson(to_fd,message);
         }
         if(to_online==false||success==-1)
@@ -480,6 +490,7 @@ void Server::sendPrivateUnreadMessage(int confd,ID user_id)
         data["to_id"]=user_id;
         data["from_id"]=(ID)row.get(USER_UNSEND_MESSAGE_SRC_USER_ID);
         data["content"]=row.get(USER_UNSEND_MESSAGE_CONTENT);
+        data["is_file"]=(bool)row.get(USER_UNSEND_MESSAGE_ISFILE);
         message["data"]=data;
         message_bundle.push_back(message);
     }
@@ -506,10 +517,10 @@ void Server::sendGroupUnreadMessage(int confd,ID user_id)
         time=time.substr(3);
         reverse(time.begin(),time.end());
         data["time"]=time;
-        data["to_id"]=user_id;
         data["from_id"]=(ID)row.get(GROUP_UNSEND_MESSAGE_SRC_USER_ID);
         data["group_id"]=(ID)row.get(GROUP_UNSEND_MESSAGE_DST_GROUP_ID);
         data["content"]=(std::string)row.get(GROUP_UNSEND_MESSAGE_CONTENT);
+        data["is_file"]=(bool)row.get(GROUP_UNSEND_MESSAGE_ISFILE);
         message["data"]=data;
         message_bundle.push_back(message);
     }
@@ -570,6 +581,7 @@ void Server::getPrivateHistory(int confd,json &request)
         data["to_id"]=(ID)row.get(USER_HISTORY_DST_USER_ID);
         data["from_id"]=(ID)row.get(USER_HISTORY_SRC_USER_ID);
         data["content"]=row.get(USER_HISTORY_CONTENT);
+        data["is_file"]=row.get(USER_HISTORY_ISFILE);
         message["data"]=data;
         res.push_back(message);
     }
@@ -602,8 +614,7 @@ void Server::getGroupHistory(int confd,json &request)
     else request["end_time"]="'"+(std::string)request["end_time"]+"'";
     std::vector<json>res;
     ID group_id=request["group_id"];
-    ID to_id=request["user_id"];
-    auto all_message=db->searchGroupHistory(to_id,group_id,request["begin_time"],request["end_time"]);
+    auto all_message=db->searchGroupHistory(0,group_id,request["begin_time"],request["end_time"]);
     while(all_message.count()>0)
     {
         auto row=all_message.fetchOne();
@@ -615,10 +626,10 @@ void Server::getGroupHistory(int confd,json &request)
         time=time.substr(3);
         reverse(time.begin(),time.end());
         data["time"]=time;
-        //data["to_id"]=(ID)row.get(GROUP_HISTORY_DST_GROUP_ID);
         data["from_id"]=(ID)row.get(GROUP_HISTORY_SRC_USER_ID);
         data["group_id"]=(ID)row.get(GROUP_HISTORY_DST_GROUP_ID);
         data["content"]=row.get(GROUP_HISTORY_CONTENT);
+        data["is_file"]=row.get(GROUP_HISTORY_ISFILE);
         message["data"]=data;
         res.push_back(message);
     }
@@ -1156,4 +1167,73 @@ void Server::getGroups(int confd,json &request)
     sendjson(confd,result);
 
     sendGroupUnreadMessage(confd,user_id);
+}
+
+void Server::sendPrivateFile(int confd,json &request)
+{
+    ID user_id=request["user_id"];
+    ID to_id=request["to_id"];
+
+    std::string filepath="user/"+(std::string)request["filename"]+(std::string)request["time"];
+    auto fp=fopen(filepath.c_str(),"w");
+    std::string data=request["data"];
+    fprintf(fp,"%s",data.c_str());
+    fclose(fp);
+
+    json result;
+    result["type"]=SEND_PRIVATE_FILE;
+    result["data"]["result"]="send private file successfully";
+    sendjson(confd,result);
+    std::cout<<"send private file successfully\n";
+
+    json message;
+    message["user_id"]=user_id,
+    message["to_id"]=to_id,
+    message["time"]=request["time"],
+    message["content"]=request["filename"];
+    message["is_file"]=true;
+    sendPrivateMessage(confd,message);
+}
+
+void Server::sendGroupFile(int confd,json &request)
+{
+    ID user_id=request["user_id"];
+    ID group_id=request["group_id"];
+
+    std::string filepath="user/"+(std::string)request["filename"]+(std::string)request["time"];
+    auto fp=fopen(filepath.c_str(),"w");
+    std::string data=request["data"];
+    fprintf(fp,"%s",data.c_str());
+    fclose(fp);
+
+    json result;
+    result["type"]=SEND_GROUP_FILE;
+    result["data"]["result"]="send private file successfully";
+    sendjson(confd,result);
+    std::cout<<"send private file successfully\n";
+
+    json message;
+    message["user_id"]=user_id,
+    message["group_id"]=group_id,
+    message["time"]=request["time"],
+    message["content"]=request["filename"];
+    message["is_file"]=true;
+    sendGroupMessage(confd,message);
+}
+
+void Server::getFile(int confd,json &request)
+{
+    std::string filename=(std::string)request["filename"]+(std::string)request["time"];
+    std::string filepath="user/"+filename;
+    auto fp=fopen(filepath.c_str(),"r");
+    char buffer[MAXSIZE+1]={0};
+    fscanf(fp,"%s",buffer);
+    fclose(fp);
+    json result;
+    result["type"]=GET_FILE;
+    json data;
+    data["filename"]=request["filename"];
+    data["data"]=std::string(buffer);    
+    result["data"]=data;
+    sendjson(confd,result);
 }
