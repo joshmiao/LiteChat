@@ -235,7 +235,8 @@ int LiteChat_Server::sendMessage(LiteChat_Dialog::Dialog_Type dialogType, int32_
     j["type"] = dialogType == LiteChat_Dialog::Private ? _PRIVATE_MESSAGE : _GROUP_MESSAGE;
     j["token"] = token.toUtf8();
     j["data"]["user_id"] = userInfo.id;
-    j["data"]["to_id"] = toId;
+    if (dialogType == LiteChat_Dialog::Private) j["data"]["to_id"] = toId;
+    else j["data"]["group_id"] = toId;
     j["data"]["content"] = msg.toUtf8();
     j["data"]["time"] = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz").toUtf8();
     emit messageReceive(dialogType, userInfo.id, toId, msg);
