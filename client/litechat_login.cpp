@@ -14,7 +14,7 @@ LiteChat_Login::LiteChat_Login(LiteChat_Server *liteChatServer, QWidget *parent)
     liteChatServer(liteChatServer)
 {
     ui->setupUi(this);
-    this->setWindowFlags(Qt::Window |Qt::FramelessWindowHint);
+    this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
     this->setAttribute(Qt::WA_TranslucentBackground, true);
 }
 

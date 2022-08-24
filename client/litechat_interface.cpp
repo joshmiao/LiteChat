@@ -36,8 +36,8 @@ LiteChat_DialogListItem::LiteChat_DialogListItem(LiteChat_Dialog::Dialog_Type di
     lastMessage(lastMessage)
 {
     QString str1 = dialogName.replace('\n', ""), str2 = lastMessage.replace('\n', "");
-    if (str1.length() > 20) str1 = str1.left(17) + "...";
-    if (str2.length() > 30) str2 = str1.left(27) + "...";
+    if (str1.length() > 15) str1 = str1.left(12) + "...";
+    if (str2.length() > 18) str2 = str2.left(15) + "...";
     dialogNameLabel = new QLabel(str1, this);
     dialogContentLabel = new QLabel(str2, this);
     QFont font;
@@ -184,5 +184,11 @@ void LiteChat_Interface::on_lineEdit_textChanged(const QString &arg1)
 {
     Q_UNUSED(arg1);
     flushDialogList();
+}
+
+
+void LiteChat_Interface::on_pushButton_3_clicked()
+{
+
 }
 

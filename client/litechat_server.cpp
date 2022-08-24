@@ -1,5 +1,6 @@
 #include <QDebug>
 #include <QDateTime>
+#include <QMessageBox>
 #include "litechat_server.h"
 #include "litechat_interface.h"
 #include "litechat_dialog.h"
@@ -98,6 +99,14 @@ void LiteChat_Server::settleJson(QString str)
         j = json::parse(str.toStdString());
         qDebug() << "this is valid to parse:" << QString::fromStdString(to_string(j))<< '\n';
         if (!j["type"].is_number_integer()) throw std::runtime_error("the format is invalid!");
+        /*if (j["data"]["result"] != j["null"] && j["data"]["result"] == "failed"){
+            QString msg = "未知错误";
+            if (j["data"]["error"] != j["null"]) msg = QString::fromStdString(std::string(j["data"]["error"]));
+            QMessageBox msgBox;
+            msgBox.setIcon(QMessageBox::Warning);
+            msgBox.setText(msg);
+            msgBox.exec();
+        }*/
         if (j["type"] == _REGISTER)
         {
             j = j["data"];
@@ -168,8 +177,9 @@ void LiteChat_Server::settleJson(QString str)
             }
         }
 
-    } catch (...)
+    } catch (std::exception &e)
     {
+        qDebug() << e.what() << '\n';
         qDebug() << "Invalid sequence received\n";
         qDebug() << "Which is : " << str << '\n';
     }
