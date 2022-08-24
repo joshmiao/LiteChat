@@ -5,6 +5,8 @@
 #include <QLabel>
 #include <QPoint>
 
+#include <litechat_dialog.h>
+
 namespace Ui {
 class LiteChat_InviteFriend;
 }
@@ -32,11 +34,14 @@ class LiteChat_InviteFriend : public QWidget
     Q_OBJECT
 
 public:
-    explicit LiteChat_InviteFriend(LiteChat_Server *liteChatServer, int32_t groupId, std::vector<DialogInfo>, QWidget *parent = nullptr);
+    explicit LiteChat_InviteFriend(LiteChat_Server *liteChatServer, int32_t groupId, QWidget *parent = nullptr);
     ~LiteChat_InviteFriend();
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
+
+public slots:
+    void addSingleFriend(LiteChat_Dialog::Dialog_Type type, int32_t id, QString name);
 
 private:
     Ui::LiteChat_InviteFriend *ui;
@@ -46,6 +51,7 @@ private:
     QPoint m_mousePoint;
     QPoint movePoint;
     bool mousePress;
+    std::map<uint32_t, std::pair<int32_t, QString>> friendListIndex;
 
 private slots:
     void inviteUser(int currentRow);
