@@ -33,10 +33,13 @@ LiteChat_DialogListItem::LiteChat_DialogListItem(LiteChat_Dialog::Dialog_Type di
     dialogType(dialogType),
     toId(toId),
     dialogName(dialogName),
-    lastMessage(lastMessage),
-    dialogNameLabel(new QLabel(dialogName, this)),
-    dialogContentLabel(new QLabel(lastMessage, this))
+    lastMessage(lastMessage)
 {
+    QString str1 = dialogName.replace('\n', ""), str2 = lastMessage.replace('\n', "");
+    if (str1.length() > 20) str1 = str1.left(17) + "...";
+    if (str2.length() > 30) str2 = str1.left(27) + "...";
+    dialogNameLabel = new QLabel(str1, this);
+    dialogContentLabel = new QLabel(str2, this);
     QFont font;
     font.setPointSize(9);
     resize(QSize(parent->size().width(), 60));
@@ -148,18 +151,16 @@ void LiteChat_Interface::flushDialogList(){
     mappingIndex.clear();
     for (uint32_t i = 0; i < dialogInfoList.size(); ++i){
         DialogInfo &info = dialogInfoList[i];
+        dialogListIndex[{info.dialogType, info.toId}] = i;
         if (ui->lineEdit->text() == "" || ui->lineEdit->text() == QString::fromStdString(std::to_string(info.toId)) || ui->lineEdit->text() == info.dialogName)
         {
             LiteChat_DialogListItem *newFriend = new LiteChat_DialogListItem(info.dialogType, info.toId, info.dialogName, info.lastMessage, ui->listWidget);
-            dialogListIndex[{info.dialogType, info.toId}] = i;
             mappingIndex.push_back(i);
             QListWidgetItem *newItem = new QListWidgetItem(ui->listWidget);
             newItem->setSizeHint(QSize(ui->listWidget->size().width() - 10, 60));
             ui->listWidget->setItemWidget(newItem, newFriend);
         }
     }
-
-
     connect(ui->listWidget, &QListWidget::currentRowChanged, this, &LiteChat_Interface::changeCurrentDialog);
 }
 
