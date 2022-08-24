@@ -2,6 +2,16 @@
 #include "litechat_interface.h"
 #include "ui_litechat_interface.h"
 
+DialogInfo::DialogInfo(LiteChat_Dialog::Dialog_Type dialogType, int32_t toId, QString dialogName, QDateTime lastMessageTime, QString lastMessage):
+    dialogType(dialogType),
+    toId(toId),
+    dialogName(dialogName),
+    lastMessageTime(lastMessageTime),
+    lastMessage(lastMessage)
+{
+
+}
+
 LiteChat_Interface::LiteChat_Interface(LiteChat_Server *liteChatServer, QString loginName, int32_t loginId, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::LiteChat_Interface),
@@ -18,13 +28,14 @@ LiteChat_Interface::~LiteChat_Interface()
     delete ui;
 }
 
-LiteChat_DialogListItem::LiteChat_DialogListItem(LiteChat_Dialog::Dialog_Type dialogType, int32_t toId, QString dialogName, QWidget *parent) :
+LiteChat_DialogListItem::LiteChat_DialogListItem(LiteChat_Dialog::Dialog_Type dialogType, int32_t toId, QString dialogName, QString lastMessage, QWidget *parent) :
     QWidget(parent),
     dialogType(dialogType),
     toId(toId),
     dialogName(dialogName),
+    lastMessage(lastMessage),
     dialogNameLabel(new QLabel(dialogName, this)),
-    dialogContentLabel(new QLabel("ChatContent", this))
+    dialogContentLabel(new QLabel(lastMessage, this))
 {
     QFont font;
     font.setPointSize(9);
@@ -71,7 +82,7 @@ void LiteChat_Interface::addSingleDialogListItem(LiteChat_Dialog::Dialog_Type di
     if (dialogListIndex.count({dialogType, toId})) return;
     liteChatServer->requestMessages(toId);
 
-    LiteChat_DialogListItem *newFriend = new LiteChat_DialogListItem(dialogType, toId, dialogName, ui->listWidget);
+    LiteChat_DialogListItem *newFriend = new LiteChat_DialogListItem(dialogType, toId, dialogName, "", ui->listWidget);
     dialogList[dialogList.size()] = newFriend;
     dialogListIndex[{dialogType, toId}] = dialogList.size() - 1;
 
@@ -95,6 +106,7 @@ void LiteChat_Interface::messageReceive(LiteChat_Dialog::Dialog_Type dialogType,
         }
         return;
     }
+
     if (!dialogListIndex.count({dialogType, fromId})){
         qDebug() << "Message recieved from stranger.\n";
         return;
