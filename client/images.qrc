@@ -25,5 +25,9 @@
         <file>img/creategroup.png</file>
         <file>img/minus.png</file>
         <file>img/plus.png</file>
+        <file>img/close.png</file>
+        <file>img/dialogbg.jpeg</file>
+        <file>img/interfacebg.jpeg</file>
+        <file>img/searchfriendbg.jpeg</file>
     </qresource>
 </RCC>

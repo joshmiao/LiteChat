@@ -16,6 +16,7 @@ LiteChat_Login::LiteChat_Login(LiteChat_Server *liteChatServer, QWidget *parent)
     ui->setupUi(this);
     this->setWindowFlags(Qt::Window |Qt::FramelessWindowHint);
     this->setAttribute(Qt::WA_TranslucentBackground, true);
+    this->setFixedSize(this->width(),this->height());
 }
 
 LiteChat_Login::~LiteChat_Login()
@@ -90,24 +91,24 @@ void LiteChat_Login::on_pushButton_5_clicked()
 
 void LiteChat_Login::on_pushButton_5_pressed()
 {
-    ui->pushButton_5->setStyleSheet("border-radius:10px;background-color: rgb(240, 240, 240);");
+    ui->pushButton_5->setStyleSheet("border-radius:10px;background-color: rgb(240, 240, 240);border-image: url(:/img/minus.png);");
 }
 
 
 void LiteChat_Login::on_pushButton_5_released()
 {
-    ui->pushButton_5->setStyleSheet("border-radius:10px;background-color: rgb(255, 255, 255);");
+    ui->pushButton_5->setStyleSheet("border-radius:10px;background-color: rgb(255, 255, 255);border-image: url(:/img/minus.png);");
 }
 
 
 void LiteChat_Login::on_pushButton_4_pressed()
 {
-    ui->pushButton_4->setStyleSheet("border-radius:10px;background-color: rgb(240, 240, 240);");
+    ui->pushButton_4->setStyleSheet("border-radius:10px;background-color: rgb(240, 240, 240);border-image: url(:/img/close.png);");
 }
 
 
 void LiteChat_Login::on_pushButton_4_released()
 {
-    ui->pushButton_4->setStyleSheet("border-radius:10px;background-color: rgb(255, 255, 255);");
+    ui->pushButton_4->setStyleSheet("border-radius:10px;background-color: rgb(255, 255, 255);border-image: url(:/img/close.png);");
 }
 

@@ -7,14 +7,16 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>400</height>
+    <height>469</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color:white</string>
+   <string notr="true">QWidget#LiteChat_FindUser{
+	border-image: url(:/img/searchfriendbg.jpeg);
+}</string>
   </property>
   <widget class="QLineEdit" name="lineEdit">
    <property name="geometry">
@@ -74,8 +76,11 @@ border-radius:10px;</string>
      <x>0</x>
      <y>31</y>
      <width>200</width>
-     <height>371</height>
+     <height>441</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgba(255, 255, 255, 0);</string>
    </property>
   </widget>
   <widget class="QListWidget" name="listWidget_2">
@@ -84,8 +89,11 @@ border-radius:10px;</string>
      <x>200</x>
      <y>31</y>
      <width>201</width>
-     <height>371</height>
+     <height>441</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgba(255, 255, 255, 0);</string>
    </property>
   </widget>
   <widget class="QLabel" name="label">

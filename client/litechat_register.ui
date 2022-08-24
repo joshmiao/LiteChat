@@ -6,22 +6,28 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>398</width>
-    <height>634</height>
+    <width>477</width>
+    <height>800</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color: rgb(255, 255, 255);</string>
+   <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="styleSheet">
+    <string notr="true">QWidget#centralwidget{
+border-radius:20px;
+background-color: rgb(255, 255, 255);};
+</string>
+   </property>
    <widget class="QLabel" name="label_6">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>40</y>
+      <x>70</x>
+      <y>60</y>
       <width>341</width>
       <height>61</height>
      </rect>
@@ -36,8 +42,8 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>80</x>
-      <y>120</y>
+      <x>120</x>
+      <y>150</y>
       <width>251</width>
       <height>61</height>
      </rect>
@@ -54,8 +60,8 @@
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>220</y>
+      <x>50</x>
+      <y>240</y>
       <width>41</width>
       <height>41</height>
      </rect>
@@ -70,8 +76,8 @@
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>90</x>
-      <y>210</y>
+      <x>120</x>
+      <y>230</y>
       <width>41</width>
       <height>21</height>
      </rect>
@@ -81,6 +87,9 @@
       <pointsize>8</pointsize>
      </font>
     </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(255, 255, 255);</string>
+    </property>
     <property name="text">
      <string>用户名</string>
     </property>
@@ -88,8 +97,8 @@
    <widget class="QLineEdit" name="lineEdit">
     <property name="geometry">
      <rect>
-      <x>80</x>
-      <y>220</y>
+      <x>110</x>
+      <y>240</y>
       <width>291</width>
       <height>41</height>
      </rect>
@@ -103,8 +112,8 @@ border: 2px solid gray; </string>
    <widget class="QLabel" name="label_4">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>290</y>
+      <x>50</x>
+      <y>320</y>
       <width>41</width>
       <height>41</height>
      </rect>
@@ -119,8 +128,8 @@ border: 2px solid gray; </string>
    <widget class="QLineEdit" name="lineEdit_2">
     <property name="geometry">
      <rect>
-      <x>80</x>
-      <y>290</y>
+      <x>110</x>
+      <y>320</y>
       <width>291</width>
       <height>41</height>
      </rect>
@@ -137,8 +146,8 @@ border: 2px solid gray; </string>
    <widget class="QLabel" name="label_5">
     <property name="geometry">
      <rect>
-      <x>90</x>
-      <y>280</y>
+      <x>120</x>
+      <y>310</y>
       <width>41</width>
       <height>21</height>
      </rect>
@@ -148,6 +157,9 @@ border: 2px solid gray; </string>
       <pointsize>8</pointsize>
      </font>
     </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(255, 255, 255);</string>
+    </property>
     <property name="text">
      <string>密  码</string>
     </property>
@@ -155,8 +167,8 @@ border: 2px solid gray; </string>
    <widget class="QLabel" name="label_7">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>360</y>
+      <x>50</x>
+      <y>400</y>
       <width>41</width>
       <height>41</height>
      </rect>
@@ -171,8 +183,8 @@ border: 2px solid gray; </string>
    <widget class="QLineEdit" name="lineEdit_3">
     <property name="geometry">
      <rect>
-      <x>80</x>
-      <y>360</y>
+      <x>110</x>
+      <y>400</y>
       <width>291</width>
       <height>41</height>
      </rect>
@@ -192,8 +204,8 @@ border: 2px solid gray; </string>
    <widget class="QLabel" name="label_8">
     <property name="geometry">
      <rect>
-      <x>90</x>
-      <y>350</y>
+      <x>120</x>
+      <y>390</y>
       <width>61</width>
       <height>21</height>
      </rect>
@@ -203,6 +215,9 @@ border: 2px solid gray; </string>
       <pointsize>8</pointsize>
      </font>
     </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(255, 255, 255);</string>
+    </property>
     <property name="text">
      <string>确认密码</string>
     </property>
@@ -210,8 +225,8 @@ border: 2px solid gray; </string>
    <widget class="QLabel" name="label_9">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>430</y>
+      <x>50</x>
+      <y>480</y>
       <width>41</width>
       <height>41</height>
      </rect>
@@ -226,8 +241,8 @@ border: 2px solid gray; </string>
    <widget class="QLineEdit" name="lineEdit_4">
     <property name="geometry">
      <rect>
-      <x>80</x>
-      <y>430</y>
+      <x>110</x>
+      <y>480</y>
       <width>291</width>
       <height>41</height>
      </rect>
@@ -241,8 +256,8 @@ border: 2px solid gray; </string>
    <widget class="QLabel" name="label_10">
     <property name="geometry">
      <rect>
-      <x>90</x>
-      <y>420</y>
+      <x>120</x>
+      <y>470</y>
       <width>41</width>
       <height>21</height>
      </rect>
@@ -252,6 +267,9 @@ border: 2px solid gray; </string>
       <pointsize>8</pointsize>
      </font>
     </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(255, 255, 255);</string>
+    </property>
     <property name="text">
      <string>邮  箱</string>
     </property>
@@ -259,8 +277,8 @@ border: 2px solid gray; </string>
    <widget class="QPushButton" name="pushButton">
     <property name="geometry">
      <rect>
-      <x>80</x>
-      <y>520</y>
+      <x>110</x>
+      <y>580</y>
       <width>291</width>
       <height>61</height>
      </rect>
@@ -275,7 +293,7 @@ border: 2px solid gray; </string>
      <string notr="true">color: rgb(255, 255, 255);
 background-color: rgb(85, 170, 255);
 border-radius:10px;	
-border: 2px groove lightblue;</string>
+</string>
     </property>
     <property name="text">
      <string>确认注册</string>
@@ -284,8 +302,8 @@ border: 2px groove lightblue;</string>
    <widget class="QPushButton" name="pushButton_4">
     <property name="geometry">
      <rect>
-      <x>360</x>
-      <y>0</y>
+      <x>430</x>
+      <y>10</y>
       <width>31</width>
       <height>29</height>
      </rect>
@@ -298,21 +316,24 @@ border: 2px groove lightblue;</string>
     <property name="styleSheet">
      <string notr="true">QPushButton#pushButton_4{
 background-color: rgb(255, 255, 255);
-border-radius:10px;};
+border-radius:10px;
+border-image: url(:/img/close.png);
+};
 QPushButton#pushButton_4:hover{
-	border-radius:10px;
-	background-color: rgb(240, 240, 240);
+border-radius:10px;
+background-color: rgb(240, 240, 240);
+border-image: url(:/img/close.png);
 };</string>
     </property>
     <property name="text">
-     <string>X</string>
+     <string/>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton_2">
     <property name="geometry">
      <rect>
-      <x>320</x>
-      <y>0</y>
+      <x>390</x>
+      <y>10</y>
       <width>31</width>
       <height>29</height>
      </rect>
@@ -325,14 +346,17 @@ QPushButton#pushButton_4:hover{
     <property name="styleSheet">
      <string notr="true">QPushButton#pushButton_2{
 background-color: rgb(255, 255, 255);
-border-radius:10px;};
+border-radius:10px;
+border-image: url(:/img/minus.png);
+};
 QPushButton#pushButton_2:hover{
-	border-radius:10px;
-	background-color: rgb(240, 240, 240);
+border-radius:10px;
+background-color: rgb(240, 240, 240);
+border-image: url(:/img/minus.png);
 };</string>
     </property>
     <property name="text">
-     <string>-</string>
+     <string/>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton_3">
@@ -348,7 +372,7 @@ QPushButton#pushButton_2:hover{
      <string notr="true">color: rgb(255, 255, 255);
 background-color: rgb(85, 170, 255);
 border-radius:10px;	
-border: 2px groove lightblue;</string>
+</string>
     </property>
     <property name="text">
      <string>返回</string>
@@ -378,7 +402,7 @@ border: 2px groove lightblue;</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>398</width>
+     <width>477</width>
      <height>26</height>
     </rect>
    </property>
