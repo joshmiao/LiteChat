@@ -21,5 +21,6 @@
         <file>img/phone.png</file>
         <file>img/picture.png</file>
         <file>img/mail.png</file>
+        <file>img/file.png</file>
     </qresource>
 </RCC>
