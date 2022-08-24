@@ -16,13 +16,26 @@ LiteChat_SearchListItem:: LiteChat_SearchListItem(int32_t id, QString name, QWid
 {
     QFont font;
     font.setPointSize(9);
+    font.setBold(true);
     resize(QSize(parent->size().width(), 60));
     resultNameLabel->setFont(font);
     resultNameLabel->setAttribute(Qt::WA_TranslucentBackground);
     resultNameLabel->setGeometry(60, 5, parent->size().width() - 40, 20);
+    font.setBold(false);
     resultIdLabel->setFont(font);
     resultIdLabel->setAttribute(Qt::WA_TranslucentBackground);
     resultIdLabel->setGeometry(60, 25, parent->size().width() - 40, 20);
+}
+
+void LiteChat_SearchListItem::paintEvent(QPaintEvent *)
+{
+    QPixmap pixmap;
+    QString url;
+    url = QString::fromStdString(std::string(":/img/head") + std::to_string(id % 31) + std::string(".png"));
+    pixmap.load(url);
+
+    QPainter painter(this);
+    painter.drawPixmap(10, 10, 40, 40, pixmap);
 }
 
 LiteChat_FindUser::LiteChat_FindUser(LiteChat_Server *liteChatServer, QWidget *parent) :

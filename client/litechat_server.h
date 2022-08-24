@@ -45,7 +45,7 @@ public:
     LiteChat_InviteFriend* createInvitePage(int32_t groupId);
 
     int requestRegister(QString name, QString pwd, QString email);
-    int requestLogin(int32_t id, QString pwd);
+    int requestLogin(QString id, QString pwd);
     int requestFriends();
     int requestMessages(int32_t toId);
     int sendMessage(LiteChat_Dialog::Dialog_Type dialogType, int32_t toId, QString msg);
@@ -76,7 +76,7 @@ private:
 
 signals:
     void registerSuccess(int32_t id);
-    void messageReceive(LiteChat_Dialog::Dialog_Type recieveType, int32_t fromId, int32_t toId, QString msg);
+    void messageReceive(LiteChat_Dialog::Dialog_Type recieveType, int32_t fromId, int32_t toId, QString msg, int32_t idx);
     void newFriendRecieve(LiteChat_Dialog::Dialog_Type recieveType, int32_t id, QString name);
     void loginSuccess(QString loginName, int32_t loginId);
     void searchResultReceive(QString name, int32_t id);

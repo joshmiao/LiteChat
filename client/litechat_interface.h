@@ -34,6 +34,7 @@ public:
     LiteChat_Dialog::Dialog_Type dialogType;
     int32_t toId;
     QString dialogName, lastMessage;
+    void paintEvent(QPaintEvent *);
 
 private:
     QLabel *dialogNameLabel, *dialogContentLabel;
@@ -72,7 +73,7 @@ private:
 
 public slots:
     void changeCurrentDialog(int currentRow);
-    void messageReceive(LiteChat_Dialog::Dialog_Type dialogType, int32_t from_Id, int32_t toId, QString msg);
+    void messageReceive(LiteChat_Dialog::Dialog_Type dialogType, int32_t from_Id, int32_t toId, QString msg, int32_t idx);
     void addSingleDialogListItem(LiteChat_Dialog::Dialog_Type dialogType, int32_t toId, QString dialogName);
     void deleteSingleDialogListItem(LiteChat_Dialog::Dialog_Type dialogType, int32_t toId);
 

@@ -12,7 +12,7 @@ class LiteChat_Message : public QWidget
 {
     Q_OBJECT
 public:
-    explicit LiteChat_Message(QWidget *parent = nullptr);
+    explicit LiteChat_Message(int32_t idx, QWidget *parent = nullptr);
 
     enum User_Type{
         User_System,//系统

@@ -1,5 +1,6 @@
 #include <QInputDialog>
 #include <QMouseEvent>
+#include <QPixmap>
 #include "litechat_finduser.h"
 #include "litechat_interface.h"
 #include "ui_litechat_interface.h"
@@ -26,6 +27,8 @@ LiteChat_Interface::LiteChat_Interface(LiteChat_Server *liteChatServer, QString 
     this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
     this->setAttribute(Qt::WA_TranslucentBackground, true);
     this->setFixedSize(this->width(),this->height());
+    QString url = QString::fromStdString(std::string(":/img/head") + std::to_string(userinfo.id % 31) + std::string(".png"));
+    ui->label->setStyleSheet("border-image:url(" + url + ");");
     liteChatServer->requestFriends();
     liteChatServer->requestGroups();
 }
@@ -48,14 +51,29 @@ LiteChat_DialogListItem::LiteChat_DialogListItem(LiteChat_Dialog::Dialog_Type di
     dialogNameLabel = new QLabel(str1, this);
     dialogContentLabel = new QLabel(str2, this);
     QFont font;
-    font.setPointSize(9);
+    font.setPointSize(12);
+    font.setBold(true);
     resize(QSize(parent->size().width(), 60));
     dialogNameLabel->setFont(font);
     dialogNameLabel->setAttribute(Qt::WA_TranslucentBackground);
     dialogNameLabel->setGeometry(60, 5, parent->size().width() - 40, 20);
+    font.setPointSize(9);
+    font.setBold(false);
     dialogContentLabel->setFont(font);
     dialogContentLabel->setAttribute(Qt::WA_TranslucentBackground);
-    dialogContentLabel->setGeometry(60, 25, parent->size().width() - 40, 20);
+    dialogContentLabel->setGeometry(60, 30, parent->size().width() - 40, 20);
+}
+
+void LiteChat_DialogListItem::paintEvent(QPaintEvent *)
+{
+    QPixmap pixmap;
+    QString url;
+    if (dialogType == LiteChat_Dialog::Private) url = QString::fromStdString(std::string(":/img/head") + std::to_string(toId % 31) + std::string(".png"));
+    else url = QString::fromStdString(std::string(":/img/ghead") + std::to_string(toId % 4) + std::string(".png"));
+    pixmap.load(url);
+
+    QPainter painter(this);
+    painter.drawPixmap(10, 10, 40, 40, pixmap);
 }
 
 void LiteChat_Interface::changeCurrentDialog(int currentRow)
@@ -110,7 +128,7 @@ void LiteChat_Interface::deleteSingleDialogListItem(LiteChat_Dialog::Dialog_Type
     openedDialog.erase({dialogType, toId});
 }
 
-void LiteChat_Interface::messageReceive(LiteChat_Dialog::Dialog_Type dialogType, int32_t fromId, int32_t toId, QString msg){
+void LiteChat_Interface::messageReceive(LiteChat_Dialog::Dialog_Type dialogType, int32_t fromId, int32_t toId, QString msg, int32_t idx){
     if (fromId == userinfo.id){
         if (!dialogListIndex.count({dialogType, toId})){
             qDebug() << "Message recieved from stranger.\n";
@@ -121,13 +139,13 @@ void LiteChat_Interface::messageReceive(LiteChat_Dialog::Dialog_Type dialogType,
         flushDialogList();
         auto iter = openedDialog.find({dialogType, toId});
         if (iter != openedDialog.end()) {
-            iter->second->receiveSingalMessage(msg, true);
+            iter->second->receiveSingalMessage(msg, true, idx);
         }
         else{
             QString dialogName = dialogInfoList[dialogListIndex[{dialogType, toId}]].dialogName;
             LiteChat_Dialog *newDialog = liteChatServer->createDialog(dialogName, dialogType, toId);
             openedDialog[{dialogType, toId}] = newDialog;
-            newDialog->receiveSingalMessage(msg, true);
+            newDialog->receiveSingalMessage(msg, true, idx);
         }
         return;
     }
@@ -142,13 +160,13 @@ void LiteChat_Interface::messageReceive(LiteChat_Dialog::Dialog_Type dialogType,
     flushDialogList();
     auto iter = openedDialog.find({dialogType, fromId});
     if (iter != openedDialog.end()) {
-        iter->second->receiveSingalMessage(msg, false);
+        iter->second->receiveSingalMessage(msg, false, idx);
     }
     else{
         QString dialogName = dialogInfoList[dialogListIndex[{dialogType, fromId}]].dialogName;
         LiteChat_Dialog *newDialog = liteChatServer->createDialog(dialogName, dialogType, fromId);
         openedDialog[{dialogType, fromId}] = newDialog;
-        newDialog->receiveSingalMessage(msg, false);
+        newDialog->receiveSingalMessage(msg, false, idx);
     }
 }
 
@@ -240,31 +258,31 @@ void LiteChat_Interface::on_pushButton_5_clicked()
 
 void LiteChat_Interface::on_pushButton_4_pressed()
 {
-    ui->pushButton_4->setStyleSheet("background-color: rgba(150, 150, 150,150);border-radius:10px;border-image: url(:/img/minus.png);");
+    ui->pushButton_4->setStyleSheet("background-color: rgba(150, 150, 150, 150);border-radius:10px;border-image: url(:/img/minus.png);");
 }
 
 
 void LiteChat_Interface::on_pushButton_4_released()
 {
-    ui->pushButton_4->setStyleSheet("background-color: rgba(255, 255, 255,0);border-radius:10px;border-image: url(:/img/minus.png);");
+    ui->pushButton_4->setStyleSheet("background-color: rgba(255, 255, 255, 0);border-radius:10px;border-image: url(:/img/minus.png);");
 }
 
 
 void LiteChat_Interface::on_pushButton_5_pressed()
 {
-    ui->pushButton_5->setStyleSheet("background-color: rgba(150, 150, 150,150);border-radius:10px;border-image: url(:/img/close.png);");
+    ui->pushButton_5->setStyleSheet("background-color: rgba(150, 150, 150, 150);border-radius:10px;border-image: url(:/img/close.png);");
 }
 
 
 void LiteChat_Interface::on_pushButton_5_released()
 {
-    ui->pushButton_5->setStyleSheet("background-color: rgba(255, 255, 255,0);border-radius:10px;border-image: url(:/img/close.png);");
+    ui->pushButton_5->setStyleSheet("background-color: rgba(255, 255, 255, 0);border-radius:10px;border-image: url(:/img/close.png);");
 }
 
 
 void LiteChat_Interface::on_pushButton_2_pressed()
 {
-    ui->pushButton_2->setStyleSheet("background-color: rgba(107, 198, 255, 100);border-image: url(:/img/addfriend1.png);");
+    ui->pushButton_2->setStyleSheet("background-color: rgba(107, 198, 255, 150);border-image: url(:/img/addfriend1.png);");
 }
 
 
@@ -276,7 +294,7 @@ void LiteChat_Interface::on_pushButton_2_released()
 
 void LiteChat_Interface::on_pushButton_3_pressed()
 {
-    ui->pushButton_3->setStyleSheet("background-color: rgba(107, 198, 255, 100);border-image: url(:/img/creategroup.png);");
+    ui->pushButton_3->setStyleSheet("background-color: rgba(107, 198, 255, 150);border-image: url(:/img/creategroup.png);");
 }
 
 

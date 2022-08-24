@@ -51,9 +51,7 @@
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">QFrame#frame{
-	background-image: url(:/img/interfacebg.jpeg);
-}</string>
+     <string notr="true">background-color: rgb(0, 118, 246);</string>
     </property>
     <property name="frameShape">
      <enum>QFrame::StyledPanel</enum>
@@ -193,7 +191,7 @@ border-top:2px groove gray;
     </property>
     <property name="styleSheet">
      <string notr="true">QFrame{
-	background-image: url(:/img/dialogbg.jpeg);
+
 background-color: rgba(255, 255, 255, 0);
 border-radius:0;
 border-left:2px solid gray;
@@ -216,7 +214,7 @@ border-left:2px solid gray;
      </property>
      <property name="styleSheet">
       <string notr="true">QPushButton#pushButton_4{
-background-color: rgb(255, 255, 255,0);
+background-color: rgba(255, 255, 255,0);
 border-radius:10px;
 border-image: url(:/img/minus.png);
 };
@@ -237,7 +235,7 @@ border-image: url(:/img/minus.png);
      </property>
      <property name="styleSheet">
       <string notr="true">QPushButton#pushButton_5{
-background-color: rgb(255, 255, 255,0);
+background-color: rgba(255, 255, 255,0);
 border-radius:10px;
 border-image: url(:/img/close.png);
 };</string>

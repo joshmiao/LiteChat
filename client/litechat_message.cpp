@@ -8,7 +8,7 @@
 #include <QDebug>
 #include <QColor>
 
-LiteChat_Message::LiteChat_Message(QWidget *parent) : QWidget(parent)
+LiteChat_Message::LiteChat_Message(int32_t idx, QWidget *parent) : QWidget(parent)
 {
     QFont te_font = this->font();
     te_font.setFamily("MicrosoftYaHei");
@@ -18,9 +18,9 @@ LiteChat_Message::LiteChat_Message(QWidget *parent) : QWidget(parent)
 //    te_font.setLetterSpacing(QFont::PercentageSpacing, 100);          //300%,100为默认  //设置字间距%
 //    te_font.setLetterSpacing(QFont::AbsoluteSpacing, 0);             //设置字间距为3像素 //设置字间距像素值
     this->setFont(te_font);
-    m_leftPixmap = QPixmap(":/img/Customer Copy.png");
-    m_rightPixmap = QPixmap(":/img/CustomerService.png");
-
+    QString url = QString::fromStdString(std::string(":/img/head") + std::to_string(idx % 31) + std::string(".png"));
+    m_leftPixmap = QPixmap(url);
+    m_rightPixmap = QPixmap(url);
     m_loadingMovie = new QMovie(this);
     m_loadingMovie->setFileName(":/img/loading4.gif");
     m_loading = new QLabel(this);

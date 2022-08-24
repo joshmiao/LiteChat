@@ -33,7 +33,7 @@ void LiteChat_Login::on_pushButton_clicked()
         msg.exec();
         return;
     }
-    liteChatServer->requestLogin(ui->lineEdit->text().toInt(), ui->lineEdit_2->text());
+    liteChatServer->requestLogin(ui->lineEdit->text(), ui->lineEdit_2->text());
 }
 
 void LiteChat_Login::on_pushButton_2_clicked()

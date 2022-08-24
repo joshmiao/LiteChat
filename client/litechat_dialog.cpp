@@ -36,12 +36,12 @@ void LiteChat_Dialog::on_pushButton_clicked()
     liteChatServer->sendMessage(dialogType, toId, msg);
 }
 
-void LiteChat_Dialog::receiveSingalMessage(QString msg, bool myMessage){
+void LiteChat_Dialog::receiveSingalMessage(QString msg, bool myMessage, int32_t idx){
     qDebug() << "receive msg : " << msg << '\n';
     QString time = QString::number(QDateTime::currentDateTime().toTime_t()); //时间戳
     if(msg != "") {
         dealMessageTime(time);
-        LiteChat_Message* messageW = new LiteChat_Message(ui->listWidget->parentWidget());
+        LiteChat_Message* messageW = new LiteChat_Message(idx, ui->listWidget->parentWidget());
         QListWidgetItem* item = new QListWidgetItem(ui->listWidget);
         if (myMessage) {
             dealMessage(messageW, item, msg, time, LiteChat_Message::User_Me);
@@ -75,7 +75,7 @@ void LiteChat_Dialog::dealMessageTime(QString curMsgTime)
         isShowTime = true;
     }
     if(isShowTime) {
-        LiteChat_Message* messageTime = new LiteChat_Message(ui->listWidget->parentWidget());
+        LiteChat_Message* messageTime = new LiteChat_Message(0, ui->listWidget->parentWidget());
         QListWidgetItem* itemTime = new QListWidgetItem(ui->listWidget);
 
         QSize size = QSize(this->width() - 10, 20);

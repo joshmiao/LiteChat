@@ -104,14 +104,15 @@ void LiteChat_Server::settleJson(QString str)
         j = json::parse(str.toStdString());
         qDebug() << "this is valid to parse:" << QString::fromStdString(to_string(j))<< '\n';
         if (!j["type"].is_number_integer()) throw std::runtime_error("the format is invalid!");
-        /*if (j["data"]["result"] != j["null"] && j["data"]["result"] == "failed"){
+        if (!j["data"].is_array())
+        if (j["data"]["result"] != j["null"] && j["data"]["result"] == "failed"){
             QString msg = "未知错误";
             if (j["data"]["error"] != j["null"]) msg = QString::fromStdString(std::string(j["data"]["error"]));
             QMessageBox msgBox;
             msgBox.setIcon(QMessageBox::Warning);
             msgBox.setText(msg);
             msgBox.exec();
-        }*/
+        }
         if (j["type"] == _REGISTER)
         {
             j = j["data"];
@@ -133,7 +134,7 @@ void LiteChat_Server::settleJson(QString str)
              j = j["data"];
              int32_t fromId = j["from_id"], toId = j["to_id"];
              QString msg = QString::fromStdString(std::string(j["content"]));
-             emit messageReceive(LiteChat_Dialog::Private, fromId, toId, msg);
+             emit messageReceive(LiteChat_Dialog::Private, fromId, toId, msg, fromId);
         }
 
         else if (j["type"] == _GET_HISTORY_PRIVATE)
@@ -143,7 +144,7 @@ void LiteChat_Server::settleJson(QString str)
             {
                 int32_t fromId = f["data"]["from_id"], toId = f["data"]["to_id"];
                 QString msg = QString::fromStdString(std::string(f["data"]["content"]));
-                emit messageReceive(LiteChat_Dialog::Private, fromId, toId, msg);
+                emit messageReceive(LiteChat_Dialog::Private, fromId, toId, msg, fromId);
             }
         }
 
@@ -202,8 +203,9 @@ void LiteChat_Server::settleJson(QString str)
         {
             j = j["data"];
             int32_t id = j["group_id"];
+            int32_t fromId = j["from_id"];
             QString msg = QString::fromStdString(std::string(j["content"]));
-            emit messageReceive(LiteChat_Dialog::Group, id, userInfo.id, msg);
+            emit messageReceive(LiteChat_Dialog::Group, id, userInfo.id, msg, fromId);
         }
         else if (j["type"] == _GET_HISTORY_GROUP)
         {
@@ -213,10 +215,10 @@ void LiteChat_Server::settleJson(QString str)
                 int32_t groupId = f["data"]["group_id"], fromId = f["data"]["from_id"];
                 QString msg = QString::fromStdString(std::string(f["data"]["content"]));
                 if (fromId == userInfo.id) {
-                    emit messageReceive(LiteChat_Dialog::Group, fromId, groupId, msg);
+                    emit messageReceive(LiteChat_Dialog::Group, fromId, groupId, msg, userInfo.id);
                 }
                 else {
-                    emit messageReceive(LiteChat_Dialog::Private, groupId, userInfo.id, msg);
+                    emit messageReceive(LiteChat_Dialog::Private, groupId, userInfo.id, msg, fromId);
                 }
             }
         }
@@ -266,15 +268,15 @@ int LiteChat_Server::sendMessage(LiteChat_Dialog::Dialog_Type dialogType, int32_
     else j["data"]["group_id"] = toId;
     j["data"]["content"] = msg.toUtf8();
     j["data"]["time"] = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz").toUtf8();
-    emit messageReceive(dialogType, userInfo.id, toId, msg);
+    emit messageReceive(dialogType, userInfo.id, toId, msg, userInfo.id);
     return sendtoServer(j);
 }
 
-int LiteChat_Server::requestLogin(int32_t id, QString pwd)
+int LiteChat_Server::requestLogin(QString id, QString pwd)
 {
     json j;
     j["type"] = _LOGIN;
-    j["data"]["user_id"] = id;
+    j["data"]["user_id"] = id.toUtf8();
     j["data"]["pwd"] = pwd.toUtf8();
     return sendtoServer(j);
 }

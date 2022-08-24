@@ -22,7 +22,7 @@ public:
     ~LiteChat_FriendListItem() = default;
     int32_t id;
     QString name;
-
+    void paintEvent(QPaintEvent *);
 
 private:
     QLabel *NameLabel, *IdLabel;

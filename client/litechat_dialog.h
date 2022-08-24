@@ -36,7 +36,7 @@ public:
     void paintEvent(QPaintEvent *event);
 
 public slots:
-    void receiveSingalMessage(QString msg, bool myMessage);
+    void receiveSingalMessage(QString msg, bool myMessage, int32_t idx);
 protected:
     void resizeEvent(QResizeEvent *event);
 private slots:
