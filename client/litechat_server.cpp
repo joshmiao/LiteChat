@@ -272,11 +272,11 @@ int LiteChat_Server::sendMessage(LiteChat_Dialog::Dialog_Type dialogType, int32_
     return sendtoServer(j);
 }
 
-int LiteChat_Server::requestLogin(int32_t id, QString pwd)
+int LiteChat_Server::requestLogin(QString id, QString pwd)
 {
     json j;
     j["type"] = _LOGIN;
-    j["data"]["user_id"] = id;
+    j["data"]["user_id"] = id.toUtf8();
     j["data"]["pwd"] = pwd.toUtf8();
     return sendtoServer(j);
 }

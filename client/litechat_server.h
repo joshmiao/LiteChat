@@ -45,7 +45,7 @@ public:
     LiteChat_InviteFriend* createInvitePage(int32_t groupId);
 
     int requestRegister(QString name, QString pwd, QString email);
-    int requestLogin(int32_t id, QString pwd);
+    int requestLogin(QString id, QString pwd);
     int requestFriends();
     int requestMessages(int32_t toId);
     int sendMessage(LiteChat_Dialog::Dialog_Type dialogType, int32_t toId, QString msg);
