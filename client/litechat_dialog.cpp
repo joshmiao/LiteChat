@@ -30,14 +30,7 @@ void LiteChat_Dialog::on_pushButton_clicked()
     QString time = QString::number(QDateTime::currentDateTime().toTime_t()); //时间戳
 
     qDebug()<<"addMessage" << msg << time << ui->listWidget->count();
-
-    dealMessageTime(time);
-    LiteChat_Message* messageW = new LiteChat_Message(ui->listWidget->parentWidget());
-    QListWidgetItem* item = new QListWidgetItem(ui->listWidget);
-    dealMessage(messageW, item, msg, time, LiteChat_Message::User_Me);
-
-    if(liteChatServer->sendMessage(dialogType, toId, msg) == 0) messageW->setTextSuccess();
-    ui->listWidget->setCurrentRow(ui->listWidget->count()-1);
+    liteChatServer->sendMessage(dialogType, toId, msg);
 }
 
 void LiteChat_Dialog::receiveSingalMessage(QString msg, bool myMessage){

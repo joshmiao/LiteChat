@@ -21,7 +21,7 @@ public:
     QString dialogName;
     QDateTime lastMessageTime;
     QString lastMessage;
-    bool operator < (const DialogInfo &rhs) const {return lastMessageTime < rhs.lastMessageTime;}
+    bool operator < (const DialogInfo &rhs) const {return lastMessageTime > rhs.lastMessageTime;}
 };
 
 class LiteChat_DialogListItem : public QWidget
@@ -57,9 +57,11 @@ private:
     LiteChat_Dialog *currentDialog;
 
     std::map<std::pair<LiteChat_Dialog::Dialog_Type, int32_t>, LiteChat_Dialog*> openedDialog;
-    std::map<uint32_t, LiteChat_DialogListItem*> dialogList;
     std::map<std::pair<LiteChat_Dialog::Dialog_Type, int32_t>, uint32_t> dialogListIndex;
     std::vector<DialogInfo> dialogInfoList;
+    std::vector<int> mappingIndex;
+
+    void flushDialogList();
 
 public slots:
     void changeCurrentDialog(int currentRow);
@@ -69,6 +71,7 @@ public slots:
 private slots:
     void on_pushButton_clicked();
     void on_pushButton_2_clicked();
+    void on_lineEdit_textChanged(const QString &arg1);
 };
 
 
