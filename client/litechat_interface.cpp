@@ -126,6 +126,7 @@ void LiteChat_Interface::deleteSingleDialogListItem(LiteChat_Dialog::Dialog_Type
     }
     flushDialogList();
     currentDialog = nullptr;
+    delete openedDialog[{dialogType, toId}];
     openedDialog.erase({dialogType, toId});
 }
 
