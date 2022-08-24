@@ -92,7 +92,6 @@ void LiteChat_FindUser::acceptFriend(int currentRow){
     if(result == QMessageBox::Yes)
     {
             liteChatServer->acceptFriend(id, true);
-            QThread::msleep(50);
             liteChatServer->requestFriends();
             requestSet.erase({id, name});
     }

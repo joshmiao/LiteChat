@@ -148,18 +148,16 @@ void LiteChat_Interface::flushDialogList(){
     mappingIndex.clear();
     for (uint32_t i = 0; i < dialogInfoList.size(); ++i){
         DialogInfo &info = dialogInfoList[i];
+        dialogListIndex[{info.dialogType, info.toId}] = i;
         if (ui->lineEdit->text() == "" || ui->lineEdit->text() == QString::fromStdString(std::to_string(info.toId)) || ui->lineEdit->text() == info.dialogName)
         {
             LiteChat_DialogListItem *newFriend = new LiteChat_DialogListItem(info.dialogType, info.toId, info.dialogName, info.lastMessage, ui->listWidget);
-            dialogListIndex[{info.dialogType, info.toId}] = i;
             mappingIndex.push_back(i);
             QListWidgetItem *newItem = new QListWidgetItem(ui->listWidget);
             newItem->setSizeHint(QSize(ui->listWidget->size().width() - 10, 60));
             ui->listWidget->setItemWidget(newItem, newFriend);
         }
     }
-
-
     connect(ui->listWidget, &QListWidget::currentRowChanged, this, &LiteChat_Interface::changeCurrentDialog);
 }
 
