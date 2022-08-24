@@ -48,7 +48,7 @@ void LiteChat_Login::loginSuccess(QString loginName, int32_t loginId){
     interface->show();
     QMessageBox msgBox;
     msgBox.setText("登录成功！\n欢迎您 " + loginName + "!");
-    msgBox.exec();
+//    msgBox.exec();
     delete this;
 }
 

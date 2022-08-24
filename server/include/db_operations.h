@@ -5,7 +5,7 @@
 #include <mysqlx/xdevapi.h>
 
 constexpr int32_t USER_ID_BEGIN = 10000;
-constexpr int32_t GROUP_ID_BEGIN = 10000;
+constexpr int32_t GROUP_ID_BEGIN = 20000;
 typedef int32_t ID;
 
 class LiteChatDatabaseAccess

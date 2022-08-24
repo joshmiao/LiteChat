@@ -267,11 +267,14 @@ getHistoryPrivate
     "type":GET_HISTORY_PRIVATE,
     "data":[
         {
-            "from_id":
-            "to_id":
-            "time":
-            "content":
-            "is_file":
+            "type":"PRIVATE_MESSAGE",
+            "data":{
+                "from_id":
+                "to_id":
+                "time":
+                "content":
+                "is_file":
+            }
         },
         ...
     ]
@@ -496,11 +499,21 @@ getGroupMembers
 
 sendGroupMessage
 {
-    "type":GROUPMESSAGE,
+    "type":GROUP_MESSAGE,
     "token":
     "data":{
         "group_id":
         "user_id":
+        "content":
+        "time":
+        "is_file":
+    }
+}
+{
+    "type":GROUP_MESSAGE,
+    "data":{
+        "group_id":
+        "from_id":
         "content":
         "time":
         "is_file":
@@ -514,11 +527,14 @@ getHistoryGroup
     "token":
     "data":[
         {
-            "group_id":
-            "from_id":
-            "content":
-            "time":
-            "is_file":
+            "type":GROUP_MESSAGE,
+            "data":{
+                "group_id":
+                "from_id":
+                "content":
+                "time":
+                "is_file":
+            }
         },
         ...
     ]
