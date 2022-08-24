@@ -63,8 +63,11 @@ LiteChat_DialogListItem::LiteChat_DialogListItem(LiteChat_Dialog::Dialog_Type di
 void LiteChat_DialogListItem::paintEvent(QPaintEvent *)
 {
     QPixmap pixmap;
-    if (dialogType == LiteChat_Dialog::Private) pixmap.load(":/img/head0.png");
-    else pixmap.load(":/img/head1.png");
+    QString url;
+    if (dialogType == LiteChat_Dialog::Private) url = QString::fromStdString(std::string(":/img/head") + std::to_string(toId % 31) + std::string(".png"));
+    else url = QString::fromStdString(std::string(":/img/head") + std::to_string(toId % 31) + std::string(".png"));
+    pixmap.load(url);
+
     QPainter painter(this);
     painter.drawPixmap(10, 10, 40, 40, pixmap);
 }
