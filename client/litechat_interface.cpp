@@ -240,48 +240,48 @@ void LiteChat_Interface::on_pushButton_5_clicked()
 
 void LiteChat_Interface::on_pushButton_4_pressed()
 {
-    ui->pushButton_4->setStyleSheet("background-color: rgba(150, 150, 150,150);border-radius:10px;border-image: url(:/img/minus.png);");
+    ui->pushButton_4->setStyleSheet("background-color: rgb(150, 150, 150);border-radius:10px;border-image: url(:/img/minus.png);");
 }
 
 
 void LiteChat_Interface::on_pushButton_4_released()
 {
-    ui->pushButton_4->setStyleSheet("background-color: rgba(255, 255, 255,0);border-radius:10px;border-image: url(:/img/minus.png);");
+    ui->pushButton_4->setStyleSheet("background-color: rgb(255, 255, 255);border-radius:10px;border-image: url(:/img/minus.png);");
 }
 
 
 void LiteChat_Interface::on_pushButton_5_pressed()
 {
-    ui->pushButton_5->setStyleSheet("background-color: rgba(150, 150, 150,150);border-radius:10px;border-image: url(:/img/close.png);");
+    ui->pushButton_5->setStyleSheet("background-color: rgb(150, 150, 150);border-radius:10px;border-image: url(:/img/close.png);");
 }
 
 
 void LiteChat_Interface::on_pushButton_5_released()
 {
-    ui->pushButton_5->setStyleSheet("background-color: rgba(255, 255, 255,0);border-radius:10px;border-image: url(:/img/close.png);");
+    ui->pushButton_5->setStyleSheet("background-color: rgb(255, 255, 255);border-radius:10px;border-image: url(:/img/close.png);");
 }
 
 
 void LiteChat_Interface::on_pushButton_2_pressed()
 {
-    ui->pushButton_2->setStyleSheet("background-color: rgba(107, 198, 255, 100);border-image: url(:/img/addfriend1.png);");
+    ui->pushButton_2->setStyleSheet("background-color: rgb(107, 198, 255);border-image: url(:/img/addfriend1.png);");
 }
 
 
 void LiteChat_Interface::on_pushButton_2_released()
 {
-    ui->pushButton_2->setStyleSheet("background-color: rgba(255, 255, 255, 0);border-image: url(:/img/addfriend1.png);");
+    ui->pushButton_2->setStyleSheet("background-color: rgb(255, 255, 255);border-image: url(:/img/addfriend1.png);");
 }
 
 
 void LiteChat_Interface::on_pushButton_3_pressed()
 {
-    ui->pushButton_3->setStyleSheet("background-color: rgba(107, 198, 255, 100);border-image: url(:/img/creategroup.png);");
+    ui->pushButton_3->setStyleSheet("background-color: rgb(107, 198, 255);border-image: url(:/img/creategroup.png);");
 }
 
 
 void LiteChat_Interface::on_pushButton_3_released()
 {
-    ui->pushButton_3->setStyleSheet("background-color: rgba(255, 255, 255, 0);border-image: url(:/img/creategroup.png);");
+    ui->pushButton_3->setStyleSheet("background-color: rgb(255, 255, 255);border-image: url(:/img/creategroup.png);");
 }
 
