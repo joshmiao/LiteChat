@@ -1,5 +1,5 @@
 register1://user1,1@1.com
-password error
+
 email error//111@bit..edu.cn
 
 register2://user2,2@2.com
@@ -12,7 +12,7 @@ password error
 login2://email
 
 login3://name->id
-id error
+
 
 add friends:
 1+2
@@ -47,8 +47,6 @@ login1
 
 2 quit #1
 1 delete #1
-
-
 
 delete friend:
 1 delete 2
