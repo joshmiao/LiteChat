@@ -29,14 +29,9 @@ const int MAXSIZE=8192;
 int Server::sendjson(int confd,json &result){
     std::string str = to_string(result);
     std::cout << std::setw(4) << result << std::endl;
-    try{
-        int ret=send(confd,str.c_str(),str.size(),0);
-        if(ret<0){
-            printf("send to %d failed\n",confd);
-            return -1;
-        }
-    }
-    catch(...){
+    int ret=send(confd,str.c_str(),str.size(),0);
+    std::cout<<"send successfully\n\n";
+    if(ret<0){
         printf("send to %d failed\n",confd);
         return -1;
     }
