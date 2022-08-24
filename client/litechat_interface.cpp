@@ -23,11 +23,11 @@ LiteChat_Interface::LiteChat_Interface(LiteChat_Server *liteChatServer, QString 
     ui->setupUi(this);
     connect(ui->listWidget, &QListWidget::currentRowChanged, this, &LiteChat_Interface::changeCurrentDialog);
     currentDialog = nullptr;
-    liteChatServer->requestFriends();
-    liteChatServer->requestGroups();
     this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
     this->setAttribute(Qt::WA_TranslucentBackground, true);
     this->setFixedSize(this->width(),this->height());
+    liteChatServer->requestFriends();
+    liteChatServer->requestGroups();
 }
 
 LiteChat_Interface::~LiteChat_Interface()

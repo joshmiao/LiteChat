@@ -198,6 +198,28 @@ void LiteChat_Server::settleJson(QString str)
             QString name = QString::fromStdString(std::string(j["group_name"]));
             emit newFriendRecieve(LiteChat_Dialog::Group, id, name);
         }
+        else if (j["type"] == _GROUP_MESSAGE)
+        {
+            j = j["data"];
+            int32_t id = j["group_id"];
+            QString msg = QString::fromStdString(std::string(j["content"]));
+            emit messageReceive(LiteChat_Dialog::Group, id, userInfo.id, msg);
+        }
+        else if (j["type"] == _GET_HISTORY_GROUP)
+        {
+            j = j["data"];
+            for (const auto &f : j)
+            {
+                int32_t groupId = f["data"]["group_id"], fromId = f["data"]["from_id"];
+                QString msg = QString::fromStdString(std::string(f["data"]["content"]));
+                if (fromId == userInfo.id) {
+                    emit messageReceive(LiteChat_Dialog::Group, fromId, groupId, msg);
+                }
+                else {
+                    emit messageReceive(LiteChat_Dialog::Private, groupId, userInfo.id, msg);
+                }
+            }
+        }
 
     } catch (std::exception &e)
     {
