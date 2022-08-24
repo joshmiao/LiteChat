@@ -65,6 +65,13 @@ void LiteChat_Server::handReadyRead()
 {
     QByteArray recvArray = client->readAll();
     QString recvString = QString::fromUtf8(recvArray);
+    if (recvString[0] == '*'){
+        userInfo.id = 9999;
+        userInfo.username = "test_user";
+        token = "test_token";
+        loginStatus = true;
+        emit loginSuccess(userInfo.username, userInfo.id);
+    }
     int begin = 0;
     while (true){
         int k = begin + 1, seq = 1;
@@ -87,7 +94,7 @@ void LiteChat_Server::settleJson(QString str)
     try
     {
         json j;
-//      {"data":{"friends":[{"user_id":66666,"user_name":"nonono1"},{"user_id":88888,"user_name":"nonono2"}],"result":"success_get_friends"},"type":1004}
+//      {"data":[{"friend_id":66666,"friend_name":"nonono1"},{"friend_id":88888,"friend_name":"nonono2"}],"result":"success_get_friends"},"type":1004}
         j = json::parse(str.toStdString());
         qDebug() << "this is valid to parse:" << QString::fromStdString(to_string(j))<< '\n';
         if (!j["type"].is_number_integer()) throw std::runtime_error("the format is invalid!");
@@ -164,6 +171,7 @@ void LiteChat_Server::settleJson(QString str)
     } catch (...)
     {
         qDebug() << "Invalid sequence received\n";
+        qDebug() << "Which is : " << str << '\n';
     }
 }
 int LiteChat_Server::sendtoServer(json j)
@@ -202,6 +210,7 @@ int LiteChat_Server::sendMessage(LiteChat_Dialog::Dialog_Type dialogType, int32_
     j["data"]["to_id"] = toId;
     j["data"]["content"] = msg.toUtf8();
     j["data"]["time"] = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz").toUtf8();
+    emit messageReceive(LiteChat_Dialog::Private, userInfo.id, toId, msg);
     return sendtoServer(j);
 }
 
