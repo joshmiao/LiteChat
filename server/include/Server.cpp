@@ -17,6 +17,7 @@
 #include "Server.h"
 #include "json.hpp"
 #include "db_operations.h"
+#include "db_table_column.h"
 #include "request_type.h"
 using json = nlohmann::json;
 
@@ -212,7 +213,7 @@ void Server::Analyze(int confd,json &request)
     
     if(request["token"]!=request["null"])
     {
-        std::string token(db->getUserStatus((ID)request["data"]["user_id"]).get(2));
+        std::string token(db->getUserStatus((ID)request["data"]["user_id"]).get(USER_STATUS_TOKEN));
         if(token!=(std::string)request["token"])
         {
             Error("token error",confd,TOKEN);
@@ -290,11 +291,11 @@ void Server::userLogin(int confd,json &request)
 
         auto row=db->getBasicUserDataByID(res);
         data["user_id"]=(ID)res;
-        data["user_name"]=row.get(1);
-        data["email"]=row.get(2);
-        data["birthday"]=row.get(3);
-        data["avatar_filename"]=row.get(4);
-        data["signature"]=row.get(5);
+        data["user_name"]=row.get(BASIC_USER_DATA_USER_NAME);
+        data["email"]=row.get(BASIC_USER_DATA_EMAIL);
+        data["birthday"]=row.get(BASIC_USER_DATA_BIRTHDAY);
+        data["avatar_filename"]=row.get(BASIC_USER_DATA_AVATAR_FILENAME);
+        data["signature"]=row.get(BASIC_USER_DATA_SIGNATURE);
         data["token"]=setLogin(confd,res);
         result["data"]=data;
         sendjson(confd,result);
@@ -345,14 +346,14 @@ void Server::getFriends(int confd,json &request)
     {
         json _friend;
         ID friend_id;
-        _friend["friend_id"]=friend_id=(ID)friends.fetchOne().get(1);
-        _friend["is_online"]=(int)db->getUserStatus(friend_id).get(0);
+        _friend["friend_id"]=friend_id=(ID)friends.fetchOne().get(FRIEND_RELATION_USER2);
+        _friend["is_online"]=(int)db->getUserStatus(friend_id).get(USER_STATUS_IS_ONLINE);
         auto row=db->getBasicUserDataByID(friend_id);
-        _friend["friend_name"]=row.get(1);
-        _friend["email"]=row.get(2);
-        _friend["birthday"]=row.get(3);
-        _friend["avatar_filename"]=row.get(4);
-        _friend["signature"]=row.get(5);
+        _friend["friend_name"]=row.get(BASIC_USER_DATA_USER_NAME);
+        _friend["email"]=row.get(BASIC_USER_DATA_EMAIL);
+        _friend["birthday"]=row.get(BASIC_USER_DATA_BIRTHDAY);
+        _friend["avatar_filename"]=row.get(BASIC_USER_DATA_AVATAR_FILENAME);
+        _friend["signature"]=row.get(BASIC_USER_DATA_SIGNATURE);
 
         data.push_back(_friend);
     }
@@ -373,11 +374,11 @@ void Server::sendPrivateMessage(int confd,json &request)
     std::string time=request["time"];
     db->addUserHistory(time,user_id,to_id,content);
     auto status=db->getUserStatus(to_id);
-    bool to_online=bool(status.get(0));
+    bool to_online=bool(status.get(USER_STATUS_IS_ONLINE));
     int success=-1;
     if(to_online==true)
     {
-        int to_fd=(int)status.get(1);
+        int to_fd=(int)status.get(USER_STATUS_HANDLE);
 
         json result;
         result["type"]=PRIVATE_MESSAGE;
@@ -438,15 +439,15 @@ void Server::sendGroupMessage(int confd,json &request)
     auto group_member=db->getGroupMember(group_id);
     while(group_member.count()>0)
     {
-        ID to_id=(ID)(group_member.fetchOne().get(1));
+        ID to_id=(ID)(group_member.fetchOne().get(FRIEND_RELATION_USER2));
         auto statu=db->getUserStatus(to_id);
         if(to_id==user_id)
             continue;
-        bool to_online=bool(statu.get(0));
+        bool to_online=bool(statu.get(USER_STATUS_IS_ONLINE));
         int success=-1;
         if(to_online==true)
         {
-            int to_fd=(int)statu.get(1);
+            int to_fd=(int)statu.get(USER_STATUS_HANDLE);
             message["data"]["to_id"]=(ID)to_id;
             success=sendjson(to_fd,message);
         }
@@ -471,14 +472,14 @@ void Server::sendPrivateUnreadMessage(int confd,ID user_id)
         json message;
         message["type"]=PRIVATE_MESSAGE;
         json data;
-        std::string time=(std::string)row.get(0);
+        std::string time=(std::string)row.get(USER_UNSEND_MESSAGE_SEND_TIME);
         reverse(time.begin(),time.end());
         time=time.substr(3);
         reverse(time.begin(),time.end());
         data["time"]=time;
         data["to_id"]=user_id;
-        data["from_id"]=(ID)row.get(1);
-        data["content"]=row.get(2);
+        data["from_id"]=(ID)row.get(USER_UNSEND_MESSAGE_SRC_USER_ID);
+        data["content"]=row.get(USER_UNSEND_MESSAGE_CONTENT);
         message["data"]=data;
         message_bundle.push_back(message);
     }
@@ -500,15 +501,15 @@ void Server::sendGroupUnreadMessage(int confd,ID user_id)
         json message;
         message["type"]=GROUP_MESSAGE;
         json data;
-        std::string time=(std::string)row.get(0);
+        std::string time=(std::string)row.get(GROUP_UNSEND_MESSAGE_SEND_TIME);
         reverse(time.begin(),time.end());
         time=time.substr(3);
         reverse(time.begin(),time.end());
         data["time"]=time;
         data["to_id"]=user_id;
-        data["from_id"]=(ID)row.get(1);
-        data["group_id"]=(ID)row.get(2);
-        data["content"]=(std::string)row.get(3);
+        data["from_id"]=(ID)row.get(GROUP_UNSEND_MESSAGE_SRC_USER_ID);
+        data["group_id"]=(ID)row.get(GROUP_UNSEND_MESSAGE_DST_GROUP_ID);
+        data["content"]=(std::string)row.get(GROUP_UNSEND_MESSAGE_CONTENT);
         message["data"]=data;
         message_bundle.push_back(message);
     }
@@ -561,14 +562,14 @@ void Server::getPrivateHistory(int confd,json &request)
         json message;
         message["type"]=PRIVATE_MESSAGE;
         json data;
-        std::string time=(std::string)row.get(0);
+        std::string time=(std::string)row.get(USER_HISTORY_SEND_TIME);
         reverse(time.begin(),time.end());
         time=time.substr(3);
         reverse(time.begin(),time.end());
         data["time"]=time;
-        data["to_id"]=(ID)row.get(1);
-        data["from_id"]=(ID)row.get(2);
-        data["content"]=row.get(3);
+        data["to_id"]=(ID)row.get(USER_HISTORY_DST_USER_ID);
+        data["from_id"]=(ID)row.get(USER_HISTORY_SRC_USER_ID);
+        data["content"]=row.get(USER_HISTORY_CONTENT);
         message["data"]=data;
         res.push_back(message);
     }
@@ -609,15 +610,15 @@ void Server::getGroupHistory(int confd,json &request)
         json message;
         message["type"]=GROUP_MESSAGE;
         json data;
-        std::string time=(std::string)row.get(0);
+        std::string time=(std::string)row.get(GROUP_HISTORY_SEND_TIME);
         reverse(time.begin(),time.end());
         time=time.substr(3);
         reverse(time.begin(),time.end());
         data["time"]=time;
-        data["to_id"]=(ID)row.get(1);
-        data["from_id"]=(ID)row.get(2);
-        data["group_id"]=(ID)row.get(3);
-        data["content"]=row.get(4);
+        //data["to_id"]=(ID)row.get(GROUP_HISTORY_DST_GROUP_ID);
+        data["from_id"]=(ID)row.get(GROUP_HISTORY_SRC_USER_ID);
+        data["group_id"]=(ID)row.get(GROUP_HISTORY_DST_GROUP_ID);
+        data["content"]=row.get(GROUP_HISTORY_CONTENT);
         message["data"]=data;
         res.push_back(message);
     }
@@ -654,12 +655,12 @@ void Server::searchUser(int confd,json &request)
     {
         auto row=users.fetchOne();
         json user;
-        user["user_id"]=(ID)row.get(0);
-        user["user_name"]=row.get(1);
-        user["email"]=row.get(2);
-        user["birthday"]=row.get(3);
-        user["avatar_filename"]=row.get(4);
-        user["signature"]=row.get(5);
+        user["user_id"]=(ID)row.get(BASIC_USER_DATA_USER_ID);
+        user["user_name"]=row.get(BASIC_USER_DATA_USER_NAME);
+        user["email"]=row.get(BASIC_USER_DATA_EMAIL);
+        user["birthday"]=row.get(BASIC_USER_DATA_BIRTHDAY);
+        user["avatar_filename"]=row.get(BASIC_USER_DATA_AVATAR_FILENAME);
+        user["signature"]=row.get(BASIC_USER_DATA_SIGNATURE);
         
         //unfinished
         //user avatar_filename and resoure?
@@ -714,9 +715,9 @@ void Server::getFriendRequest(int confd,json &request)
     {
         auto row=requests.fetchOne();
         json request;
-        request["from_id"]=(ID)row.get(0);
-        request["name"]=db->getBasicUserDataByID((ID)request["from_id"]).get(1);
-        request["message"]=row.get(2);
+        request["from_id"]=(ID)row.get(FRIEND_REQUEST_USER_FROM);
+        request["name"]=db->getBasicUserDataByID((ID)request["from_id"]).get(BASIC_USER_DATA_USER_NAME);
+        request["message"]=row.get(FRIEND_REQUEST_REQUEST_MESSAGE);
         res.push_back(request);
     }
     json result;
@@ -766,25 +767,25 @@ void Server::acceptFriend(int confd,json &request)
     }
 
     auto status=db->getUserStatus(from_id);
-    bool is_online=(bool)status.get(0);
+    bool is_online=(bool)status.get(USER_STATUS_IS_ONLINE);
     if(is_online==true)
     {
         json _friend;
         ID friend_id=from_id;
         _friend["friend_id"]=friend_id;
-        _friend["is_online"]=(int)status.get(0);
+        _friend["is_online"]=(int)status.get(USER_STATUS_IS_ONLINE);
         auto row=db->getBasicUserDataByID(friend_id);
-        _friend["friend_name"]=row.get(1);
-        _friend["email"]=row.get(2);
-        _friend["birthday"]=row.get(3);
-        _friend["avatar_filename"]=row.get(4);
-        _friend["signature"]=row.get(5);
+        _friend["friend_name"]=row.get(BASIC_USER_DATA_USER_NAME);
+        _friend["email"]=row.get(BASIC_USER_DATA_EMAIL);
+        _friend["birthday"]=row.get(BASIC_USER_DATA_BIRTHDAY);
+        _friend["avatar_filename"]=row.get(BASIC_USER_DATA_AVATAR_FILENAME);
+        _friend["signature"]=row.get(BASIC_USER_DATA_SIGNATURE);
         std::vector<json>data;
         data.push_back(_friend);
         json result;
         result["type"]=GET_FRIENDS;
         result["data"]=data;
-        int fd=(int)status.get(1);
+        int fd=(int)status.get(USER_STATUS_HANDLE);
         sendjson(fd,result);
         std::cout<<fd<<" get a new friend\n"; 
     }
@@ -842,7 +843,7 @@ void Server::inviteMember(int confd,json &request){
 void Server::deleteGroup(int confd,json &request){
     ID user_id = request["user_id"];
     ID group_id = request["group_id"];
-    if(user_id != (ID)db->getBasicGroupData(group_id).get(2))
+    if(user_id != (ID)db->getBasicGroupData(group_id).get(BASIC_GROUP_DATA_OWNER))
     {
         Error("you are not the owner of this group",confd,DELETE_GROUP);
         return;
@@ -875,7 +876,7 @@ void Server::getGroupMembers(int confd,json &request){
     while(members.count() > 0){
         json res;
         auto row=members.fetchOne();
-        res["user_id"] =(ID)row.get(0);
+        res["user_id"] =(ID)row.get(GROUP_MEMBER_USER_ID);
         data.push_back(res);
     }
     json result;
@@ -933,9 +934,9 @@ void Server::searchGroup(int confd,json &request)
     {
         auto row=groups.fetchOne();
         json group;
-        group["group_id"]=(ID)row.get(0);
-        group["group_name"]=row.get(1);
-        group["group_desciption"]=row.get(2);
+        group["group_id"]=(ID)row.get(BASIC_GROUP_DATA_GROUP_ID);
+        group["group_name"]=row.get(BASIC_GROUP_DATA_GROUP_NAME);
+        group["group_desciption"]=row.get(BASIC_GROUP_DATA_GROUP_DESCRIPTION);
         res.push_back(group);
     }
     json result;
@@ -987,9 +988,9 @@ void Server::getMemberRequest(int confd,json &request)
     {
         auto row=requests.fetchOne();
         json request;
-        request["member_id"]=(ID)row.get(0);
+        request["member_id"]=(ID)row.get(GROUP_REQUEST_USER_ID);
         request["group_id"]=group_id;
-        request["message"]=row.get(2);
+        request["message"]=row.get(GROUP_REQUEST_REQUEST_MESSAGE);
         res.push_back(request);
     }
     json result;
@@ -1043,13 +1044,13 @@ void Server::deleteMember(int confd,json &request)
 {
     ID member_id=request["member_id"];
     ID group_id=request["group_id"];
-    ID owner_id = (ID)db->getBasicGroupData(group_id).get(2), member_confd = (int)db->getUserStatus(member_id).get(1); 
+    ID owner_id = (ID)db->getBasicGroupData(group_id).get(BASIC_GROUP_DATA_OWNER), member_confd = (int)db->getUserStatus(member_id).get(USER_STATUS_HANDLE); 
     auto owner_status = db->getUserStatus(owner_id);
     if(member_id == owner_id){
         Error("failed: you are the owner, you can not quit!",confd,DELETE_MEMBER);
         return;
     }
-    if(confd != member_confd && ((bool)owner_status.get(0) == false || confd != (int)owner_status.get(1))){
+    if(confd != member_confd && ((bool)owner_status.get(USER_STATUS_IS_ONLINE) == false || confd != (int)owner_status.get(USER_STATUS_HANDLE))){
         Error("failed: you do not have the authority!",confd,DELETE_MEMBER);
         return;
     }
@@ -1086,11 +1087,11 @@ void Server::getGroups(int confd,json &request)
     {
         json group;
         ID group_id;
-        group["group_id"]=group_id=(ID)groups.fetchOne().get(0);
+        group["group_id"]=group_id=(ID)groups.fetchOne().get(GROUP_MEMBER_GROUP_ID);
         auto row=db->getBasicGroupData(group_id);
-        group["group_name"]=(std::string)row.get(1);
-        group["owner_id"]=(ID)row.get(2);
-        group["description"]=(std::string)row.get(3);
+        group["group_name"]=(std::string)row.get(BASIC_GROUP_DATA_GROUP_NAME);
+        group["owner_id"]=(ID)row.get(BASIC_GROUP_DATA_OWNER);
+        group["description"]=(std::string)row.get(BASIC_GROUP_DATA_GROUP_DESCRIPTION);
 
         data.push_back(group);
     }
