@@ -1,18 +1,21 @@
 #include "litechat_server.h"
 #include "litechat_dialog.h"
+#include "litechat_invitefriend.h"
+#include "litechat_interface.h"
 #include "ui_litechat_dialog.h"
 
 #include <QDateTime>
 #include <QDebug>
 #include <QMessageBox>
 
-LiteChat_Dialog::LiteChat_Dialog(LiteChat_Server *liteChatServer, QString dialogName, Dialog_Type dialogType, int32_t toId, QWidget *parent) :
+LiteChat_Dialog::LiteChat_Dialog(LiteChat_Server *liteChatServer, QString dialogName, LiteChat_Dialog::Dialog_Type dialogType, int32_t toId, std::vector<DialogInfo> &dialogInfo, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::LiteChat_Dialog),
     liteChatServer(liteChatServer),
     dialogName(dialogName),
     dialogType(dialogType),
-    toId(toId)
+    toId(toId),
+    dialogInfo(dialogInfo)
 {
     ui->setupUi(this);
     ui->label->setText(dialogName);
@@ -70,7 +73,6 @@ void LiteChat_Dialog::dealMessageTime(QString curMsgTime)
         int curTime = curMsgTime.toInt();
         qDebug() << "curTime lastTime:" << curTime - lastTime;
         isShowTime = ((curTime - lastTime) > 60); // 两个消息相差一分钟
-//        isShowTime = true;
     } else {
         isShowTime = true;
     }
@@ -90,28 +92,6 @@ void LiteChat_Dialog::resizeEvent(QResizeEvent *event){
     Q_UNUSED(event);
 }
 
-/*
-void LiteChat_Dialog::resizeEvent(QResizeEvent *event)
-{
-    Q_UNUSED(event);
-
-
-    ui->textEdit->resize(this->width() - 20, this->height() - 20);
-    ui->textEdit->move(10, 10);
-
-    ui->pushButton->move(ui->textEdit->width()+ui->textEdit->x() - ui->pushButton->width() - 10,
-                         ui->textEdit->height()+ui->textEdit->y() - ui->pushButton->height() - 10);
-
-
-    for(int i = 0; i < ui->listWidget->count(); i++) {
-        LiteChat_Message* messageW = (LiteChat_Message*)ui->listWidget->itemWidget(ui->listWidget->item(i));
-        QListWidgetItem* item = ui->listWidget->item(i);
-
-        dealMessage(messageW, item, messageW->text(), messageW->time(), messageW->userType());
-    }
-}
-*/
-
 void LiteChat_Dialog::on_pushButton_5_clicked()
 {
     QString typemsg = dialogType == Private ? "删除好友" : "退出群聊";
@@ -119,8 +99,16 @@ void LiteChat_Dialog::on_pushButton_5_clicked()
     auto result = message.exec();
     if(result == QMessageBox::Yes)
     {
-            liteChatServer->deleteFriend(toId);
+            if (dialogType == Private) liteChatServer->deleteFriend(toId);
+            else if (dialogType == Group) liteChatServer->leaveGroup(toId);
             delete this;
     }
+}
+
+
+void LiteChat_Dialog::on_pushButton_4_clicked()
+{
+    LiteChat_InviteFriend *invitePage = new LiteChat_InviteFriend(liteChatServer, toId, dialogInfo);
+    invitePage->show();
 }
 

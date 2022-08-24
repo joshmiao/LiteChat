@@ -20,20 +20,24 @@ constexpr int USER_HISTORY_SEND_TIME = 0;
 constexpr int USER_HISTORY_SRC_USER_ID = 1;
 constexpr int USER_HISTORY_DST_USER_ID = 2;
 constexpr int USER_HISTORY_CONTENT = 3;
+constexpr int USER_HISTORY_ISFILE = 4;
 
 constexpr int GROUP_HISTORY_SEND_TIME = 0;
 constexpr int GROUP_HISTORY_SRC_USER_ID = 1;
 constexpr int GROUP_HISTORY_DST_GROUP_ID = 2;
 constexpr int GROUP_HISTORY_CONTENT = 3;
+constexpr int GROUP_HISTORY_ISFILE = 4;
 
 constexpr int USER_UNSEND_MESSAGE_SEND_TIME = 0;
 constexpr int USER_UNSEND_MESSAGE_SRC_USER_ID = 1;
 constexpr int USER_UNSEND_MESSAGE_CONTENT = 2;
+constexpr int USER_UNSEND_MESSAGE_ISFILE = 3;
 
 constexpr int GROUP_UNSEND_MESSAGE_SEND_TIME = 0;
 constexpr int GROUP_UNSEND_MESSAGE_SRC_USER_ID = 1;
 constexpr int GROUP_UNSEND_MESSAGE_DST_GROUP_ID = 2;
 constexpr int GROUP_UNSEND_MESSAGE_CONTENT = 3;
+constexpr int GROUP_UNSEND_MESSAGE_ISFILE = 4;
 
 constexpr int USER_STATUS_IS_ONLINE = 0;
 constexpr int USER_STATUS_HANDLE = 1;

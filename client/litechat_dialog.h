@@ -10,6 +10,7 @@ class LiteChat_Dialog;
 }
 
 class LiteChat_Server;
+class DialogInfo;
 
 class LiteChat_Dialog : public QWidget
 {
@@ -27,7 +28,9 @@ public:
     QString dialogName;
     Dialog_Type dialogType;
     int32_t userId, toId;
-    explicit LiteChat_Dialog(LiteChat_Server *liteChatServer, QString dialogName, Dialog_Type dialogType, int toId, QWidget *parent = nullptr);
+    std::vector<DialogInfo> dialogInfo;
+
+    explicit LiteChat_Dialog(LiteChat_Server *liteChatServer, QString dialogName, Dialog_Type dialogType, int toId, std::vector<DialogInfo> &dialogInfo, QWidget *parent = nullptr);
     ~LiteChat_Dialog();
     void dealMessage(LiteChat_Message *messageW, QListWidgetItem *item, QString text, QString time, LiteChat_Message::User_Type type);
     void dealMessageTime(QString curMsgTime);
@@ -40,6 +43,7 @@ private slots:
 
 
     void on_pushButton_5_clicked();
+    void on_pushButton_4_clicked();
 };
 
 #endif // LITECHAT_DIALOG_H

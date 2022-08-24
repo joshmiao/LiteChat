@@ -34,6 +34,7 @@ send_time DATETIME(3), -- 精确到ms
 src_user_id INT,
 dst_user_id INT,
 content VARCHAR(2048) NOT NULL,
+is_file BOOL DEFAULT(FALSE),
 CONSTRAINT IDENTIFIER_MESSAGE_TO_USER PRIMARY KEY(send_time, src_user_id, dst_user_id),
 CONSTRAINT SRC_USER_REGISTERED_1 foreign key (src_user_id) references basic_user_data(user_id),
 CONSTRAINT DST_USER_REGISTERED_1 foreign key (dst_user_id) references basic_user_data(user_id)
@@ -44,6 +45,7 @@ send_time DATETIME(3), -- 精确到ms
 src_user_id INT,
 dst_group_id INT,
 content VARCHAR(2048) NOT NULL,
+is_file BOOL DEFAULT(FALSE),
 CONSTRAINT IDENTIFIER_MESSAGE_TO_USER PRIMARY KEY(send_time, src_user_id, dst_group_id),
 CONSTRAINT SRC_USER_REGISTERED_2 foreign key (src_user_id) references basic_user_data(user_id),
 CONSTRAINT DST_GROUP_CREATED_2 foreign key (dst_group_id) references basic_group_data(group_id)
@@ -54,6 +56,7 @@ send_time DATETIME(3), -- 精确到ms
 unsend_user_id INT,
 src_user_id INT,
 content VARCHAR(2048) NOT NULL,
+is_file BOOL DEFAULT(FALSE),
 CONSTRAINT IDENTIFIER_UNSEND_MESSGAE_FROM_USER PRIMARY KEY(send_time, unsend_user_id, src_user_id),
 CONSTRAINT SRC_USER_REGISTERED_3 foreign key (src_user_id) references basic_user_data(user_id),
 CONSTRAINT UNSEND_USER_REGISTERED_3 foreign key (unsend_user_id) references basic_user_data(user_id)
@@ -66,6 +69,7 @@ unsend_user_id INT,
 src_user_id INT,
 dst_group_id INT,
 content VARCHAR(2048) NOT NULL,
+is_file BOOL DEFAULT(FALSE),
 CONSTRAINT IDENTIFIER_UNSEND_MESSGAE_FROM_GROUP PRIMARY KEY(send_time, unsend_user_id, src_user_id, dst_group_id),
 CONSTRAINT UNSEND_USER_REGISTERED_4 foreign key (unsend_user_id) references basic_user_data(user_id),
 CONSTRAINT SRC_USER_REGISTERED_4 foreign key (src_user_id) references basic_user_data(user_id),

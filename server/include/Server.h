@@ -53,11 +53,16 @@ private:
     void getGroupHistory(int confd,json &request);
     void getGroups(int confd,json &request);
 
+    //message
     void sendPrivateUnreadMessage(int confd,ID user_id);
     void sendGroupUnreadMessage(int confd,ID user_id);
     void sendPrivateMessage(int confd,json &request);
     void sendGroupMessage(int confd,json &request);
     
+    //file
+    void sendPrivateFile(int confd,json &request);
+    void sendGroupFile(int confd,json &request);
+    void getFile(int confd,json &request);
 public:
     Server(int port);
     void Start();

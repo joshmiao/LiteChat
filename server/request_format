@@ -169,10 +169,9 @@ deleteFriend
 }
 {
     "type":DELETE_FRIEND,
-    "token":
     "data":{
-        "user_id":
         "friend_id":
+        "message":${"frined_id"}+" has deleted you"
     }
 }
 
@@ -210,6 +209,7 @@ sendPrivateMessage
         "to_id":
         "time":
         "content":
+        "is_file":
     }
 }//client to server to send private message
 {
@@ -219,6 +219,7 @@ sendPrivateMessage
         "to_id":
         "time":
         "content":
+        "is_file":
     }
 }
 //server to client to forward private message
@@ -241,6 +242,7 @@ sendUnreadMessage
                 "to_id":
                 "time":
                 "content":
+                "is_file":
             }
         },
         ...
@@ -269,6 +271,7 @@ getHistoryPrivate
             "to_id":
             "time":
             "content":
+            "is_file":
         },
         ...
     ]
@@ -443,6 +446,14 @@ inviteMember
         "result":"invite successfully"
     }
 }
+{
+    "type":GET_GROUPS,
+    "data":[
+        {
+            "group_id":
+        }
+    ]
+}//exactly on group after a user was invited
 
 
 deleteGroup
@@ -477,6 +488,37 @@ getGroupMembers
         {
             "member_id":
             "member_name":
+        },
+        ...
+    ]
+}
+
+
+sendGroupMessage
+{
+    "type":GROUPMESSAGE,
+    "token":
+    "data":{
+        "group_id":
+        "user_id":
+        "content":
+        "time":
+        "is_file"
+    }
+}
+
+
+getHistoryGroup
+{
+    "type":GET_HISTORY_GROUP,
+    "token":
+    "data":[
+        {
+            "group_id":
+            "from_id":
+            "content":
+            "time":
+            "is_file"
         },
         ...
     ]

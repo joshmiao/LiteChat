@@ -12,6 +12,7 @@ SOURCES += \
     litechat_dialog.cpp \
     litechat_finduser.cpp \
     litechat_interface.cpp \
+    litechat_invitefriend.cpp \
     litechat_login.cpp \
     litechat_message.cpp \
     litechat_register.cpp \
@@ -23,6 +24,7 @@ HEADERS += \
     litechat_dialog.h \
     litechat_finduser.h \
     litechat_interface.h \
+    litechat_invitefriend.h \
     litechat_login.h \
     litechat_message.h \
     litechat_register.h \
@@ -33,6 +35,7 @@ FORMS += \
     litechat_dialog.ui \
     litechat_finduser.ui \
     litechat_interface.ui \
+    litechat_invitefriend.ui \
     litechat_login.ui \
     litechat_register.ui \
     litechat_server.ui

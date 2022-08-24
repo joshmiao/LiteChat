@@ -14,7 +14,7 @@ LiteChat_Login::LiteChat_Login(LiteChat_Server *liteChatServer, QWidget *parent)
     liteChatServer(liteChatServer)
 {
     ui->setupUi(this);
-    this->setWindowFlags(Qt::Window |Qt::FramelessWindowHint);
+    this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
     this->setAttribute(Qt::WA_TranslucentBackground, true);
     this->setFixedSize(this->width(),this->height());
 }
@@ -49,7 +49,6 @@ void LiteChat_Login::loginSuccess(QString loginName, int32_t loginId){
     QMessageBox msgBox;
     msgBox.setText("登录成功！\n欢迎您 " + loginName + "!");
     msgBox.exec();
-    liteChatServer->requestFriends();
     delete this;
 }
 
