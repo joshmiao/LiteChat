@@ -169,10 +169,9 @@ deleteFriend
 }
 {
     "type":DELETE_FRIEND,
-    "token":
     "data":{
-        "user_id":
         "friend_id":
+        "message":${"frined_id"}+" has deleted you"
     }
 }
 
@@ -480,4 +479,17 @@ getGroupMembers
         },
         ...
     ]
+}
+
+
+sendFile
+{
+    "type":SEND_FILE,
+    "token":
+    "data":{
+        "user_id":
+        "filename":
+        "finished"://true or false
+        "data":string
+    }
 }

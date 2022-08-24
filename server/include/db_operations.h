@@ -47,9 +47,10 @@ public:
     void updateUserStatusWhenLogin(ID user_id, int handle, const std::string& token);
     void updateUserStatusWhenLogout(int handle);
 
+    void deleteGroup(ID group_id);
+    void deleteUserHistory(ID user1_id, ID user2_id);
     void deleteUserUnsendMessage(ID unsend_user_id);
     void deleteGroupUnsendMessage(ID unsend_user_id, ID group_id);
-    void deleteGroup(ID group_id);
     void deleteGroupHistory(ID group_id);
     void removeUserFromGroup(ID group_id, ID user_id = 0);
     void deleteGroupRequest(ID user_id, ID group_id);
@@ -79,7 +80,8 @@ private:
         get_user_status,
         get_friend_relation, get_friend_request,
         get_group_member, get_group_request;
-    mysqlx::TableRemove delete_group, delete_group_history,
+    mysqlx::TableRemove delete_group, 
+        delete_user_history, delete_group_history,
         delete_user_unsend_messgae, delete_group_unsend_messgae,
         remove_user_from_group, delete_group_request,
         delete_friend_relation, delete_friend_request;

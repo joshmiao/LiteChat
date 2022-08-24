@@ -85,8 +85,8 @@ Server::Server(int port)
         Error("listen error");
 
     //link database
-    //db=new LiteChatDatabaseAccess("mysqlx://LiteChat:Z0136z0136@127.0.0.1");
-    db=new LiteChatDatabaseAccess("mysqlx://root:Sail2Boat3A@127.0.0.1");
+    db=new LiteChatDatabaseAccess("mysqlx://LiteChat:Z0136z0136@127.0.0.1");
+    //db=new LiteChatDatabaseAccess("mysqlx://root:Sail2Boat3A@127.0.0.1");
 }
 
 //accept client
@@ -793,9 +793,10 @@ void Server::acceptFriend(int confd,json &request)
 
 void Server::deleteFriend(int confd,json &request)
 {
-    ID id1=request["friend_id"];
-    ID id2=request["user_id"];
-    db->deleteFriendRelation(id1,id2);
+    ID friend_id=request["friend_id"];
+    ID user_id=request["user_id"];
+    db->deleteFriendRelation(friend_id,user_id);
+    db->deleteUserHistory(friend_id,user_id);
     json result;
     result["type"]=DELETE_FRIEND;
     json data;
@@ -808,6 +809,18 @@ void Server::deleteFriend(int confd,json &request)
     }
     else{
         std::cout<<confd<<" delete friend successfully\n\n";
+    }
+
+    auto status=db->getUserStatus(friend_id);
+    bool is_online=(bool)status.get(USER_STATUS_IS_ONLINE);
+    if(is_online==true)
+    {
+        int fd=(int)status.get(USER_STATUS_HANDLE);
+        json result;
+        result["type"]=DELETE_FRIEND;
+        result["data"]["friend_id"]=user_id;
+        result["data"]["message"]=std::to_string(friend_id)+" has deleted you";
+        sendjson(fd,result);
     }
 }
 
@@ -1041,7 +1054,26 @@ void Server::acceptMember(int confd,json &request)
     else{
         std::cout<<confd<<" accept member successfully\n\n";
     }
-    //unfinished
+    
+    auto status=db->getUserStatus(from_id);
+    bool is_online=(bool)status.get(USER_STATUS_IS_ONLINE);
+    if(is_online)
+    {
+        std::vector<json>data;
+        auto row=db->getBasicGroupData(group_id);
+        json group;
+        group["group_id"]=group_id;
+        group["group_name"]=row.get(BASIC_GROUP_DATA_GROUP_NAME);
+        group["group_description"]=row.get(BASIC_GROUP_DATA_GROUP_DESCRIPTION);
+        group["owner_id"]=row.get(BASIC_GROUP_DATA_OWNER);
+        data.push_back(group);
+        json result;
+        result["type"]=GET_GROUPS;
+        result["data"]=data;
+        int fd=(int)status.get(USER_STATUS_HANDLE);
+        sendjson(fd,result);
+    }
+
 }
 
 void Server::deleteMember(int confd,json &request)
