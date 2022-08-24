@@ -96,7 +96,11 @@ void LiteChat_Server::settleJson(QString str)
     try
     {
         json j;
-//      {"data":[{"friend_id":66666,"friend_name":"nonono1"},{"friend_id":88888,"friend_name":"nonono2"}],"result":"success_get_friends","type":1004}
+        /*
+         * {"data":[{"friend_id":66666,"friend_name":"nonono1"},{"friend_id":88888,"friend_name":"nonono2"}],"result":"success_get_friends","type":1004}{"data":{"group_description":"This is a group created by test_user","group_name":"缇よ亰鍚嶇О","group_id":9999},"token":"test_token","type":1014}
+         *
+         *
+         */
         j = json::parse(str.toStdString());
         qDebug() << "this is valid to parse:" << QString::fromStdString(to_string(j))<< '\n';
         if (!j["type"].is_number_integer()) throw std::runtime_error("the format is invalid!");

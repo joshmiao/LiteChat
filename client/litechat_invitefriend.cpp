@@ -60,6 +60,6 @@ void LiteChat_InviteFriend::inviteUser(int currentRow)
     }
     disconnect(ui->listWidget, &QListWidget::currentRowChanged, this, &LiteChat_InviteFriend::inviteUser);
     disconnect(liteChatServer, &LiteChat_Server::newFriendRecieve, this, &LiteChat_InviteFriend::addSingleFriend);
-    delete this;
+    this->close();
 }
 
