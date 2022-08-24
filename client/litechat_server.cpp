@@ -30,6 +30,7 @@ LiteChat_Server::LiteChat_Server(QWidget *parent) :
     client = new QTcpSocket();
     serverStatus = false;
     loginStatus = false;
+    on_pushButton_clicked();
 }
 
 LiteChat_Server::~LiteChat_Server()
@@ -60,7 +61,7 @@ void LiteChat_Server::handConnected()
     connect(client, SIGNAL(readyRead()), this, SLOT(handReadyRead()));
     LiteChat_Login *loginPage = createLoginPage();
     loginPage->show();
-//    this->hide();
+    this->hide();
 }
 
 void LiteChat_Server::handReadyRead()
