@@ -219,7 +219,7 @@ void LiteChat_Server::settleJson(QString str)
                     emit messageReceive(LiteChat_Dialog::Group, fromId, groupId, msg, userInfo.id);
                 }
                 else {
-                    emit messageReceive(LiteChat_Dialog::Private, groupId, userInfo.id, msg, fromId);
+                    emit messageReceive(LiteChat_Dialog::Group, groupId, userInfo.id, msg, fromId);
                 }
             }
         }
