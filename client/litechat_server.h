@@ -18,6 +18,7 @@ class LiteChat_Interface;
 class LiteChat_ChatList;
 class LiteChat_Register;
 class LiteChat_FindUser;
+class LiteChat_InviteFriend;
 
 class UserInfo
 {
@@ -37,10 +38,11 @@ public:
     ~LiteChat_Server();
 
     LiteChat_Login* createLoginPage();
-    LiteChat_Dialog* createDialog(QString dialogName, LiteChat_Dialog::Dialog_Type dialogType, int32_t toId, std::vector<DialogInfo> &dialogInfo);
+    LiteChat_Dialog* createDialog(QString dialogName, LiteChat_Dialog::Dialog_Type dialogType, int32_t toId);
     LiteChat_Interface* createInterface(QString loginName, int32_t loginId);
     LiteChat_Register* createRegister();
     LiteChat_FindUser* createFindUser();
+    LiteChat_InviteFriend* createInvitePage(int32_t groupId);
 
     int requestRegister(QString name, QString pwd, QString email);
     int requestLogin(int32_t id, QString pwd);
