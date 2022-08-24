@@ -49,17 +49,24 @@ LiteChat_DialogListItem::LiteChat_DialogListItem(LiteChat_Dialog::Dialog_Type di
     dialogNameLabel = new QLabel(str1, this);
     dialogContentLabel = new QLabel(str2, this);
     QFont font;
-    font.setPointSize(9);
+    font.setPointSize(12);
     resize(QSize(parent->size().width(), 60));
-    QPixmap pixmap(":/img/CustomerService.png");
-    QPainter painter(this);
-    painter.drawPixmap(0, 0, pixmap);
     dialogNameLabel->setFont(font);
     dialogNameLabel->setAttribute(Qt::WA_TranslucentBackground);
     dialogNameLabel->setGeometry(60, 5, parent->size().width() - 40, 20);
+    font.setPointSize(9);
     dialogContentLabel->setFont(font);
     dialogContentLabel->setAttribute(Qt::WA_TranslucentBackground);
-    dialogContentLabel->setGeometry(60, 25, parent->size().width() - 40, 20);
+    dialogContentLabel->setGeometry(60, 30, parent->size().width() - 40, 20);
+}
+
+void LiteChat_DialogListItem::paintEvent(QPaintEvent *)
+{
+    QPixmap pixmap;
+    if (dialogType == LiteChat_Dialog::Private) pixmap.load(":/img/head0.png");
+    else pixmap.load(":/img/head1.png");
+    QPainter painter(this);
+    painter.drawPixmap(10, 10, 40, 40, pixmap);
 }
 
 void LiteChat_Interface::changeCurrentDialog(int currentRow)
