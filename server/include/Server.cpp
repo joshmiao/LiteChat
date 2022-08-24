@@ -904,23 +904,30 @@ void Server::deleteGroup(int confd,json &request){
         return;
     }
 
+    std::string group_name=(std::string)db->getBasicGroupData(group_id).get(BASIC_GROUP_DATA_GROUP_NAME);
+    json result;
+    result["type"]=DELETE_GROUP;
+    result["data"]["message"]=group_name+" has been dissolved";
+
+    auto members=db->getGroupMember(group_id);
+    while(members.count()>0)
+    {
+        auto member=members.fetchOne();
+        ID member_id=member.get(GROUP_MEMBER_USER_ID);
+        if(member_id==request["user_id"])continue;
+        auto status=db->getUserStatus(member_id);
+        bool is_online=(bool)status.get(USER_STATUS_IS_ONLINE);
+        if(is_online==true)
+        {
+            int fd=(int)status.get(USER_STATUS_HANDLE);
+            sendjson(fd,result);
+        }
+    }
+
     db->deleteGroupUnsendMessage(0, group_id);
     db->deleteGroupHistory(group_id);
     db->removeUserFromGroup(group_id);
     db->deleteGroup(group_id);
-
-    json result, data;
-    result["type"] = DELETE_GROUP;
-    data["result"] = "delete successfully";
-    result["data"] = data;
-    int success=sendjson(confd,result);
-    if(success==-1)
-    {
-        Error("Deletion message sending failed",confd,DELETE_GROUP);
-    }
-    else{
-        std::cout<<confd<<" Deletion message sent successfully\n\n";
-    }
 }
 
 void Server::getGroupMembers(int confd,json &request){
