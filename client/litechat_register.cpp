@@ -48,7 +48,7 @@ void LiteChat_Register::on_pushButton_clicked()
     QString word = ui->lineEdit_2->text();
     Hash.addData(word.toLatin1().data());
     word = Hash.result().toHex().toUpper();
-    liteChatServer->requestRegister(ui->lineEdit->text(), word.left(10), ui->lineEdit_4->text());
+    liteChatServer->requestRegister(ui->lineEdit->text(), word.left(30), ui->lineEdit_4->text());
 }
 
 void LiteChat_Register::registerSuccess(int32_t id)
