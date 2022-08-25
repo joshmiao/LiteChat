@@ -1,5 +1,6 @@
 #include <QMessageBox>
 #include <QMouseEvent>
+#include <QCryptographicHash>
 #include "litechat_server.h"
 #include "litechat_login.h"
 #include "litechat_register.h"
@@ -43,7 +44,11 @@ void LiteChat_Register::on_pushButton_clicked()
         ui->lineEdit_4->setText("");
         return;
     }
-    liteChatServer->requestRegister(ui->lineEdit->text(), ui->lineEdit_2->text(), ui->lineEdit_4->text());
+    QCryptographicHash Hash(QCryptographicHash::Sha1);
+    QString word = ui->lineEdit_2->text();
+    Hash.addData(word.toLatin1().data());
+    word = Hash.result().toHex().toUpper();
+    liteChatServer->requestRegister(ui->lineEdit->text(), word, ui->lineEdit_4->text());
 }
 
 void LiteChat_Register::registerSuccess(int32_t id)

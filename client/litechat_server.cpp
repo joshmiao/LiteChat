@@ -44,7 +44,9 @@ void LiteChat_Server::on_pushButton_clicked()
     QString port = ui->lineEdit_2->text();
     if (ip == "" || port == ""){
         ip = QString("192.168.148.129");
+        ip = QString("192.168.50.249");
         port = QString("2333");
+        port = QString("1234");
         ui->textEdit->append("Input correct IP and Port!");
 //        return;
     }
