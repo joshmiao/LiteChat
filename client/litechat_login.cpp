@@ -39,7 +39,7 @@ void LiteChat_Login::on_pushButton_clicked()
     Hash.addData(word.toLatin1().data());
     word = Hash.result().toHex().toUpper();
     qDebug() << "Hash" << word << '\n';
-    liteChatServer->requestLogin(ui->lineEdit->text(), word);
+    liteChatServer->requestLogin(ui->lineEdit->text(), word.left(10));
 }
 
 void LiteChat_Login::on_pushButton_2_clicked()
