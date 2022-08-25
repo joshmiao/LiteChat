@@ -45,9 +45,6 @@ gruop message:
 logout1
 login1
 
-2 quit #1
-1 delete #1
-
 delete friend:
 1 delete 2
 
