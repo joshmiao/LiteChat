@@ -47,6 +47,8 @@ gruop message:
 logout1
 login1
 
+2 send message to 1
+
 delete friend:
 1 delete 2
 
