@@ -63,10 +63,16 @@ void LiteChat_FindUser::on_pushButton_clicked()
     connect(ui->listWidget, &QListWidget::currentRowChanged, this, &LiteChat_FindUser::addFriendConfirm);
     searchList.clear();
     liteChatServer->searchUser(ui->lineEdit->text());
+    ui->lineEdit->setText("");
 }
 
 void LiteChat_FindUser::addSearchResult(QString name, int32_t id)
 {
+    disconnect(ui->listWidget, &QListWidget::currentRowChanged, this, &LiteChat_FindUser::addFriendConfirm);
+    ui->listWidget->clear();
+    connect(ui->listWidget, &QListWidget::currentRowChanged, this, &LiteChat_FindUser::addFriendConfirm);
+    searchList.clear();
+
     LiteChat_SearchListItem *newUser = new LiteChat_SearchListItem(id, name, ui->listWidget);
     QListWidgetItem *newItem = new QListWidgetItem(ui->listWidget);
     newItem->setSizeHint(QSize(ui->listWidget->size().width() - 10, 60));

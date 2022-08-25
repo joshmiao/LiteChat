@@ -30,6 +30,7 @@ LiteChat_Server::LiteChat_Server(QWidget *parent) :
     client = new QTcpSocket();
     serverStatus = false;
     loginStatus = false;
+    on_pushButton_clicked();
 }
 
 LiteChat_Server::~LiteChat_Server()
@@ -42,7 +43,9 @@ void LiteChat_Server::on_pushButton_clicked()
     QString ip = ui->lineEdit->text();
     QString port = ui->lineEdit_2->text();
     if (ip == "" || port == ""){
+        ip = QString("192.168.148.129");
         ip = QString("192.168.50.249");
+        port = QString("2333");
         port = QString("1234");
         ui->textEdit->append("Input correct IP and Port!");
 //        return;
@@ -60,7 +63,7 @@ void LiteChat_Server::handConnected()
     connect(client, SIGNAL(readyRead()), this, SLOT(handReadyRead()));
     LiteChat_Login *loginPage = createLoginPage();
     loginPage->show();
-//    this->hide();
+    this->hide();
 }
 
 void LiteChat_Server::handReadyRead()
@@ -218,7 +221,7 @@ void LiteChat_Server::settleJson(QString str)
                     emit messageReceive(LiteChat_Dialog::Group, fromId, groupId, msg, userInfo.id);
                 }
                 else {
-                    emit messageReceive(LiteChat_Dialog::Private, groupId, userInfo.id, msg, fromId);
+                    emit messageReceive(LiteChat_Dialog::Group, groupId, userInfo.id, msg, fromId);
                 }
             }
         }
